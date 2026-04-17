@@ -13,7 +13,7 @@ export const TestPage: React.FC<{ onNavigate?: (page: string) => void }> = ({ on
       <main>
         <HeroSection />
         <PopularServices />
-        <TopExperts />
+        <TopExperts onNavigate={onNavigate} />
         <PremiumBanner />
       </main>
       <Footer />

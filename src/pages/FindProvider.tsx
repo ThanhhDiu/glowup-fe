@@ -12,7 +12,7 @@ export const FindProvider: React.FC<{ onNavigate?: (page: string) => void }> = (
             <main className="fp-main-container">
                 <div className="fp-layout">
                     <FilterSidebar />
-                    <ProviderList />
+                    <ProviderList onNavigate={onNavigate} />
                 </div>
             </main>
 

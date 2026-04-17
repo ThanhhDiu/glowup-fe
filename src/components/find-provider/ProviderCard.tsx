@@ -15,7 +15,7 @@ export interface ProviderProps {
   timeAvailable? : string;
 }
 
-export const ProviderCard: React.FC<{ provider: ProviderProps }> = ({ provider }) => {
+export const ProviderCard: React.FC<{ provider: ProviderProps; onNavigate?: (page: string, data?: any) => void }> = ({ provider, onNavigate }) => {
   return (
     <div className="provider-card">
       <div className="pc-top">
@@ -56,7 +56,7 @@ export const ProviderCard: React.FC<{ provider: ProviderProps }> = ({ provider }
           </div>
           
           <div className="pc-actions">
-            <button className="pc-btn-outline">Xem hồ sơ</button>
+            <button className="pc-btn-outline" onClick={() => onNavigate?.('provider-profile', provider)}>Xem hồ sơ</button>
             <button className="pc-btn-solid">Gửi yêu cầu</button>
           </div>
         </div>

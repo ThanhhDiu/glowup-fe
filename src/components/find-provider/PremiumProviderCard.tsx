@@ -9,7 +9,7 @@ export interface PremiumProviderProps {
   description: string;
 }
 
-export const PremiumProviderCard: React.FC<{ provider: PremiumProviderProps }> = ({ provider }) => {
+export const PremiumProviderCard: React.FC<{ provider: PremiumProviderProps; onNavigate?: (page: string, data?: any) => void }> = ({ provider, onNavigate }) => {
   return (
     <div className="premium-provider-card">
       <div className="ppc-bg-decoration"></div>
@@ -25,7 +25,7 @@ export const PremiumProviderCard: React.FC<{ provider: PremiumProviderProps }> =
           </div>
           <h3 className="ppc-name">{provider.name}</h3>
           <p className="ppc-desc">{provider.description}</p>
-          <button className="ppc-btn">Xem hồ sơ đặc biệt</button>
+          <button className="ppc-btn" onClick={() => onNavigate?.('provider-profile', provider)}>Xem hồ sơ đặc biệt</button>
         </div>
       </div>
     </div>

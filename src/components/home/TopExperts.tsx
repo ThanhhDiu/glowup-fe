@@ -46,7 +46,24 @@ const experts: Expert[] = [
   }
 ];
 
-export const TopExperts: React.FC = () => {
+const badgeLabels: Record<string, string> = {
+  DIAMOND: 'CHUYÊN GIA KIM CƯƠNG',
+  PLATINUM: 'CHUYÊN GIA BẠCH KIM',
+  GOLD: 'CHUYÊN GIA VÀNG',
+};
+
+export const TopExperts: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
+  const handleExpertClick = (expert: Expert) => {
+    onNavigate?.('provider-profile', {
+      name: expert.name,
+      avatar: expert.imageUrl,
+      rating: expert.rating,
+      reviewCount: parseInt(expert.completedJobs.replace(/[^0-9]/g, '')) || 0,
+      location: 'TP. Hồ Chí Minh',
+      type: 'premium',
+      titleBadge: badgeLabels[expert.badge] || 'CHUYÊN GIA CỦA THÁNG',
+    });
+  };
   return (
     <section className="experts-section">
       <div className="experts-header">
@@ -58,7 +75,7 @@ export const TopExperts: React.FC = () => {
 
       <div className="experts-grid">
         {experts.map(expert => (
-          <div key={expert.id} className="expert-card">
+          <div key={expert.id} className="expert-card" onClick={() => handleExpertClick(expert)} style={{ cursor: 'pointer' }}>
             <div className={`badge-tier badge-${expert.badge.toLowerCase()}`}>
               {expert.badge}
             </div>

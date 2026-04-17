@@ -4,7 +4,7 @@ import { ProviderCard } from './ProviderCard';
 import { PremiumProviderCard } from './PremiumProviderCard';
 import { ChevronDownIcon } from '../common/Icons';
 
-export const ProviderList: React.FC = () => {
+export const ProviderList: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState('PHỔ BIẾN NHẤT');
 
@@ -25,7 +25,7 @@ export const ProviderList: React.FC = () => {
       type: 'normal',
       id: '2',
       name: 'Phạm Hoài Nam',
-      avatar: 'https://i.pravatar.cc/150?img=8',
+      avatar: 'https://i.pravatar.cc/150?img=55',
       rating: 4.8,
       reviewCount: 98,
       location: '152 Nguyễn Lương Bằng, Quận 7, HCMC',
@@ -68,12 +68,12 @@ export const ProviderList: React.FC = () => {
           <button className="sort-btn" onClick={() => setIsSortOpen(!isSortOpen)}>
             {selectedSort} <ChevronDownIcon size={14} className="sort-icon" />
           </button>
-          
+
           {isSortOpen && (
             <div className="sort-dropdown">
               {['PHỔ BIẾN NHẤT', 'ĐẾN NHANH NHẤT'].map(option => (
-                <div 
-                  key={option} 
+                <div
+                  key={option}
                   className={`sort-option ${selectedSort === option ? 'active' : ''}`}
                   onClick={() => {
                     setSelectedSort(option);
@@ -91,9 +91,9 @@ export const ProviderList: React.FC = () => {
       <div className="pl-cards">
         {providers.map((p) => {
           if (p.type === 'premium') {
-            return <PremiumProviderCard key={p.id} provider={p as any} />;
+            return <PremiumProviderCard key={p.id} provider={p as any} onNavigate={onNavigate} />;
           }
-          return <ProviderCard key={p.id} provider={p as any} />;
+          return <ProviderCard key={p.id} provider={p as any} onNavigate={onNavigate} />;
         })}
       </div>
     </div>
