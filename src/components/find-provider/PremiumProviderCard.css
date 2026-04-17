@@ -1,0 +1,96 @@
+.premium-provider-card {
+  background-color: #000C33;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 12, 51, 0.15);
+}
+
+.ppc-bg-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  background: radial-gradient(circle at right, rgba(226, 175, 116, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Also add abstract wave lines using pseudo-element or CSS shapes if needed, but a simple gradient glow is good enough for now */
+
+.ppc-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  padding: 32px;
+  gap: 32px;
+  align-items: center;
+}
+
+.ppc-avatar-wrapper {
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.ppc-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ppc-info-section {
+  flex-grow: 1;
+}
+
+.ppc-badge-wrapper {
+  margin-bottom: 12px;
+}
+
+.ppc-badge {
+  background-color: #DEC38D;
+  color: #000C33;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ppc-name {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.ppc-desc {
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+  max-width: 600px;
+}
+
+.ppc-btn {
+  background-color: #ffffff;
+  color: #000C33;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ppc-btn:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+}

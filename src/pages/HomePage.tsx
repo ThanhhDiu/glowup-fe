@@ -6,10 +6,10 @@ import { TopExperts } from '../components/home/TopExperts';
 import { PremiumBanner } from '../components/home/PremiumBanner';
 import { Footer } from '../components/layout/Footer';
 
-export const TestPage: React.FC = () => {
+export const TestPage: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
   return (
-    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
-      <Header />
+    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
+      <Header onNavigate={onNavigate} />
       <main>
         <HeroSection />
         <PopularServices />

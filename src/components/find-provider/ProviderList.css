@@ -1,0 +1,90 @@
+.provider-list-container {
+  flex-grow: 1;
+}
+
+.pl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.pl-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #000C33;
+  margin: 0 0 8px 0;
+}
+
+.pl-subtitle {
+  font-size: 14px;
+  color: #4A5E8B;
+  margin: 0;
+}
+
+.pl-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-label {
+  font-size: 13px;
+  color: #4A5E8B;
+  font-weight: 500;
+}
+
+.sort-btn {
+  background: none;
+  border: none;
+  color: #000C33;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sort-icon {
+  margin-top: 2px;
+}
+
+.sort-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  z-index: 10;
+  min-width: 160px;
+  border: 1px solid #e2e8f0;
+}
+
+.sort-option {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4A5E8B;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-option:hover {
+  background-color: #f8fafc;
+  color: #000C33;
+}
+
+.sort-option.active {
+  color: #000C33;
+  background-color: #f1f5f9;
+}
+
+.pl-cards {
+  display: flex;
+  flex-direction: column;
+}
