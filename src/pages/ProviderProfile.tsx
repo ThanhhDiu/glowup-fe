@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderLogged } from '../components/layout/HeaderLogged';
 import { Footer } from '../components/layout/Footer';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
@@ -9,7 +10,23 @@ import { ProjectsTab } from '../components/provider-profile/ProjectsTab';
 import { ScheduleSidebar, VerificationSidebar, MapSidebar } from '../components/provider-profile/SidebarWidgets';
 import './ProviderProfile.css';
 
-export const ProviderProfile: React.FC<{ onNavigate?: (page: string, data?: any) => void, providerData?: any }> = ({ onNavigate, providerData }) => {
+const pageMap: Record<string, string> = {
+  'home': '/',
+  'find-provider': '/find-provider',
+  'provider-profile': '/provider-profile',
+  'provider-dashboard': '/provider-dashboard',
+};
+
+export const ProviderProfile: React.FC = () => {
+  const nav = useNavigate();
+  const location = useLocation();
+  const providerData = location.state as any;
+
+  const onNavigate = (page: string, data?: any) => {
+    const path = pageMap[page] || '/';
+    nav(path, { state: data });
+  };
+
   const [activeTab, setActiveTab] = useState('about');
   
   const defaultProfile = {
@@ -41,7 +58,7 @@ export const ProviderProfile: React.FC<{ onNavigate?: (page: string, data?: any)
       <HeaderLogged onNavigate={onNavigate} />
       
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate?.('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 
