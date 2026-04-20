@@ -1,0 +1,158 @@
+.earnings-chart-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 28px 32px;
+  margin-bottom: 28px;
+}
+
+.earnings-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.earnings-chart-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1e3b;
+  margin: 0;
+}
+
+.earnings-period-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.period-btn {
+  padding: 7px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.period-btn.active {
+  background: #ffffff;
+  color: #1a1e3b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.chart-area {
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chart-bars-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+}
+
+.chart-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.chart-bar-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+
+.chart-bar-bg {
+  width: 24px;
+  background: #e2e8f0;
+  border-radius: 6px 6px 4px 4px;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 8px;
+}
+
+.chart-bar-main {
+  width: 24px;
+  background: linear-gradient(180deg, #94a3b8 0%, #cbd5e1 100%);
+  border-radius: 6px 6px 4px 4px;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 12px;
+  position: relative;
+  cursor: pointer;
+}
+
+.chart-bar-main:hover {
+  opacity: 0.85;
+}
+
+.chart-bar-main:hover .bar-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+  visibility: visible;
+}
+
+.bar-tooltip {
+  position: absolute;
+  top: -36px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: #1a1e3b;
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.bar-today {
+  background: linear-gradient(180deg, #e2af74 0%, #d19f64 100%);
+}
+
+.chart-bar-label {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.label-today {
+  color: #1a1e3b;
+  font-weight: 700;
+  background: #f8fafc;
+  padding: 2px 10px;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .earnings-chart-card {
+    padding: 20px;
+  }
+  .chart-bar-bg,
+  .chart-bar-main {
+    width: 18px;
+  }
+}

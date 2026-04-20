@@ -1,0 +1,54 @@
+.admin-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background-color: #1a1e3b;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 20px 24px;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+}
+
+.admin-sidebar-brand { margin-bottom: 48px; padding-left: 12px; }
+.admin-sidebar-logo { font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px; letter-spacing: -0.5px; }
+.admin-sidebar-badge { font-size: 13px; color: #7dd3fc; font-weight: 500; }
+.admin-sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
+
+.admin-nav-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px; border-radius: 14px; border: none;
+  background: transparent; color: #94a3b8; font-size: 15px;
+  font-weight: 500; cursor: pointer; transition: all 0.25s ease;
+  text-align: left; width: 100%; font-family: inherit;
+}
+.admin-nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+.admin-nav-item.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+}
+.admin-nav-icon { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; }
+.admin-nav-label { font-weight: 600; }
+
+.admin-sidebar-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+.admin-user-profile {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px; border-radius: 12px; cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-user-profile:hover { background: rgba(255,255,255,0.06); }
+.admin-user-avatar { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid rgba(255,255,255,0.15); }
+.admin-user-info { display: flex; flex-direction: column; }
+.admin-user-name { font-size: 14px; font-weight: 700; color: #fff; }
+.admin-user-id { font-size: 12px; color: #64748b; }
+
+@media (max-width: 900px) {
+  .admin-sidebar { width: 72px; min-width: 72px; padding: 24px 10px; align-items: center; }
+  .admin-sidebar-logo { font-size: 14px; }
+  .admin-sidebar-badge, .admin-nav-label, .admin-user-info { display: none; }
+  .admin-nav-item { justify-content: center; padding: 12px; }
+  .admin-sidebar-brand { padding-left: 0; text-align: center; }
+}

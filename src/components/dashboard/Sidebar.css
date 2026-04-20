@@ -1,0 +1,149 @@
+.db-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background-color: #1a1e3b;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 20px 24px;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+}
+
+.db-sidebar-brand {
+  margin-bottom: 48px;
+  padding-left: 12px;
+}
+
+.db-sidebar-logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
+}
+
+.db-sidebar-badge {
+  font-size: 13px;
+  color: #7dd3fc;
+  font-weight: 500;
+}
+
+.db-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.db-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+
+.db-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.db-nav-item.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+}
+
+.db-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.db-nav-label {
+  font-weight: 600;
+}
+
+/* Bottom user section */
+.db-sidebar-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 20px;
+}
+
+.db-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.db-user-profile:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.db-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.db-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.db-user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.db-user-id {
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .db-sidebar {
+    width: 72px;
+    min-width: 72px;
+    padding: 24px 10px;
+    align-items: center;
+  }
+  .db-sidebar-logo {
+    font-size: 16px;
+  }
+  .db-sidebar-badge,
+  .db-nav-label,
+  .db-user-info {
+    display: none;
+  }
+  .db-nav-item {
+    justify-content: center;
+    padding: 12px;
+  }
+  .db-sidebar-brand {
+    padding-left: 0;
+    text-align: center;
+  }
+}
