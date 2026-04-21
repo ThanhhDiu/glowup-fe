@@ -1,0 +1,136 @@
+.request-detail {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid var(--border);
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-weight: var(--fw-bold);
+    color: var(--blueberry-skin);
+    font-size: var(--fs-base);
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font-family);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.req-id {
+    color: var(--text-sub);
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+}
+
+.label {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.device-title {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+    color: var(--blueberry-skin);
+    margin: 0 0 24px 0;
+}
+
+.desc-box {
+    background: var(--plate-white);
+    border-left: 4px solid var(--yogurt-tint);
+    padding: 16px 20px;
+    font-size: var(--fs-base);
+    color: var(--text-main);
+    font-style: italic;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 32px;
+}
+
+.images-block {
+    margin-bottom: 32px;
+}
+
+.block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.img-count {
+    background: var(--yogurt-tint);
+    color: var(--white);
+    font-size: var(--fs-xs);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: var(--fw-semibold);
+}
+
+.image-grid {
+    display: flex;
+    gap: 16px;
+}
+
+.req-image {
+    width: 200px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.meta-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.meta-box .icon {
+    font-size: var(--fs-md);
+    background: var(--plate-white);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.meta-box p {
+    margin: 0;
+    font-weight: var(--fw-semibold);
+    color: var(--text-main);
+    font-size: var(--fs-sm);
+}
+
+.detail-footer {
+    display: flex;
+    gap: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+}

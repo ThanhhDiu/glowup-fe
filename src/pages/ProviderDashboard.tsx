@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sidebar } from '../components/dashboard/Sidebar';
+import { TechnicianSidebar } from '../components/layout/TechnicianSidebar.tsx';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { EarningsChart } from '../components/dashboard/EarningsChart';
 import { AvailableTasks } from '../components/dashboard/AvailableTasks';
@@ -23,7 +23,7 @@ const ProviderDashboard: React.FC = () => {
 
   return (
     <div className="pd-layout">
-      <Sidebar activeItem="dashboard" onNavigate={onNavigate} />
+      <TechnicianSidebar activeItem="dashboard" onNavigate={onNavigate} />
 
       <div className="pd-main">
         {/* Top Header Bar */}
