@@ -1,7 +1,7 @@
 :root {
   /* --- BẢNG MÀU BLUEBERRY --- */
   --blueberry-skin: #2f3a55;   /* Màu chính (Primary) - Nút, Header */
-  --berry-bloom: #5c6b8a;      /* Màu phụ (Secondary) - Sidebar, Icons */
+  --berry-bloom: #5c6b8a;      /* Màu phụ (Secondary) - TechnicianSidebar, Icons */
   --stem-grey: #6e6f73;        /* Màu xám (Grey) - Chữ phụ, Border */
   --yogurt-tint: #a29f76;      /* Màu nhấn (Accent) - Tag trạng thái, Background nhẹ */
   --plate-white: #f5f6f3;      /* Màu nền (Background) - Nền trang chính */
