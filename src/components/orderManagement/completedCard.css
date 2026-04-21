@@ -1,0 +1,114 @@
+.cmp-list-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    transition: 0.2s;
+}
+
+.cmp-list-card:hover {
+    border-color: var(--blueberry-skin);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.cmp-icon-box {
+    width: 48px;
+    height: 48px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: var(--text-sub);
+    margin-right: 20px;
+}
+
+.cmp-card-main {
+    flex: 1;
+}
+
+.cmp-person-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--blueberry-skin);
+    margin: 0 0 4px 0;
+}
+
+.cmp-service-name {
+    color: var(--text-sub);
+    font-size: 14px;
+    margin: 0 0 12px 0;
+}
+
+.cmp-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.cmp-date {
+    font-size: 13px;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cmp-stars {
+    display: flex;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.star-filled {
+    color: #fbbf24;
+}
+
+.star-empty {
+    color: #e2e8f0;
+}
+
+.cmp-card-actions {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.cmp-price-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.price-label {
+    font-size: 10px;
+    color: var(--text-sub);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.btn-outline-rounded {
+    background: white;
+    border: 1px solid var(--blueberry-skin);
+    color: var(--blueberry-skin);
+    font-weight: 600;
+    padding: 8px 24px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-outline-rounded:hover {
+    background: var(--plate-white);
+}

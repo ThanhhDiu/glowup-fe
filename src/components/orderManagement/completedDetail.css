@@ -1,0 +1,372 @@
+.cmp-detail-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 0 80px;
+    font-family: var(--font-family);
+}
+
+.header-info p {
+    margin: 0;
+    color: var(--text-sub);
+    font-size: 14px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-outline-gray {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.btn-solid-dark {
+    background: var(--blueberry-skin);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.cmp-grid-layout {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.cmp-col-main {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cmp-col-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.cmp-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 32px;
+    border: 1px solid var(--border);
+}
+
+.cmp-card h3 {
+    margin: 0 0 24px 0;
+    font-size: 16px;
+    color: var(--blueberry-skin);
+}
+
+.cmp-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cmp-stepper .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.cmp-stepper .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: #cbd5e1;
+}
+
+.cmp-stepper span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+.cmp-stepper .line {
+    flex: 1;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 0 16px 24px;
+}
+
+.cmp-stepper .step.completed .icon {
+    background: var(--blueberry-skin);
+    color: white;
+}
+
+.cmp-stepper .step.completed span {
+    color: var(--blueberry-skin);
+}
+
+.cmp-stepper .line.completed {
+    background: var(--blueberry-skin);
+}
+
+/* Chi tiết hóa đơn */
+.invoice-rows {
+    border-bottom: 1px dashed var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+
+.inv-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 15px;
+    color: var(--text-main);
+}
+
+.inv-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.total-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.total-price {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--blueberry-skin);
+}
+
+.payment-method-box {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.wallet-icon {
+    font-size: 24px;
+    color: var(--blueberry-skin);
+}
+
+.pm-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-sub);
+    margin-bottom: 4px;
+}
+
+.pm-value {
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+/* Hình ảnh */
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-header-flex h3 {
+    margin: 0;
+}
+
+.photo-count {
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--text-sub);
+    letter-spacing: 0.5px;
+}
+
+.photo-grid-row {
+    display: flex;
+    gap: 16px;
+}
+
+.photo-grid-row img {
+    width: 140px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* bên phải */
+.w-100 {
+    width: 100%;
+    justify-content: center;
+}
+
+.mb-3 {
+    margin-bottom: 16px;
+}
+
+.mb-2 {
+    margin-bottom: 8px;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+/* đánh giá */
+.rating-desc {
+    font-size: 13px;
+    color: var(--text-sub);
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.rating-stars-input {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 24px;
+    cursor: pointer;
+}
+
+.rating-placeholder {
+    background: #f1f5f9;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    margin-bottom: 16px;
+    cursor: text;
+}
+
+.rated-success {
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 14px;
+}
+
+/* bảo hành*/
+.warranty-status {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.shield-icon {
+    background: #e0e7ff;
+    color: #4338ca;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.warranty-status strong {
+    display: block;
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.warranty-status p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-sub);
+    line-height: 1.5;
+}
+
+.btn-outline-dark {
+    background: white;
+    border: 1px solid var(--blueberry-skin);
+    color: var(--blueberry-skin);
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-text-danger {
+    background: none;
+    border: none;
+    color: #dc2626;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.dark-profile-card {
+    background: var(--blueberry-skin);
+    color: white;
+    border: none;
+}
+
+.tech-brief {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 16px;
+}
+
+.tech-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.tech-brief h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+}
+
+.tech-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+.tech-bio {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+}
