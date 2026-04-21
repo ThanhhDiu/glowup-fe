@@ -1,12 +1,12 @@
 import React from 'react';
-import './Sidebar.css';
+import './technicianSidebar.css';
 
 interface SidebarProps {
   activeItem?: string;
   onNavigate?: (page: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeItem = 'dashboard', onNavigate }) => {
+export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashboard', onNavigate }) => {
   const menuItems = [
     {
       id: 'dashboard', label: 'Dashboard', icon: (
