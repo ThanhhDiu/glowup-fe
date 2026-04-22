@@ -1,0 +1,76 @@
+.db-header {
+    height: 68px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.db-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #5c6b8a;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.db-header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.db-wallet-quick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.wallet-label { color: #64748b; font-size: 14px; }
+.wallet-amount { font-weight: 700; color: #2F3A55; font-size: 15px; min-width: 85px; }
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    position: relative;
+    padding: 4px;
+}
+
+.notification .badge {
+    position: absolute;
+    top: 0;
+    right: -2px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+}
+
+/* Toggle Switch */
+.db-status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-text { font-size: 14px; font-weight: 600; color: #64748b; }
+.db-status-toggle.online .status-text { color: #10b981; }
+
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #10b981; }
+input:checked + .slider:before { transform: translateX(20px); }

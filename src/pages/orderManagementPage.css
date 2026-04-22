@@ -1,0 +1,102 @@
+.bg-plate-white {
+    background-color: var(--plate-white);
+}
+
+.orders-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 24px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 24px;
+}
+
+.page-header h2 {
+    font-size: var(--fs-lg);
+    color: var(--blueberry-skin);
+    margin: 0;
+    font-weight: var(--fw-bold);
+}
+
+.search-bar input {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    width: 300px;
+    font-family: var(--font-family);
+    font-size: var(--fs-sm);
+    color: var(--text-main);
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--berry-bloom);
+}
+
+.card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 140px;
+}
+
+.btn-primary, .btn-secondary, .btn-large-primary, .btn-large-secondary {
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+    border: none;
+    font-family: var(--font-family);
+}
+
+.btn-primary {
+    background: var(--blueberry-skin);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--berry-bloom);
+}
+
+.btn-secondary {
+    background: var(--white);
+    color: var(--text-sub);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    color: var(--text-main);
+    border-color: var(--stem-grey);
+}
+
+.btn-large-primary, .btn-large-secondary {
+    padding: 14px 24px;
+    flex: 1;
+    font-size: var(--fs-base);
+}
+
+.btn-large-primary {
+    background: var(--blueberry-skin);
+    color: var(--white);
+}
+
+.btn-large-primary:hover {
+    background: var(--berry-bloom);
+}
+
+.btn-large-secondary {
+    background: var(--white);
+    color: var(--blueberry-skin);
+    border: 1px solid var(--border);
+}
+
+.btn-large-secondary:hover {
+    background: var(--plate-white);
+}

@@ -1,0 +1,165 @@
+.ip-list-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.ip-list-card:hover {
+    border-color: var(--blueberry-skin);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ip-list-card.needs-action {
+    border-color: #f59e0b;
+    background: #fffbeb;
+}
+
+.ip-list-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--blueberry-skin);
+}
+
+.ip-list-card.needs-action::before {
+    background: #f59e0b;
+}
+
+.ip-card-main {
+    flex: 1;
+    padding-right: 24px;
+}
+
+.ip-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.ip-status-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+}
+
+.ip-status-badge.active {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+/* Xanh dương (Đang làm) */
+.ip-status-badge.warning {
+    background: #fef3c7;
+    color: #d97706;
+    animation: pulseBadge 2s infinite;
+}
+
+/* Cam (Chờ xác nhận) */
+
+@keyframes pulseBadge {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.ip-id {
+    color: var(--text-sub);
+    font-size: var(--fs-sm);
+}
+
+.ip-title {
+    font-size: var(--fs-md);
+    color: var(--text-main);
+    margin: 0 0 4px 0;
+}
+
+.ip-subtitle {
+    color: var(--text-sub);
+    font-size: var(--fs-sm);
+    margin: 0 0 16px 0;
+}
+
+.ip-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-sm);
+    color: var(--text-main);
+}
+
+.info-item .icon {
+    color: var(--stem-grey);
+}
+
+.info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.ip-alert-msg {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #d97706;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-semibold);
+}
+
+.ip-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 200px;
+    border-left: 1px dashed var(--border);
+    padding-left: 24px;
+}
+
+.price-display {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.price-label {
+    font-size: var(--fs-xs);
+    color: var(--text-sub);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: var(--blueberry-skin);
+}
+
+.price-value.text-warning {
+    color: #d97706;
+}

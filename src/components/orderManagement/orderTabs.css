@@ -1,0 +1,24 @@
+.order-tabs {
+    display: flex;
+    gap: 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 12px 0;
+    font-size: var(--fs-base);
+    color: var(--text-sub);
+    font-weight: var(--fw-medium);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-family);
+}
+
+.tab-btn.active {
+    color: var(--blueberry-skin);
+    border-bottom-color: var(--blueberry-skin);
+    font-weight: var(--fw-semibold);
+}

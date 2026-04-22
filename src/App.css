@@ -1,3 +1,43 @@
+:root {
+  /* --- BẢNG MÀU BLUEBERRY --- */
+  --blueberry-skin: #2f3a55;   /* Màu chính (Primary) - Nút, Header */
+  --berry-bloom: #5c6b8a;      /* Màu phụ (Secondary) - TechnicianSidebar, Icons */
+  --stem-grey: #6e6f73;        /* Màu xám (Grey) - Chữ phụ, Border */
+  --yogurt-tint: #a29f76;      /* Màu nhấn (Accent) - Tag trạng thái, Background nhẹ */
+  --plate-white: #f5f6f3;      /* Màu nền (Background) - Nền trang chính */
+
+  /* --- MÀU HỆ THỐNG (SYSTEM COLORS) --- */
+  --text-main: #1a1a1a;        /* Chữ chính */
+  --text-sub: var(--stem-grey);/* Chữ phụ */
+  --border: #dcdcdc;           /* Đường kẻ */
+  --white: #ffffff;            /* Màu trắng tinh */
+
+  /* --- TYPOGRAPHY (FONT & SIZE) --- */
+  --font-family: 'Inter', 'Be Vietnam Pro', -apple-system, sans-serif;
+
+  /* Cỡ chữ theo tỉ lệ (Typography Scale) */
+  --fs-xs: 12px;     /* Small tags, caption */
+  --fs-sm: 14px;     /* Text bình thường, label */
+  --fs-base: 16px;   /* Body text chính */
+  --fs-md: 18px;     /* Sub-heading, Card title */
+  --fs-lg: 24px;     /* Title trang */
+  --fs-xl: 32px;     /* Dashboard stats, Banner */
+
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--fs-base);
+  color: var(--text-main);
+  background-color: var(--plate-white);
+  line-height: 1.5;
+  margin: 0;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
