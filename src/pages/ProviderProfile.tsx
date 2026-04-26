@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { HeaderLogged } from '../components/layout/HeaderLogged';
+import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
 import { ProfileTabs } from '../components/provider-profile/ProfileTabs';
@@ -55,7 +55,7 @@ export const ProviderProfile: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <HeaderLogged onNavigate={onNavigate} />
+      <Header onNavigate={onNavigate} />
       
       <main className="pp-main-container">
         <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />

@@ -1,7 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './FindProvider.css';
-import { HeaderLogged } from '../components/layout/HeaderLogged';
+import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { FilterSidebar } from '../components/find-provider/FilterSidebar';
 import { ProviderList } from '../components/find-provider/ProviderList';
@@ -15,6 +15,9 @@ const pageMap: Record<string, string> = {
 
 export const FindProvider: React.FC = () => {
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedService = searchParams.get('service') || undefined;
+
   const onNavigate = (page: string, data?: any) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
@@ -22,11 +25,11 @@ export const FindProvider: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <HeaderLogged onNavigate={onNavigate} />
+      <Header onNavigate={onNavigate} />
       <main className="fp-main-container">
         <div className="fp-layout">
           <FilterSidebar />
-          <ProviderList onNavigate={onNavigate} />
+          <ProviderList onNavigate={onNavigate} selectedService={selectedService} />
         </div>
       </main>
       <Footer />
