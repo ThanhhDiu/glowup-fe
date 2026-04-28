@@ -6,6 +6,8 @@ import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
 import AdminUserDetail from './pages/AdminUserDetail'
+import AdminFinancePage from './pages/AdminFinancePage'
+import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
@@ -61,6 +63,8 @@ function App() {
             <Route path="/provider-dashboard" element={<ProviderDashboard/>}/>
             <Route path="/admin/users" element={<AdminUserManagement/>}/>
             <Route path="/admin/users/:id" element={<AdminUserDetail/>}/>
+            <Route path="/admin/finance" element={<AdminFinancePage/>}/>
+            <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
 
         </Routes>
     )
