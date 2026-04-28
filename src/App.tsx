@@ -8,6 +8,7 @@ import AdminUserManagement from './pages/AdminUserManagement'
 import AdminUserDetail from './pages/AdminUserDetail'
 import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
+import TechnicianWalletPage from './pages/TechnicianWalletPage'
 
 function App() {
     return (
@@ -15,8 +16,13 @@ function App() {
             {/*  Luồng của thợ*/}
             <Route path="/technician">
                 <Route path="jobs" element={
-                    <TechnicianLayout>
+                    <TechnicianLayout activeItem="jobs">
                         <OrderManagementPage role="technician" />
+                    </TechnicianLayout>
+                } />
+                <Route path="wallet" element={
+                    <TechnicianLayout activeItem="wallet">
+                        <TechnicianWalletPage />
                     </TechnicianLayout>
                 } />
             </Route>
