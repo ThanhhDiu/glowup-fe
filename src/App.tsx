@@ -1,5 +1,5 @@
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
-<<<<<<< HEAD
 import HomePage from './pages/HomePage'
 import FindProvider from './pages/FindProvider'
 import ProviderProfile from './pages/ProviderProfile'
@@ -9,6 +9,8 @@ import AdminUserDetail from './pages/AdminUserDetail'
 import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
+import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
+import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 
 function App() {
     return (
@@ -23,6 +25,16 @@ function App() {
                 <Route path="wallet" element={
                     <TechnicianLayout activeItem="wallet">
                         <TechnicianWalletPage />
+                    </TechnicianLayout>
+                } />
+                <Route path="wallet/topup" element={
+                    <TechnicianLayout activeItem="wallet">
+                        <TechnicianWalletTopUpPage />
+                    </TechnicianLayout>
+                } />
+                <Route path="wallet/withdraw" element={
+                    <TechnicianLayout activeItem="wallet">
+                        <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
             </Route>
@@ -52,12 +64,6 @@ function App() {
 
         </Routes>
     )
-=======
-import AppRouter from './router'
-
-function App() {
-  return <AppRouter />
->>>>>>> e1dec1290681da817acaf7dc63f0de0f9201c46a
 }
 
 export default App
