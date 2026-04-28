@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HeaderLogged } from '../components/layout/HeaderLogged';
 import { Footer } from '../components/layout/Footer';
@@ -8,6 +8,7 @@ import { AboutTab } from '../components/provider-profile/AboutTab';
 import { ScheduleTab } from '../components/provider-profile/ScheduleTab';
 import { ProjectsTab } from '../components/provider-profile/ProjectsTab';
 import { ScheduleSidebar, VerificationSidebar, MapSidebar } from '../components/provider-profile/SidebarWidgets';
+import { ChangePasswordTab } from '../components/provider-profile/ChangePasswordTab';
 import './ProviderProfile.css';
 
 const pageMap: Record<string, string> = {
@@ -15,6 +16,7 @@ const pageMap: Record<string, string> = {
   'find-provider': '/find-provider',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
+  'login': '/auth/login',
 };
 
 export const ProviderProfile: React.FC = () => {
@@ -27,7 +29,13 @@ export const ProviderProfile: React.FC = () => {
     nav(path, { state: data });
   };
 
-  const [activeTab, setActiveTab] = useState('about');
+  const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
+
+  useEffect(() => {
+    if (providerData?.activeTab) {
+      setActiveTab(providerData.activeTab);
+    }
+  }, [providerData]);
   
   const defaultProfile = {
     name: 'Nguyễn Văn Hùng',
@@ -68,12 +76,15 @@ export const ProviderProfile: React.FC = () => {
             {activeTab === 'reviews' && <AboutTab onlyReviews={true} />}
             {activeTab === 'schedule' && <ScheduleTab />}
             {activeTab === 'projects' && <ProjectsTab />}
+            {activeTab === 'security' && <ChangePasswordTab />}
           </div>
-          <div className="pp-sidebar-right">
-            <ScheduleSidebar />
-            <VerificationSidebar />
-            <MapSidebar />
-          </div>
+          {activeTab !== 'security' && (
+            <div className="pp-sidebar-right">
+              <ScheduleSidebar />
+              <VerificationSidebar />
+              <MapSidebar />
+            </div>
+          )}
         </div>
       </main>
 

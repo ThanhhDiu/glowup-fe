@@ -2,7 +2,10 @@ import React from 'react';
 import './Header.css';
 import { SearchIcon, BellIcon } from '../common/Icons';
 
-export const Header: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNavigate }) => {
+export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
+  const goToProfile = () => onNavigate && onNavigate('provider-profile');
+  const goToLogout = () => onNavigate && onNavigate('login');
+
   return (
     <header className="header">
       <div className="header-container">
@@ -26,8 +29,27 @@ export const Header: React.FC<{ onNavigate?: (page: string) => void }> = ({ onNa
             <BellIcon size={20} />
             <span className="notification-dot"></span>
           </div>
-          <div className="profile-btn">
-            <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" className="avatar-img" />
+          <div className="profile-dropdown">
+            <button className="profile-btn" type="button" aria-haspopup="menu" aria-label="Tài khoản của tôi">
+              <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" className="avatar-img" />
+            </button>
+
+            <div className="profile-menu" role="menu" aria-label="Tùy chọn tài khoản">
+              <div className="profile-menu__header">
+                <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" className="profile-menu__avatar" />
+                <div>
+                  <p className="profile-menu__name">Hồ sơ của tôi</p>
+                  <p className="profile-menu__sub">Quản lý thông tin cá nhân</p>
+                </div>
+              </div>
+
+              <button className="profile-menu__item" type="button" onClick={goToProfile} role="menuitem">
+                Hồ sơ của tôi
+              </button>
+              <button className="profile-menu__item profile-menu__item--danger" type="button" onClick={goToLogout} role="menuitem">
+                Đăng xuất
+              </button>
+            </div>
           </div>
         </div>
       </div>

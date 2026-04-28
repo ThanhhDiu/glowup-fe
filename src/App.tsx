@@ -1,5 +1,5 @@
-import {Routes, Route} from 'react-router-dom'
 import './App.css'
+<<<<<<< HEAD
 import HomePage from './pages/HomePage'
 import FindProvider from './pages/FindProvider'
 import ProviderProfile from './pages/ProviderProfile'
@@ -52,6 +52,12 @@ function App() {
 
         </Routes>
     )
+=======
+import AppRouter from './router'
+
+function App() {
+  return <AppRouter />
+>>>>>>> e1dec1290681da817acaf7dc63f0de0f9201c46a
 }
 
 export default App
