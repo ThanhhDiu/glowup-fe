@@ -8,6 +8,7 @@ import {
 } from '../pages/AuthScreens'
 import AdminUserDetail from '../pages/AdminUserDetail'
 import AdminUserManagement from '../pages/AdminUserManagement'
+import AdminDashboard from '../pages/AdminDashboard'
 import FindProvider from '../pages/FindProvider'
 import HomePage from '../pages/HomePage'
 import { OrderManagementPage } from '../pages/OrderManagementPage'
@@ -48,6 +49,7 @@ export default function AppRouter() {
       <Route path="/find-provider" element={<FindProvider />} />
       <Route path="/provider-profile" element={<ProviderProfile />} />
       <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUserManagement />} />
       <Route path="/admin/users/:id" element={<AdminUserDetail />} />
     </Routes>

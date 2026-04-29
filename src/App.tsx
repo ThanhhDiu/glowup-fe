@@ -6,6 +6,7 @@ import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
 import AdminUserDetail from './pages/AdminUserDetail'
+import AdminDashboard from './pages/AdminDashboard'
 import { OrderManagementPage } from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import { ChatPage } from './pages/ChatPage';
@@ -45,6 +46,7 @@ function App() {
             <Route path="/find-provider" element={<FindProvider />} />
             <Route path="/provider-profile" element={<ProviderProfile />} />
             <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
             <Route path="/admin/users/:id" element={<AdminUserDetail />} />
 
