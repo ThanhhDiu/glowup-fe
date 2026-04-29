@@ -4,20 +4,6 @@ Frontend project built with **React + TypeScript + Vite**
 
 ---
 
-## 🚀 Tech Stack
-
-- ⚛️ React  
-- 🟦 TypeScript  
-- ⚡ Vite  
-- 🎨 CSS / Tailwind  
-- 🔍 ESLint  
-
----
-
-## 📦 Installation
-
-Clone project:
-
 # GlowUp FE
 
 Frontend project built with React + TypeScript + Vite.
@@ -54,24 +40,45 @@ npm run build
 
 ---
 
-## Admin Dashboard
+## Admin pages
+
+### Dashboard
 
 - URL: /admin/dashboard
-- Main page: src/pages/AdminDashboard.tsx
-- Uses shared admin components:
-	- src/components/admin/AdminSidebar.tsx
-	- src/components/admin/AdminHeader.tsx
+- Page: src/pages/AdminDashboard.tsx
 
-### Included UI blocks
+### User Management
 
-- Overview stat cards
-- Revenue line chart (7 days / 30 days)
-- Service distribution donut chart
-- Recent orders table
+- URL: /admin/users
+- Page: src/pages/AdminUserManagement.tsx
+
+### Technician Identity Verification Flow
+
+1) Verification request list
+- URL: /admin/verification
+- Page: src/pages/AdminVerificationRequests.tsx
+
+2) Verification request detail
+- URL: /admin/verification/:requestId
+- Page: src/pages/AdminVerificationDetail.tsx
+
+3) Verification status update
+- URL: /admin/verification/:requestId/update
+- Page: src/pages/AdminVerificationUpdate.tsx
+
+Flow behavior:
+- Admin reviews technician documents.
+- Admin approves / rejects / requests additional documents.
+- New status is saved and synced to the technician verification status store.
+
+Shared components reused:
+- src/components/admin/AdminSidebar.tsx
+- src/components/admin/AdminHeader.tsx
+- src/components/layout/Footer.tsx
 
 ---
 
 ## Notes
 
-- If opening /admin/dashboard shows blank page, ensure route exists in src/App.tsx.
-- This project now keeps all guidance in this README only.
+- If you see a blank page, verify routes in src/App.tsx.
+- Verification mock state is stored in localStorage via src/services/verificationService.ts.

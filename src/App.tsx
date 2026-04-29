@@ -7,6 +7,9 @@ import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
 import AdminUserDetail from './pages/AdminUserDetail'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminVerificationRequests from './pages/AdminVerificationRequests'
+import AdminVerificationDetail from './pages/AdminVerificationDetail'
+import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import { OrderManagementPage } from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import { ChatPage } from './pages/ChatPage';
@@ -49,6 +52,9 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
             <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+            <Route path="/admin/verification" element={<AdminVerificationRequests />} />
+            <Route path="/admin/verification/:requestId/update" element={<AdminVerificationUpdate />} />
+            <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
 
         </Routes>
     )
