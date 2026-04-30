@@ -37,13 +37,18 @@
 
 .hl-nav-item {
   color: #4A5E8B;
-  text-decoration: none;
   font-weight: 600;
   font-size: 15px;
   padding: 8px 12px;
   border-radius: 8px;
   transition: all 0.2s;
   border-bottom: 2px solid transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .hl-nav-item:hover {

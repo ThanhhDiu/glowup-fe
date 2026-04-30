@@ -2,8 +2,34 @@ import React from 'react';
 import './HeaderLogged.css';
 import { SearchIcon, BellIcon, FileTextIcon } from '../common/Icons';
 
-export const HeaderLogged: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
-  const goToProfile = () => onNavigate && onNavigate('provider-profile');
+interface HeaderNavItem {
+  key: string;
+  label: string;
+  page: string;
+}
+
+interface HeaderLoggedProps {
+  onNavigate?: (page: string, data?: any) => void;
+  navItems?: HeaderNavItem[];
+  activeNavKey?: string;
+  profilePage?: string;
+  searchPlaceholder?: string;
+}
+
+const defaultNavItems: HeaderNavItem[] = [
+  { key: 'services', label: 'Dịch vụ', page: 'home' },
+  { key: 'providers', label: 'Danh sách thợ', page: 'find-provider' },
+  { key: 'offers', label: 'Ưu đãi', page: 'find-provider' },
+];
+
+export const HeaderLogged: React.FC<HeaderLoggedProps> = ({
+  onNavigate,
+  navItems = defaultNavItems,
+  activeNavKey = 'providers',
+  profilePage = 'customer-settings',
+  searchPlaceholder = 'Tìm kiếm thợ...',
+}) => {
+  const goToProfile = () => onNavigate && onNavigate(profilePage);
   const goToLogout = () => onNavigate && onNavigate('login');
 
   return (
@@ -15,16 +41,23 @@ export const HeaderLogged: React.FC<{ onNavigate?: (page: string, data?: any) =>
           </div>
 
           <nav className="hl-nav-menu">
-            <a href="#" className="hl-nav-item">Dịch vụ</a>
-            <a href="#" className="hl-nav-item active">Danh sách thợ</a>
-            <a href="#" className="hl-nav-item">Ưu đãi</a>
+            {navItems.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                className={`hl-nav-item ${activeNavKey === item.key ? 'active' : ''}`}
+                onClick={() => onNavigate && onNavigate(item.page)}
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
         </div>
 
         <div className="hl-right">
           <div className="hl-search-bar">
             <SearchIcon size={16} className="hl-search-icon" />
-            <input type="text" placeholder="Tìm kiếm thợ..." className="hl-search-input" />
+            <input type="text" placeholder={searchPlaceholder} className="hl-search-input" />
           </div>
 
           <div className="hl-actions">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './technicianSidebar.css';
 
 interface SidebarProps {
@@ -7,6 +8,7 @@ interface SidebarProps {
 }
 
 export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashboard', onNavigate }) => {
+  const nav = useNavigate();
   const menuItems = [
     {
       id: 'dashboard', label: 'Dashboard', icon: (
@@ -46,6 +48,22 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
     },
   ];
 
+  const pageMap: Record<string, string> = {
+    dashboard: '/provider-dashboard',
+    jobs: '/technician/jobs',
+    earnings: '/provider-dashboard',
+    profile: '/technician/profile',
+  };
+
+  const handleNavigate = (page: string) => {
+    if (onNavigate) {
+      onNavigate(page);
+      return;
+    }
+
+    nav(pageMap[page] || '/provider-dashboard');
+  };
+
   return (
     <aside className="db-sidebar">
       <div className="db-sidebar-top">
@@ -59,7 +77,7 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
             <button
               key={item.id}
               className={`db-nav-item ${activeItem === item.id ? 'active' : ''}`}
-              onClick={() => onNavigate?.(item.id)}
+              onClick={() => handleNavigate(item.id)}
             >
               <span className="db-nav-icon">{item.icon}</span>
               <span className="db-nav-label">{item.label}</span>

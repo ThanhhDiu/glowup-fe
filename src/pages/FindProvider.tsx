@@ -11,6 +11,8 @@ const pageMap: Record<string, string> = {
   'find-provider': '/find-provider',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
+  'customer-settings': '/customer/settings',
+  'login': '/auth/login',
 };
 
 export const FindProvider: React.FC = () => {
@@ -22,7 +24,7 @@ export const FindProvider: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <HeaderLogged onNavigate={onNavigate} />
+      <HeaderLogged onNavigate={onNavigate} activeNavKey="providers" />
       <main className="fp-main-container">
         <div className="fp-layout">
           <FilterSidebar />

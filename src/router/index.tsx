@@ -6,13 +6,16 @@ import {
   LoginPage,
   RegisterPage,
 } from '../pages/AuthScreens'
+import AdminSystemSettingsPage from '../pages/AdminSystemSettingsPage'
 import AdminUserDetail from '../pages/AdminUserDetail'
 import AdminUserManagement from '../pages/AdminUserManagement'
+import CustomerAccountSettingsPage from '../pages/CustomerAccountSettingsPage'
 import FindProvider from '../pages/FindProvider'
 import HomePage from '../pages/HomePage'
 import { OrderManagementPage } from '../pages/OrderManagementPage'
 import ProviderDashboard from '../pages/ProviderDashboard'
 import ProviderProfile from '../pages/ProviderProfile'
+import TechnicianProfileSettingsPage from '../pages/TechnicianProfileSettingsPage'
 
 export default function AppRouter() {
   return (
@@ -21,19 +24,27 @@ export default function AppRouter() {
         <Route
           path="jobs"
           element={
-            <TechnicianLayout>
+            <TechnicianLayout activeItem="jobs">
               <OrderManagementPage role="technician" />
+            </TechnicianLayout>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <TechnicianLayout activeItem="profile">
+              <TechnicianProfileSettingsPage />
             </TechnicianLayout>
           }
         />
       </Route>
 
       <Route path="/customer">
-        {/* Customer routes will be added here. */}
+        <Route path="settings" element={<CustomerAccountSettingsPage />} />
       </Route>
 
       <Route path="/admin">
-        {/* Admin routes will be added here. */}
+        <Route path="settings" element={<AdminSystemSettingsPage />} />
       </Route>
 
       <Route path="/auth">
