@@ -13,6 +13,9 @@ import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
+import { OrderManagementPage } from "./pages/OrderManagementPage.tsx";
+import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
+import { ChatPage } from './pages/ChatPage';
 
 function App() {
     return (
@@ -48,6 +51,7 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
+                <Route path="messages" element={<ChatPage />} />
             </Route>
 
 
@@ -65,6 +69,12 @@ function App() {
             <Route path="/admin/users/:id" element={<AdminUserDetail/>}/>
             <Route path="/admin/finance" element={<AdminFinancePage/>}/>
             <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/find-provider" element={<FindProvider />} />
+            <Route path="/provider-profile" element={<ProviderProfile />} />
+            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+            <Route path="/admin/users" element={<AdminUserManagement />} />
+            <Route path="/admin/users/:id" element={<AdminUserDetail />} />
 
         </Routes>
     )

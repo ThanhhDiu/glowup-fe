@@ -1,0 +1,81 @@
+/* OVERLAY */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+
+    /* tránh dính mép trên mobile */
+    padding: 16px;
+}
+
+/* CONTAINER */
+.modal-container {
+    width: 100%;
+    max-width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* MAIN MODAL */
+.modal-inner {
+    background: white;
+    border-radius: 24px;
+
+    /* 🔥 QUAN TRỌNG */
+    max-height: 90vh;
+    width: fit-content;
+    max-width: 100%;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    /* animation nhẹ */
+    animation: modalFade 0.2s ease;
+}
+
+/* SCROLL BODY (áp dụng cho content bên trong) */
+.modal-inner>* {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* SCROLL đẹp hơn */
+.modal-inner::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-inner::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* ANIMATION */
+@keyframes modalFade {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .modal-inner {
+        border-radius: 16px;
+        max-height: 95vh;
+    }
+}
