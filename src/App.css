@@ -38,6 +38,8 @@ body {
   margin: 0;
 }
 
+html { overflow-y: scroll; }
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
