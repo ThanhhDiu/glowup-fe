@@ -7,6 +7,8 @@ import {
   RegisterPage,
 } from '../pages/AuthScreens'
 import AdminUserDetail from '../pages/AdminUserDetail'
+import AdminFinancePage from '../pages/AdminFinancePage'
+import AdminCategoriesPage from '../pages/AdminCategoriesPage'
 import AdminUserManagement from '../pages/AdminUserManagement'
 import AdminDashboard from '../pages/AdminDashboard'
 import FindProvider from '../pages/FindProvider'
@@ -52,6 +54,8 @@ export default function AppRouter() {
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUserManagement />} />
       <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+      <Route path="/admin/finance" element={<AdminFinancePage />} />
+      <Route path="/admin/categories" element={<AdminCategoriesPage />} />
     </Routes>
   )
 }
