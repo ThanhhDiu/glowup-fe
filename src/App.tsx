@@ -13,8 +13,6 @@ import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
-import { OrderManagementPage } from "./pages/OrderManagementPage.tsx";
-import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import { ChatPage } from './pages/ChatPage';
 
 function App() {
