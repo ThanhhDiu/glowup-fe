@@ -8,16 +8,21 @@ import { TodaySchedule } from '../components/dashboard/TodaySchedule';
 import './ProviderDashboard.css';
 
 const pageMap: Record<string, string> = {
-  dashboard: '/provider-dashboard',
-  jobs: '/technician/jobs',
-  wallet: '/technician/wallet',
-  profile: '/provider-profile',
-  services: '/services',
+  'home': '/',
+  'find-provider': '/find-provider',
+  'provider-profile': '/provider-profile',
+  'provider-dashboard': '/provider-dashboard',
+  'dashboard': '/provider-dashboard',
+  'jobs': '/technician/jobs',
+  'profile': '/technician/profile',
+  'earnings': '/provider-dashboard',
+  'wallet': '/technician/wallet',
+  'services': '/services',
 };
 
 const ProviderDashboard: React.FC = () => {
   const nav = useNavigate();
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };

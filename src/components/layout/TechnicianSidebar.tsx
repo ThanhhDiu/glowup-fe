@@ -9,7 +9,6 @@ interface SidebarProps {
 
 export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashboard', onNavigate }) => {
   const navigate = useNavigate();
-
   const menuItems = [
     {
       id: 'dashboard', label: 'Dashboard', icon: (

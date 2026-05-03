@@ -1,9 +1,14 @@
 .ad-layout {
+<<<<<<< HEAD
   display: block;
+=======
+  display: flex;
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   min-height: 100vh;
   background-color: #f0f2f5;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   text-align: left;
+<<<<<<< HEAD
   margin-left: 240px;
 }
 
@@ -12,6 +17,15 @@
   min-width: 0;
   overflow-y: auto;
   min-height: 100vh;
+=======
+}
+
+.ad-main {
+  flex: 1;
+  padding: 28px 36px;
+  min-width: 0;
+  overflow-y: auto;
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 }
 
 /* Page Header */
@@ -145,10 +159,13 @@
 }
 
 @media (max-width: 900px) {
+<<<<<<< HEAD
   .ad-layout {
     margin-left: 72px;
   }
 
+=======
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   .ad-main {
     padding: 20px 16px;
   }

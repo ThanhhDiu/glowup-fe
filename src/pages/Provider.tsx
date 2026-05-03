@@ -12,6 +12,8 @@ const pageMap: Record<string, string> = {
   'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
+  'customer-settings': '/customer/settings',
+  'login': '/auth/login',
 };
 
 export const Provider: React.FC = () => {
@@ -22,7 +24,7 @@ export const Provider: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };

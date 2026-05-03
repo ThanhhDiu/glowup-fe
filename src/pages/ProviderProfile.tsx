@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import type { ProviderProfile as ProviderProfileType } from '../types/Provider';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
@@ -17,26 +18,21 @@ const pageMap: Record<string, string> = {
   'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
+  'customer-settings': '/customer/settings',
   'login': '/auth/login',
 };
 
 export const ProviderProfile: React.FC = () => {
   const nav = useNavigate();
   const location = useLocation();
-  const providerData = location.state as any;
+  const providerData = location.state as ProviderProfileType | null;
 
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };
 
   const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
-
-  useEffect(() => {
-    if (providerData?.activeTab) {
-      setActiveTab(providerData.activeTab);
-    }
-  }, [providerData]);
   
   const defaultProfile = {
     name: 'Nguyễn Văn Hùng',

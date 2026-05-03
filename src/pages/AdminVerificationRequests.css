@@ -1,4 +1,5 @@
 .avr-layout {
+<<<<<<< HEAD
   display: block;
   min-height: 100vh;
   background: #f0f2f5;
@@ -11,6 +12,19 @@
   padding: 28px 36px;
   overflow-y: auto;
   min-height: 100vh;
+=======
+  display: flex;
+  min-height: 100vh;
+  background: #f0f2f5;
+  text-align: left;
+}
+
+.avr-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 36px;
+  overflow-y: auto;
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 }
 
 .avr-breadcrumb {
@@ -220,10 +234,13 @@
 }
 
 @media (max-width: 900px) {
+<<<<<<< HEAD
   .avr-layout {
     margin-left: 72px;
   }
 
+=======
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   .avr-main {
     padding: 20px 16px;
   }

@@ -1,3 +1,4 @@
+import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import Provider from './pages/Provider.tsx'
@@ -12,13 +13,13 @@ import AdminVerificationDetail from './pages/AdminVerificationDetail'
 import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import AdminFinancePage from './pages/AdminFinancePage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
-import { OrderManagementPage } from "./pages/OrderManagementPage.tsx";
+import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 import { ChatPage } from './pages/ChatPage';
-import { Route, Routes } from 'react-router-dom'
+
 
 function App() {
     return (

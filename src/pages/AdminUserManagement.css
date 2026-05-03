@@ -12,13 +12,29 @@
   letter-spacing: 0.5px;
   margin: 4px 0 10px;
 }
+<<<<<<< HEAD
+=======
+.aum-main { flex: 1; padding: 28px 36px; min-width: 0; overflow-y: auto; margin-left: 240px; }
+
+.aum-breadcrumb {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 4px 0 10px;
+}
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 
 .aum-page-header {
   display: flex; justify-content: space-between; align-items: flex-start;
   margin-bottom: 20px; gap: 24px; flex-wrap: wrap;
 }
 .aum-page-title {
+<<<<<<< HEAD
   font-size: 36px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;
+=======
+  font-size: 36px; font-weight: 800; color: #1a1e3b; margin: 0 0 6px;
+>>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   letter-spacing: -0.5px;
 }
 .aum-page-subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
