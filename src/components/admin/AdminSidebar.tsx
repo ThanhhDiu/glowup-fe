@@ -10,6 +10,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeItem = 'users'
   const nav = useNavigate();
 
   const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+    )},
     { id: 'users', label: 'Users', icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
@@ -49,6 +57,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeItem = 'users'
   ];
 
   const pageMap: Record<string, string> = {
+    'dashboard': '/admin/dashboard',
     'users': '/admin/users',
     'verification': '/admin/verification',
     'orders': '/admin/orders',
