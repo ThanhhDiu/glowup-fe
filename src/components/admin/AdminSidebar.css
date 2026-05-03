@@ -16,14 +16,9 @@
   z-index: 30;
 }
 
-<<<<<<< HEAD
 .admin-sidebar-logo { font-size: 22px; font-weight: 800; color: var(--text-white); margin: 0 0 4px; letter-spacing: -0.5px; }
 .admin-sidebar-brand { margin-bottom: 48px; padding-left: 12px; text-align: left; }
 
-=======
-.admin-sidebar-brand { margin-bottom: 48px; padding-left: 12px; text-align: left; }
-.admin-sidebar-logo { font-size: 22px; font-weight: 800; color: #fff; margin: 0 0 4px; letter-spacing: -0.5px; }
->>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 .admin-sidebar-badge { font-size: 13px; color: #7dd3fc; font-weight: 500; }
 .admin-sidebar-nav { display: flex; flex-direction: column; gap: 6px; }
 
@@ -51,14 +46,9 @@
 .admin-user-profile:hover { background: var(--sidebar-hover-bg); }
 .admin-user-avatar { width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover; border: 2px solid rgba(255,255,255,0.15); }
 .admin-user-info { display: flex; flex-direction: column; }
-<<<<<<< HEAD
 .admin-user-name { font-size: 14px; font-weight: 700; color: var(--text-white); }
 
 .admin-user-id { font-size: 12px; color: var(--text-muted); text-align: left; }
-=======
-.admin-user-name { font-size: 14px; font-weight: 700; color: #fff; }
-.admin-user-id { font-size: 12px; color: #64748b; text-align: left; }
->>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 
 @media (max-width: 900px) {
   .admin-sidebar { width: 72px; min-width: 72px; padding: 24px 10px; align-items: center; }

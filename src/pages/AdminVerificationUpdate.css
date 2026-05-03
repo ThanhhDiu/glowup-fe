@@ -1,5 +1,4 @@
 .avu-layout {
-<<<<<<< HEAD
   display: block;
   min-height: 100vh;
   background: #f0f2f5;
@@ -7,23 +6,11 @@
 }
 
 .avu-main {
-=======
-  display: flex;
-  min-height: 100vh;
-  background: #f0f2f5;
-}
-
-.avu-main {
-  flex: 1;
->>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   min-width: 0;
   padding: 28px 36px;
   overflow-y: auto;
   text-align: left;
-<<<<<<< HEAD
   min-height: 100vh;
-=======
->>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
 }
 
 .avu-breadcrumb {
@@ -195,13 +182,10 @@
 }
 
 @media (max-width: 900px) {
-<<<<<<< HEAD
   .avu-layout {
     margin-left: 72px;
   }
 
-=======
->>>>>>> ca5611de0fe4df39bf68124d2dcff80db0599821
   .avu-main {
     padding: 20px 16px;
   }

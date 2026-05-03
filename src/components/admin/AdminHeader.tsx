@@ -16,7 +16,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
     <header className="adm-header">
       <div className="adm-search-box">
         <svg className="adm-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input type="text" placeholder={searchPlaceholder} className="adm-search-input" />
         <input
           type="text"
           placeholder={searchPlaceholder}
