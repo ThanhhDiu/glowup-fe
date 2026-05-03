@@ -64,9 +64,7 @@
 }
 .profile-btn:hover { border-color: var(--border-default); }
 
-<<<<<<< HEAD
 .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-=======
 .profile-btn:hover {
   border-color: #e2e8f0;
 }
@@ -160,7 +158,6 @@
   height: 100%;
   object-fit: cover;
 }
->>>>>>> e1dec1290681da817acaf7dc63f0de0f9201c46a
 
 @media (max-width: 900px) {
   .header-nav { display: none; }

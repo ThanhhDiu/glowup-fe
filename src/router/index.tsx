@@ -17,48 +17,37 @@ import ProviderProfile from '../pages/ProviderProfile'
 export default function AppRouter() {
   return (
     <Routes>
-      <Route path="/technician">
-      <Route path="/provider-dashboard" element={<ProviderDashboard />} />
-        <Route
-          path="jobs"
-          element={
-            <TechnicianLayout>
-              <OrderManagementPage role="technician" />
-            </TechnicianLayout>
-          }
-        />
-      </Route>
-
-      <Route path="/customer">
-        {/* Customer routes will be added here. */}
-        <Route path="orders" element={
-                    // <CustomerLayout>
-                        <OrderManagementPage role="customer" />
-                    // </CustomerLayout>
-                } />
-      </Route>
-
-      <Route path="/admin">
-        {/* Admin routes will be added here. */}
-        <Route path="/admin/users" element={<AdminUserManagement />} />
-        <Route path="/admin/users/:id" element={<AdminUserDetail />} />
-      </Route>
-
-      <Route path="/auth">
-        <Route index element={<Navigate to="login" replace />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
-      </Route>
-
-      <Route path="/">
-      {/* Trang chủ khách */}
-      <Route index element={<HomePage />} />
+      {/* Trang chủ */}
+      <Route path="/" element={<HomePage />} />
       <Route path="/find-provider" element={<FindProvider />} />
       <Route path="/provider-profile" element={<ProviderProfile />} />
-      </Route>
-      
+
+      {/* Technician routes */}
+      <Route path="/technician/jobs" element={
+        <TechnicianLayout>
+          <OrderManagementPage role="technician" />
+        </TechnicianLayout>
+      } />
+      <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+
+      {/* Customer routes */}
+      <Route path="/customer/orders" element={
+        <OrderManagementPage role="customer" />
+      } />
+
+      {/* Admin routes */}
+      <Route path="/admin/users" element={<AdminUserManagement />} />
+      <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+
+      {/* Auth routes */}
+      <Route path="/auth" element={<Navigate to="/auth/login" replace />} />
+      <Route path="/auth/login" element={<LoginPage />} />
+      <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/auth/change-password" element={<ChangePasswordPage />} />
+
+      {/* Catch-all redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }
