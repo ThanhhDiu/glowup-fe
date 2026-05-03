@@ -6,6 +6,10 @@ import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
 import AdminUserDetail from './pages/AdminUserDetail'
+import AdminDashboard from './pages/AdminDashboard'
+import AdminVerificationRequests from './pages/AdminVerificationRequests'
+import AdminVerificationDetail from './pages/AdminVerificationDetail'
+import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import AdminFinancePage from './pages/AdminFinancePage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
@@ -71,8 +75,12 @@ function App() {
             <Route path="/find-provider" element={<FindProvider />} />
             <Route path="/provider-profile" element={<ProviderProfile />} />
             <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
             <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+            <Route path="/admin/verification" element={<AdminVerificationRequests />} />
+            <Route path="/admin/verification/:requestId/update" element={<AdminVerificationUpdate />} />
+            <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
 
         </Routes>
     )
