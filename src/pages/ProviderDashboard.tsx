@@ -8,6 +8,14 @@ import { TodaySchedule } from '../components/dashboard/TodaySchedule';
 import './ProviderDashboard.css';
 
 const pageMap: Record<string, string> = {
+  'home': '/',
+  'find-provider': '/find-provider',
+  'provider-profile': '/provider-profile',
+  'provider-dashboard': '/provider-dashboard',
+  'dashboard': '/provider-dashboard',
+  'jobs': '/technician/jobs',
+  'profile': '/technician/profile',
+  'earnings': '/provider-dashboard',
   dashboard: '/provider-dashboard',
   jobs: '/technician/jobs',
   wallet: '/technician/wallet',
