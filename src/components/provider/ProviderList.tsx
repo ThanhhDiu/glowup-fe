@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './ProviderList.css';
 import { ProviderCard } from './ProviderCard';
 import { PremiumProviderCard } from './PremiumProviderCard';
@@ -17,6 +17,26 @@ const SERVICE_SKILL_MAP: Record<string, string[]> = {
 };
 
 const allProviders = [
+  // === Top Experts (Premium) ===
+  {
+    type: 'premium', id: 'p1', name: 'Nguyễn Văn Minh',
+    avatar: 'https://i.pravatar.cc/150?img=11', titleBadge: 'CHUYÊN GIA KIM CƯƠNG',
+    description: 'Chuyên gia Máy lạnh với 8 năm kinh nghiệm và hơn 1.450 đơn hàng hoàn thành.',
+    skills: ['Sửa điện lạnh', 'Bảo trì máy lạnh', 'Hệ thống thông gió'],
+  },
+  {
+    type: 'premium', id: 'p2', name: 'Lê Thị Tuyết',
+    avatar: 'https://i.pravatar.cc/150?img=5', titleBadge: 'CHUYÊN GIA BẠCH KIM',
+    description: 'Chuyên gia Vệ sinh với 5 năm kinh nghiệm và 900 đơn hàng hoàn thành.',
+    skills: ['Dọn dẹp nhà cửa', 'Vệ sinh công nghiệp', 'Giặt ủi chuyên nghiệp'],
+  },
+  {
+    type: 'premium', id: 'p3', name: 'Phạm Hoàng Nam',
+    avatar: 'https://i.pravatar.cc/150?img=8', titleBadge: 'CHUYÊN GIA VÀNG',
+    description: 'Kỹ thuật viên Điện nước với 6 năm kinh nghiệm, hoàn thành 1.120 đơn hàng.',
+    skills: ['Sửa điện dân dụng', 'Sửa ống nước', 'Lắp đặt điện'],
+  },
+
   // === Máy lạnh ===
   {
     type: 'normal', id: '1', name: 'Nguyễn Minh Tuấn',
@@ -47,14 +67,6 @@ const allProviders = [
     location: '201 Điện Biên Phủ, Bình Thạnh, TP.HCM',
     skills: ['Sửa điện dân dụng', 'Sửa ống nước', 'Lắp đặt điện'],
     price: '180.000đ', isAvailable: true
-  },
-
-  // === Premium (hiện cho mọi dịch vụ) ===
-  {
-    type: 'premium', id: 'p1', name: 'Trần Đại Quang',
-    avatar: 'https://i.pravatar.cc/200?img=18', titleBadge: 'CHUYÊN GIA CỦA THÁNG',
-    description: 'Kỹ sư trưởng với hơn 15 năm kinh nghiệm trong hệ thống điện công nghiệp và dân dụng. Được tin tưởng bởi hơn 1,200 hộ gia đình tại Quận 1.',
-    skills: ['Sửa điện dân dụng', 'Sửa điện lạnh', 'Lắp đặt điện'],
   },
 
   // === Nội thất / Đồ gỗ ===
@@ -138,11 +150,21 @@ const allProviders = [
 interface Props {
   onNavigate?: (page: string, data?: any) => void;
   selectedService?: string;
+  currentPage?: number;
+  setCurrentPage?: (page: number) => void;
+  setTotalPages?: (total: number) => void;
 }
 
-export const ProviderList: React.FC<Props> = ({ onNavigate, selectedService }) => {
+export const ProviderList: React.FC<Props> = ({ 
+  onNavigate, 
+  selectedService,
+  currentPage = 1,
+  setCurrentPage,
+  setTotalPages
+}) => {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState('PHỔ BIẾN NHẤT');
+  const ITEMS_PER_PAGE = 7;
 
   /** Lọc providers theo dịch vụ được chọn */
   const filteredProviders = useMemo(() => {
@@ -162,9 +184,16 @@ export const ProviderList: React.FC<Props> = ({ onNavigate, selectedService }) =
   /** Sắp xếp */
   const sortedProviders = useMemo(() => {
     const sorted = [...filteredProviders];
-    if (selectedSort === 'PHỔ BIẾN NHẤT') {
-      sorted.sort((a, b) => ((b as any).reviewCount || 0) - ((a as any).reviewCount || 0));
-    }
+    sorted.sort((a, b) => {
+      // Premium cards always at top
+      if (a.type === 'premium' && b.type !== 'premium') return -1;
+      if (b.type === 'premium' && a.type !== 'premium') return 1;
+
+      if (selectedSort === 'PHỔ BIẾN NHẤT') {
+        return ((b as any).reviewCount || 0) - ((a as any).reviewCount || 0);
+      }
+      return 0; // or implement other sorts like GIÁ THẤP NHẤT
+    });
     return sorted;
   }, [filteredProviders, selectedSort]);
 
@@ -173,6 +202,20 @@ export const ProviderList: React.FC<Props> = ({ onNavigate, selectedService }) =
     : 'Thợ sửa chữa chuyên nghiệp';
 
   const resultCount = sortedProviders.filter(p => p.type !== 'premium').length;
+
+  const totalPagesCalculated = Math.ceil(sortedProviders.length / ITEMS_PER_PAGE);
+  const paginatedProviders = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sortedProviders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [sortedProviders, currentPage]);
+
+  useEffect(() => {
+    if (setCurrentPage) setCurrentPage(1);
+  }, [selectedService, selectedSort, setCurrentPage]);
+
+  useEffect(() => {
+    if (setTotalPages) setTotalPages(totalPagesCalculated);
+  }, [totalPagesCalculated, setTotalPages]);
 
   return (
     <div className="provider-list-container">
@@ -211,7 +254,7 @@ export const ProviderList: React.FC<Props> = ({ onNavigate, selectedService }) =
       </div>
 
       <div className="pl-cards">
-        {sortedProviders.map((p) => {
+        {paginatedProviders.map((p) => {
           if (p.type === 'premium') {
             return <PremiumProviderCard key={p.id} provider={p as any} onNavigate={onNavigate} />;
           }

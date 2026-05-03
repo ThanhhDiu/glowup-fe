@@ -7,19 +7,24 @@ import {
   RegisterPage,
 } from '../pages/AuthScreens'
 import AdminUserDetail from '../pages/AdminUserDetail'
+import AdminFinancePage from '../pages/AdminFinancePage'
+import AdminCategoriesPage from '../pages/AdminCategoriesPage'
 import AdminUserManagement from '../pages/AdminUserManagement'
-import FindProvider from '../pages/FindProvider'
+import AdminDashboard from '../pages/AdminDashboard'
+import Provider from '../pages/Provider'
 import HomePage from '../pages/HomePage'
 import { OrderManagementPage } from '../pages/OrderManagementPage'
 import ProviderDashboard from '../pages/ProviderDashboard'
 import ProviderProfile from '../pages/ProviderProfile'
+import ServicesPage from '../pages/ServicesPage'
 
 export default function AppRouter() {
   return (
     <Routes>
       {/* Trang chủ */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/find-provider" element={<FindProvider />} />
+      <Route path="/provider" element={<Provider />} />
+      <Route path="/services" element={<ServicesPage />} />
       <Route path="/provider-profile" element={<ProviderProfile />} />
 
       {/* Technician routes */}
@@ -29,13 +34,7 @@ export default function AppRouter() {
         </TechnicianLayout>
       } />
       <Route path="/provider-dashboard" element={<ProviderDashboard />} />
-
-      {/* Customer routes */}
-      <Route path="/customer/orders" element={
-        <OrderManagementPage role="customer" />
-      } />
-
-      {/* Admin routes */}
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUserManagement />} />
       <Route path="/admin/users/:id" element={<AdminUserDetail />} />
 
@@ -46,7 +45,11 @@ export default function AppRouter() {
       <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth/change-password" element={<ChangePasswordPage />} />
 
-      {/* Catch-all redirect */}
+      {/* Admin routes continued */}
+      <Route path="/admin/finance" element={<AdminFinancePage />} />
+      <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+
+      {/* Catch-all redirect - PHẢI ở cuối cùng */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

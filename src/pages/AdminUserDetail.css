@@ -1,9 +1,10 @@
 .aud-layout {
-  display: flex; min-height: 100vh; background-color: var(--bg-page);
+  display: block; min-height: 100vh; background-color: var(--bg-page);
   font-family: var(--sans); text-align: left;
+  margin-left: 240px;
 }
 .aud-main {
-  flex: 1; padding: 28px 36px; min-width: 0; overflow-y: auto;
+  padding: 28px 36px; min-width: 0; overflow-y: auto; min-height: 100vh;
 }
 
 /* Breadcrumb */
@@ -48,6 +49,10 @@
   .aud-content-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 900px) {
+  .aud-layout {
+    margin-left: 72px;
+  }
+
   .aud-main { padding: 20px 16px; }
   .aud-tabs { overflow-x: auto; }
 }

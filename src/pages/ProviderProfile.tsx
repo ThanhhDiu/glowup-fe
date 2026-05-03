@@ -13,7 +13,8 @@ import './ProviderProfile.css';
 
 const pageMap: Record<string, string> = {
   'home': '/',
-  'find-provider': '/find-provider',
+  'provider': '/provider',
+  'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
   'login': '/auth/login',
@@ -66,7 +67,7 @@ export const ProviderProfile: React.FC = () => {
       <Header onNavigate={onNavigate} />
       
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 

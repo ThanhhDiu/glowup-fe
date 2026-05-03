@@ -9,7 +9,8 @@ import { Footer } from '../components/layout/Footer';
 
 const pageMap: Record<string, string> = {
   'home': '/',
-  'find-provider': '/find-provider',
+  'provider': '/provider',
+  'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
 };

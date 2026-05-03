@@ -1,0 +1,400 @@
+.withdraw-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  color: var(--blueberry-skin);
+}
+
+.withdraw-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.back-btn {
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--blueberry-skin);
+  border-radius: 12px;
+  height: 44px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: var(--fw-semibold);
+}
+
+.withdraw-kicker,
+.section-head span,
+.summary-kicker {
+  margin: 0 0 6px;
+  color: var(--berry-bloom);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: var(--fw-semibold);
+}
+
+.withdraw-header h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -0.6px;
+}
+
+.withdraw-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 18px;
+}
+
+.withdraw-card,
+.withdraw-summary {
+  background: #f5f1e8;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.bank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bank-item {
+  border: 1px solid var(--border);
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 44px 1fr 22px;
+  gap: 12px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  color: var(--blueberry-skin);
+}
+
+.bank-item.active {
+  border-color: var(--blueberry-skin);
+}
+
+.bank-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+}
+
+.bank-info strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.bank-info small {
+  display: block;
+  color: var(--berry-bloom);
+}
+
+.bank-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #c8c7c9;
+  justify-self: end;
+}
+
+.bank-item.active .bank-radio {
+  border-color: var(--blueberry-skin);
+  box-shadow: inset 0 0 0 4px var(--white), inset 0 0 0 12px var(--blueberry-skin);
+}
+
+.bank-item-add {
+  border-style: dashed;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.bank-item-add .bank-radio {
+  display: none;
+}
+
+.bank-icon-add {
+  background: rgba(47, 58, 85, 0.08);
+  color: var(--blueberry-skin);
+  border: 1px dashed rgba(47, 58, 85, 0.18);
+}
+
+.bank-item-add .bank-info strong {
+  display: block;
+}
+
+.bank-item-add .bank-info small {
+  max-width: 100%;
+}
+
+.amount-block {
+  margin-top: 18px;
+}
+
+.amount-block label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--berry-bloom);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.8px;
+  font-weight: var(--fw-semibold);
+}
+
+.amount-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0 14px;
+}
+
+.amount-input input {
+  flex: 1;
+  height: 50px;
+  border: none;
+  background: transparent;
+  outline: none;
+  font: inherit;
+  color: var(--blueberry-skin);
+}
+
+.amount-input span {
+  color: var(--berry-bloom);
+  font-weight: var(--fw-bold);
+}
+
+.amount-helpers {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--berry-bloom);
+  font-size: 13px;
+}
+
+.amount-helpers button {
+  border: none;
+  background: rgba(47, 58, 85, 0.08);
+  color: var(--blueberry-skin);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.support-note {
+  margin-top: 16px;
+  background: rgba(47, 58, 85, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: var(--blueberry-skin);
+}
+
+.support-note p,
+.withdraw-hint,
+.withdraw-help p {
+  margin: 0;
+  color: var(--berry-bloom);
+  font-size: 13px;
+}
+
+.withdraw-summary {
+  background: #1f2d65;
+  color: var(--white);
+}
+
+.withdraw-summary .summary-kicker,
+.withdraw-summary .summary-row span,
+.withdraw-summary .withdraw-hint,
+.withdraw-summary .withdraw-help p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.summary-row strong {
+  font-size: 18px;
+}
+
+.summary-row.final {
+  border-bottom: none;
+  margin-bottom: 14px;
+}
+
+.withdraw-submit {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  background: var(--white);
+  color: var(--blueberry-skin);
+  padding: 16px;
+  font-size: 15px;
+  font-weight: var(--fw-bold);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.withdraw-help {
+  margin-top: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px;
+}
+
+.withdraw-help span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-weight: var(--fw-bold);
+}
+
+.bank-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 40;
+}
+
+.bank-modal {
+  width: min(520px, 100%);
+  background: var(--white);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 80px rgba(17, 24, 39, 0.2);
+  padding: 20px;
+}
+
+.bank-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.bank-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.bank-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(47, 58, 85, 0.08);
+  color: var(--blueberry-skin);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bank-modal-form {
+  display: grid;
+  gap: 14px;
+}
+
+.bank-modal-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.bank-modal-form span {
+  color: var(--berry-bloom);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+}
+
+.bank-modal-form input,
+.bank-modal-form select {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0 14px;
+  background: #fff;
+  color: var(--blueberry-skin);
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.bank-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.bank-modal-secondary,
+.bank-modal-primary {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+
+.bank-modal-secondary {
+  background: rgba(47, 58, 85, 0.08);
+  color: var(--blueberry-skin);
+}
+
+.bank-modal-primary {
+  background: var(--blueberry-skin);
+  color: var(--white);
+}
+
+@media (max-width: 1050px) {
+  .withdraw-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .withdraw-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 620px) {
+  .amount-helpers {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
