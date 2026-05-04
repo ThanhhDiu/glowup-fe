@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { HeaderLogged } from '../components/layout/HeaderLogged';
-import { Footer } from '../components/layout/Footer';
+import { useLocation } from 'react-router-dom';
+import { useCustomerNavigate } from '../components/layout/useCustomerNavigate';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
 import { ProfileTabs } from '../components/provider-profile/ProfileTabs';
 import { AboutTab } from '../components/provider-profile/AboutTab';
@@ -11,24 +10,10 @@ import { ScheduleSidebar, VerificationSidebar, MapSidebar } from '../components/
 import { ChangePasswordTab } from '../components/provider-profile/ChangePasswordTab';
 import './ProviderProfile.css';
 
-const pageMap: Record<string, string> = {
-  'home': '/',
-  'find-provider': '/find-provider',
-  'provider-profile': '/provider-profile',
-  'provider-dashboard': '/provider-dashboard',
-  'customer-settings': '/customer/account-settings',
-  'login': '/auth/login',
-};
-
 export const ProviderProfile: React.FC = () => {
-  const nav = useNavigate();
+  const onNavigate = useCustomerNavigate();
   const location = useLocation();
   const providerData = location.state as any;
-
-  const onNavigate = (page: string, data?: any) => {
-    const path = pageMap[page] || '/';
-    nav(path, { state: data });
-  };
 
   const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
 
@@ -64,8 +49,6 @@ export const ProviderProfile: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <HeaderLogged onNavigate={onNavigate} activeNavKey="providers" />
-      
       <main className="pp-main-container">
         <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
@@ -88,8 +71,6 @@ export const ProviderProfile: React.FC = () => {
           )}
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };

@@ -7,20 +7,15 @@ import {
   Star,
   UserRound,
 } from 'lucide-react';
+import {
+  customerHeaderNavItems,
+  customerPageMap,
+} from '../../layout/customerNavigation';
 import type { SettingsNavItem } from '../types';
 
-export const customerSettingsPageMap: Record<string, string> = {
-  home: '/',
-  'find-provider': '/find-provider',
-  'customer-settings': '/customer/account-settings',
-  login: '/auth/login',
-};
+export const customerSettingsPageMap = customerPageMap;
 
-export const customerSettingsNavItems = [
-  { key: 'home', label: 'Trang chủ', page: 'home' },
-  { key: 'find-provider', label: 'Dịch vụ', page: 'find-provider' },
-  { key: 'account', label: 'Tài khoản', page: 'customer-settings' },
-];
+export const customerSettingsNavItems = customerHeaderNavItems;
 
 export const customerSettingsSidebarItems: SettingsNavItem[] = [
   { id: 'personal', label: 'Thông tin cá nhân', icon: <UserRound size={18} /> },

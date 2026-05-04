@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Footer } from '../components/layout/Footer';
-import { HeaderLogged } from '../components/layout/HeaderLogged';
+import { useCustomerNavigate } from '../components/layout/useCustomerNavigate';
 import {
   CustomerAccountDangerZone,
   CustomerAccountProfileCard,
@@ -10,13 +8,11 @@ import {
   DeleteAccountModal,
   SettingsFrame,
   SettingsMain,
-  customerSettingsNavItems,
-  customerSettingsPageMap,
 } from '../components/settings';
 import type { CustomerAccountFormData } from '../components/settings';
 
 export default function CustomerAccountSettingsPage() {
-  const navigate = useNavigate();
+  const onNavigate = useCustomerNavigate();
   const [activeSidebarItem, setActiveSidebarItem] = useState('personal');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [form, setForm] = useState<CustomerAccountFormData>({
@@ -26,24 +22,12 @@ export default function CustomerAccountSettingsPage() {
     address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM',
   });
 
-  const onNavigate = (page: string) => {
-    navigate(customerSettingsPageMap[page] || '/');
-  };
-
   const updateField = (field: keyof CustomerAccountFormData, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
   return (
     <div className="settings-page settings-page--customer">
-      <HeaderLogged
-        onNavigate={onNavigate}
-        navItems={customerSettingsNavItems}
-        activeNavKey="account"
-        profilePage="customer-settings"
-        searchPlaceholder="Tìm kiếm dịch vụ..."
-      />
-
       <SettingsFrame>
         <CustomerSettingsSidebar
           activeItem={activeSidebarItem}
@@ -77,8 +61,6 @@ export default function CustomerAccountSettingsPage() {
         onConfirm={() => setDeleteOpen(false)}
         onCancel={() => setDeleteOpen(false)}
       />
-
-      <Footer />
     </div>
   );
 }

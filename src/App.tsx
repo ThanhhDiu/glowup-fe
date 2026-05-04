@@ -12,8 +12,9 @@ import AdminVerificationRequests from './pages/AdminVerificationRequests'
 import AdminVerificationDetail from './pages/AdminVerificationDetail'
 import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import AdminFinancePage from './pages/AdminFinancePage'
+// import OrderManagementPage from './pages/OrderManagementPage.tsx'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
-import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
+import OrderManagementPage from "./pages/OrderManagementPage.tsx";
 import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
@@ -21,6 +22,7 @@ import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage'
 import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage';
 import { ChatPage } from './pages/ChatPage';
+import CustomerLayout from './components/layout/CustomerLayout'
 
 function App() {
     return (
@@ -62,8 +64,21 @@ function App() {
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
                 <Route path="messages" element={<ChatPage />} />
-                <Route path="settings" element={<CustomerAccountSettingsPage />} />
-                <Route path="account-settings" element={<CustomerAccountSettingsPage />} />
+                <Route path="settings" element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <CustomerAccountSettingsPage />
+                    </CustomerLayout>
+                } />
+                <Route path='order-management' element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <OrderManagementPage role="customer" />
+                    </CustomerLayout>
+                } />
+                <Route path="account-settings" element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <CustomerAccountSettingsPage />
+                    </CustomerLayout>
+                } />
             </Route>
 
 
@@ -74,16 +89,32 @@ function App() {
 
             {/*đem mấy này phân theo luồng*/}
             <Route path="/" element={<HomePage/>}/>
-            <Route path="/find-provider" element={<FindProvider/>}/>
-            <Route path="/provider-profile" element={<ProviderProfile/>}/>
+            <Route path="/find-provider" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <FindProvider/>
+                </CustomerLayout>
+            }/>
+            <Route path="/provider-profile" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <ProviderProfile/>
+                </CustomerLayout>
+            }/>
             <Route path="/provider-dashboard" element={<ProviderDashboard/>}/>
             <Route path="/admin/users" element={<AdminUserManagement/>}/>
             <Route path="/admin/users/:id" element={<AdminUserDetail/>}/>
             <Route path="/admin/finance" element={<AdminFinancePage/>}/>
             <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
             <Route path="/" element={<HomePage />} />
-            <Route path="/find-provider" element={<FindProvider />} />
-            <Route path="/provider-profile" element={<ProviderProfile />} />
+            <Route path="/find-provider" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <FindProvider />
+                </CustomerLayout>
+            } />
+            <Route path="/provider-profile" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <ProviderProfile />
+                </CustomerLayout>
+            } />
             <Route path="/provider-dashboard" element={<ProviderDashboard />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
