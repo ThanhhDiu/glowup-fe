@@ -16,15 +16,13 @@ const pageMap: Record<string, string> = {
   'jobs': '/technician/jobs',
   'profile': '/technician/profile',
   'earnings': '/provider-dashboard',
-  dashboard: '/provider-dashboard',
-  jobs: '/technician/jobs',
-  wallet: '/technician/wallet',
-  profile: '/provider-profile',
+  'wallet': '/technician/wallet',
+  'services': '/services',
 };
 
 const ProviderDashboard: React.FC = () => {
   const nav = useNavigate();
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };

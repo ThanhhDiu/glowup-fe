@@ -1,8 +1,9 @@
 .aum-layout {
-  display: flex; min-height: 100vh; background-color: #f0f2f5;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif; text-align: left;
+  display: block; min-height: 100vh; background-color: var(--bg-page);
+  font-family: var(--sans); text-align: left;
+  margin-left: 240px;
 }
-.aum-main { flex: 1; padding: 28px 36px; min-width: 0; overflow-y: auto; margin-left: 240px; }
+.aum-main { padding: 28px 36px; min-width: 0; overflow-y: auto; min-height: 100vh; }
 
 .aum-breadcrumb {
   font-size: 12px;
@@ -17,10 +18,10 @@
   margin-bottom: 20px; gap: 24px; flex-wrap: wrap;
 }
 .aum-page-title {
-  font-size: 36px; font-weight: 800; color: #1a1e3b; margin: 0 0 6px;
+  font-size: 36px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;
   letter-spacing: -0.5px;
 }
-.aum-page-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+.aum-page-subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
 
 .aum-add-btn {
   display: inline-flex;
@@ -65,6 +66,10 @@
 }
 
 @media (max-width: 900px) {
+  .aum-layout {
+    margin-left: 72px;
+  }
+
   .aum-main { padding: 20px 16px; }
   .aum-page-header { flex-direction: column; }
   .aum-page-title { font-size: 30px; }

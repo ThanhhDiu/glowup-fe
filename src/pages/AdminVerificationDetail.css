@@ -1,15 +1,16 @@
 .avd-layout {
-  display: flex;
+  display: block;
   min-height: 100vh;
   background: #f0f2f5;
+  margin-left: 240px;
 }
 
 .avd-main {
-  flex: 1;
   min-width: 0;
   padding: 28px 36px;
   overflow-y: auto;
   text-align: left;
+  min-height: 100vh;
 }
 
 .avd-breadcrumb {
@@ -247,6 +248,10 @@
 }
 
 @media (max-width: 900px) {
+  .avd-layout {
+    margin-left: 72px;
+  }
+
   .avd-main {
     padding: 20px 16px;
   }

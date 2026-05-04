@@ -1,15 +1,16 @@
 .avr-layout {
-  display: flex;
+  display: block;
   min-height: 100vh;
   background: #f0f2f5;
   text-align: left;
+  margin-left: 240px;
 }
 
 .avr-main {
-  flex: 1;
   min-width: 0;
   padding: 28px 36px;
   overflow-y: auto;
+  min-height: 100vh;
 }
 
 .avr-breadcrumb {
@@ -219,6 +220,10 @@
 }
 
 @media (max-width: 900px) {
+  .avr-layout {
+    margin-left: 72px;
+  }
+
   .avr-main {
     padding: 20px 16px;
   }

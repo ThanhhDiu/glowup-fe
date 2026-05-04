@@ -13,11 +13,12 @@ import AdminCategoriesPage from '../pages/AdminCategoriesPage'
 import AdminUserManagement from '../pages/AdminUserManagement'
 import CustomerAccountSettingsPage from '../pages/CustomerAccountSettingsPage'
 import AdminDashboard from '../pages/AdminDashboard'
-import FindProvider from '../pages/FindProvider'
+import Provider from '../pages/Provider'
 import HomePage from '../pages/HomePage'
 import { OrderManagementPage } from '../pages/OrderManagementPage'
 import ProviderDashboard from '../pages/ProviderDashboard'
 import ProviderProfile from '../pages/ProviderProfile'
+import ServicesPage from '../pages/ServicesPage'
 import TechnicianProfileSettingsPage from '../pages/TechnicianProfileSettingsPage'
 
 export default function AppRouter() {
@@ -59,8 +60,16 @@ export default function AppRouter() {
       </Route>
 
       <Route path="/" element={<HomePage />} />
-      <Route path="/find-provider" element={<FindProvider />} />
+      <Route path="/provider" element={<Provider />} />
+      <Route path="/services" element={<ServicesPage />} />
       <Route path="/provider-profile" element={<ProviderProfile />} />
+
+      {/* Technician routes */}
+      <Route path="/technician/jobs" element={
+        <TechnicianLayout>
+          <OrderManagementPage role="technician" />
+        </TechnicianLayout>
+      } />
       <Route path="/provider-dashboard" element={<ProviderDashboard />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<AdminUserManagement />} />

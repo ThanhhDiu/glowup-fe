@@ -5,6 +5,7 @@
   position: relative;
   margin-bottom: 24px;
   box-shadow: 0 10px 30px rgba(0, 12, 51, 0.15);
+  font-family: var(--sans);
 }
 
 .ppc-bg-decoration {

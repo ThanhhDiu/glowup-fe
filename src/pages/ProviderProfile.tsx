@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { HeaderLogged } from '../components/layout/HeaderLogged';
+import type { ProviderProfile as ProviderProfileType } from '../types/Provider';
+import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
 import { ProfileTabs } from '../components/provider-profile/ProfileTabs';
@@ -13,7 +14,8 @@ import './ProviderProfile.css';
 
 const pageMap: Record<string, string> = {
   'home': '/',
-  'find-provider': '/find-provider',
+  'provider': '/provider',
+  'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
   'customer-settings': '/customer/settings',
@@ -23,20 +25,14 @@ const pageMap: Record<string, string> = {
 export const ProviderProfile: React.FC = () => {
   const nav = useNavigate();
   const location = useLocation();
-  const providerData = location.state as any;
+  const providerData = location.state as ProviderProfileType | null;
 
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };
 
   const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
-
-  useEffect(() => {
-    if (providerData?.activeTab) {
-      setActiveTab(providerData.activeTab);
-    }
-  }, [providerData]);
   
   const defaultProfile = {
     name: 'Nguyễn Văn Hùng',
@@ -64,10 +60,10 @@ export const ProviderProfile: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <HeaderLogged onNavigate={onNavigate} activeNavKey="providers" />
+      <Header onNavigate={onNavigate} />
       
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 

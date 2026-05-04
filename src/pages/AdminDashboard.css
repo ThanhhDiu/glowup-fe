@@ -1,16 +1,17 @@
 .ad-layout {
-  display: flex;
+  display: block;
   min-height: 100vh;
   background-color: #f0f2f5;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   text-align: left;
+  margin-left: 240px;
 }
 
 .ad-main {
-  flex: 1;
   padding: 28px 36px;
   min-width: 0;
   overflow-y: auto;
+  min-height: 100vh;
 }
 
 /* Page Header */
@@ -144,6 +145,10 @@
 }
 
 @media (max-width: 900px) {
+  .ad-layout {
+    margin-left: 72px;
+  }
+
   .ad-main {
     padding: 20px 16px;
   }

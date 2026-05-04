@@ -2,7 +2,17 @@ import React from 'react';
 import './FilterSidebar.css';
 import { StarIcon } from '../common/Icons';
 
-export const FilterSidebar: React.FC = () => {
+interface FilterSidebarProps {
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+}
+
+export const FilterSidebar: React.FC<FilterSidebarProps> = ({
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange
+}) => {
   return (
     <aside className="filter-sidebar">
       <div className="filter-section">
@@ -29,6 +39,7 @@ export const FilterSidebar: React.FC = () => {
             <span className="filter-text">Quận Bình Thạnh, HCMC</span>
           </label>
         </div>
+
       </div>
 
       <div className="filter-section">
@@ -49,13 +60,35 @@ export const FilterSidebar: React.FC = () => {
         </div>
       </div>
 
-      <div className="filter-section filter-toggle-section">
-        <span className="filter-text-bold">Thợ đã xác minh</span>
-        <label className="switch">
-          <input type="checkbox" defaultChecked />
-          <span className="slider round"></span>
-        </label>
-      </div>
+      {totalPages > 1 && onPageChange && (
+        <div className="pl-pagination" style={{ marginTop: '24px' }}>
+          <button
+            className="page-btn"
+            disabled={currentPage === 1}
+            onClick={() => onPageChange(currentPage - 1)}
+          >
+            &laquo;
+          </button>
+
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              className={`page-btn ${currentPage === i + 1 ? 'active' : ''}`}
+              onClick={() => onPageChange(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            className="page-btn"
+            disabled={currentPage === totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+          >
+            &raquo;
+          </button>
+        </div>
+      )}
     </aside>
   );
 };

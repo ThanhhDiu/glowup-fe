@@ -8,7 +8,7 @@ interface SidebarProps {
 }
 
 export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashboard', onNavigate }) => {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const menuItems = [
     {
       id: 'dashboard', label: 'Dashboard', icon: (
@@ -51,17 +51,6 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
   const pageMap: Record<string, string> = {
     dashboard: '/provider-dashboard',
     jobs: '/technician/jobs',
-    earnings: '/provider-dashboard',
-    profile: '/technician/profile',
-  };
-
-  const handleNavigate = (page: string) => {
-    if (onNavigate) {
-      onNavigate(page);
-      return;
-    }
-
-    nav(pageMap[page] || '/provider-dashboard');
     wallet: '/technician/wallet',
     profile: '/provider-profile',
   };

@@ -112,7 +112,7 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
                                 <button
                                     className={styles.btnPrimary}
                                     onClick={() => {
-                                        setLocked(true); // 🔒 LOCK
+                                        setLocked(true); // LOCK
                                         onAccept?.();
                                     }}
                                     disabled={locked}
@@ -137,13 +137,13 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
                     >
                         <DatePicker
                             selected={dateTime}
-                            onChange={(date) => setDateTime(date)}
+                            onChange={(date: Date | null) => setDateTime(date)}
                             showTimeSelect
                             timeFormat="HH:mm"
                             timeIntervals={30}
                             dateFormat="dd/MM/yyyy HH:mm"
                             inline
-                            minDate={new Date()} // ❌ không chọn ngày quá khứ
+                            minDate={new Date()} // không chọn ngày quá khứ
                         />
 
                         <div className={styles.popupActions}>
