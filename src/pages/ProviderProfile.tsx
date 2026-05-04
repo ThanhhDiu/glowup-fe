@@ -16,12 +16,6 @@ export const ProviderProfile: React.FC = () => {
   const providerData = location.state as any;
 
   const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
-
-  useEffect(() => {
-    if (providerData?.activeTab) {
-      setActiveTab(providerData.activeTab);
-    }
-  }, [providerData]);
   
   const defaultProfile = {
     name: 'Nguyễn Văn Hùng',
@@ -50,7 +44,7 @@ export const ProviderProfile: React.FC = () => {
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 

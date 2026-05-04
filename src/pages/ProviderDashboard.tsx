@@ -21,7 +21,7 @@ const pageMap: Record<string, string> = {
 
 const ProviderDashboard: React.FC = () => {
   const nav = useNavigate();
-  const onNavigate = (page: string, data?: any) => {
+  const onNavigate = (page: string, data?: unknown) => {
     const path = pageMap[page] || '/';
     nav(path, { state: data });
   };

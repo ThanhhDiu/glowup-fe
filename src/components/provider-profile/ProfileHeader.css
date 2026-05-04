@@ -56,7 +56,6 @@
 .ph-content {
   display: flex;
   padding: 0 40px;
-  margin-top: -60px;
   position: relative;
   z-index: 10;
   align-items: flex-end;
@@ -71,6 +70,7 @@
   position: relative;
   width: 140px;
   height: 140px;
+  margin-top: -60px;
 }
 
 .ph-avatar-img {
@@ -109,7 +109,7 @@
 
 .ph-info-section {
   flex-grow: 1;
-  padding-bottom: 10px;
+  padding-bottom: 16px;
   text-align: left;
 }
 
@@ -117,7 +117,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 8px;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
@@ -181,7 +181,7 @@
 }
 
 .ph-action-section {
-  padding-bottom: 8px;
+  padding-bottom: 16px;
 }
 
 .ph-primary-btn {

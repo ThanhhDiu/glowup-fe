@@ -1,8 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import './Header.css';
 import { SearchIcon, BellIcon } from '../common/Icons';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isActive = (path: string) => {
+    if (path === '/') return currentPath === '/';
+    return currentPath.startsWith(path);
+  };
+
   const goToProfile = () => onNavigate && onNavigate('provider-profile');
   const goToLogout = () => onNavigate && onNavigate('login');
 
@@ -12,16 +23,35 @@ export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void 
         <div className="header-logo" style={{ cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('home')}>
           <span className="logo-text">GlowUp</span>
         </div>
-        
+
         <nav className="header-nav">
-          <a href="#" className="nav-item active">Trang chủ</a>
-          <a href="#" className="nav-item">Dịch vụ</a>
-          <a href="#" className="nav-item">Chuyên gia</a>
+          <a
+            href="#"
+            className={`nav-item ${isActive('/') ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('home'); }}
+          >
+            Trang chủ
+          </a>
+          <a
+            href="#"
+            className={`nav-item ${isActive('/services') ? 'active' : ''}`}
+           
+            onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('services'); }}
+          >
+            Dịch vụ
+          </a>
+          <a
+            href="#"
+            className={`nav-item ${isActive('/provider') ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('provider'); }}
+          >
+            Chuyên gia
+          </a>
           <a href="#" className="nav-item">Ưu đãi</a>
         </nav>
 
         <div className="header-actions">
-          <div className="search-box" style={{ cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('find-provider')}>
+          <div className="search-box" style={{ cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('provider')}>
             <SearchIcon className="search-icon" size={16} />
             <input type="text" placeholder="Tìm kiếm dịch vụ..." className="search-input" />
           </div>

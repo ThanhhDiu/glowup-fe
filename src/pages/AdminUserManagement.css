@@ -29,10 +29,10 @@
   margin-bottom: 20px; gap: 24px; flex-wrap: wrap;
 }
 .aum-page-title {
-  font-size: 36px; font-weight: 800; color: #1a1e3b; margin: 0 0 6px;
+  font-size: 36px; font-weight: 800; color: var(--text-primary); margin: 0 0 6px;
   letter-spacing: -0.5px;
 }
-.aum-page-subtitle { font-size: 14px; color: #64748b; margin: 0; }
+.aum-page-subtitle { font-size: 14px; color: var(--text-muted); margin: 0; }
 
 .aum-add-btn {
   display: inline-flex;
