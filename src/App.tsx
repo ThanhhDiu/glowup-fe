@@ -46,7 +46,10 @@ function App() {
                         <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
+
+                {/*<Route path="/chat" element={<ChatPage role="provider" />} />*/}
             </Route>
+
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
                 {/*<Route path="orders" element={*/}
@@ -55,7 +58,7 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
-                <Route path="messages" element={<ChatPage />} />
+                <Route path="chat" element={<ChatPage />} />
             </Route>
 
 
