@@ -8,8 +8,7 @@ import { MessageInput } from '../components/chat/MessageInput';
 import { SearchBar } from '../components/chat/SearchBar';
 import { Avatar } from '../components/common/Avatar';
 import type { Contact } from '../types/Message';
-
-type Role = "customer" | "provider";
+import type {UserRole} from "../types/UserRole.ts";
 
 const mockContact: Contact = {
     id: '1',
@@ -37,7 +36,7 @@ const pageMap: Record<string, string> = {
     'provider-dashboard': '/provider-dashboard',
 };
 
-export const ChatPage: React.FC<{ role?: Role }> = ({ role = "customer" }) => {
+export const ChatPage: React.FC<{ role?: UserRole }> = ({ role = "customer" }) => {
     const nav = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(role === "customer");
@@ -86,7 +85,7 @@ export const ChatPage: React.FC<{ role?: Role }> = ({ role = "customer" }) => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 
                             {/* Nút toggle chỉ cho thợ */}
-                            {role === "provider" && (
+                            {role === "technician" && (
                                 <button
                                     className={styles.toggleBtn}
                                     onClick={() => setIsSidebarOpen(prev => !prev)}
