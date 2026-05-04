@@ -1,12 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
-import Provider from './pages/Provider.tsx'
-import ServicesPage from './pages/ServicesPage'
+import FindProvider from './pages/FindProvider.tsx'
 import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
-import AdminSystemSettingsPage from './pages/AdminSystemSettingsPage';
+import AdminSystemSettingsPage from './pages/AdminSystemSettingsPage'
 import AdminUserDetail from './pages/AdminUserDetail'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminVerificationRequests from './pages/AdminVerificationRequests'
@@ -15,14 +14,14 @@ import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import AdminFinancePage from './pages/AdminFinancePage'
 // import OrderManagementPage from './pages/OrderManagementPage.tsx'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
-import OrderManagementPage from "./pages/OrderManagementPage.tsx";
-import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
+import OrderManagementPage from './pages/OrderManagementPage.tsx'
+import TechnicianLayout from './components/layout/TechnicianLayout.tsx'
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage'
-import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage';
-import { ChatPage } from './pages/ChatPage';
+import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage'
+import { ChatPage } from './pages/ChatPage'
 import CustomerLayout from './components/layout/CustomerLayout'
 
 function App() {

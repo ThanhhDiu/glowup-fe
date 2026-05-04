@@ -61,7 +61,7 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
       return;
     }
 
-    nav(pageMap[page] || '/provider-dashboard');
+    navigate(pageMap[page] || '/provider-dashboard');
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useCustomerNavigate } from '../components/layout/useCustomerNavigate';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
@@ -44,7 +44,7 @@ export const ProviderProfile: React.FC = () => {
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate('provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 
