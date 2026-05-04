@@ -14,10 +14,9 @@ const pageMap: Record<string, string> = {
   'provider-dashboard': '/provider-dashboard',
   'dashboard': '/provider-dashboard',
   'jobs': '/technician/jobs',
+  'wallet': '/technician/wallet',
   'profile': '/technician/profile',
   'earnings': '/provider-dashboard',
-  'wallet': '/technician/wallet',
-  'services': '/services',
 };
 
 const ProviderDashboard: React.FC = () => {

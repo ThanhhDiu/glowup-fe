@@ -6,7 +6,8 @@ import {
   SettingsCard,
   SettingsSwitchRow,
   SettingsTextField,
-} from '../components/settings/SettingsUI';
+  SettingsTopline,
+} from '../components/settings';
 
 export default function AdminSystemSettingsPage() {
   const [general, setGeneral] = useState({
@@ -39,26 +40,23 @@ export default function AdminSystemSettingsPage() {
   };
 
   return (
-    <div className="settings-page settings-page--admin" style={{ display: 'flex' }}>
+    <div className="settings-page settings-page--admin settings-page--admin-shell">
       <AdminSidebar activeItem="settings" />
 
-      <div style={{ flex: 1, minWidth: 0, padding: '28px 36px' }}>
+      <div className="settings-admin-main">
         <AdminHeader searchPlaceholder="Tìm kiếm hệ thống, thông báo, cấu hình..." />
 
         <div className="settings-main">
-          <div className="settings-topline">
-            <div>
-              <h1 className="settings-topline__title">Cài đặt hệ thống</h1>
-              <p className="settings-topline__subtitle">
-                Màn hình này kế thừa layout admin hiện có và gom các cấu hình nền tảng, thuế phí, cảnh báo và quy
-                tắc vận hành vào một nhịp thao tác ngắn gọn hơn.
-              </p>
-            </div>
-            <span className="settings-badge">
-              <Settings2 size={18} />
-              Đồng bộ theo bảng màu hệ thống
-            </span>
-          </div>
+          <SettingsTopline
+            title="Cài đặt hệ thống"
+            subtitle="Màn hình này kế thừa layout admin hiện có và gom các cấu hình nền tảng, thuế phí, cảnh báo và quy tắc vận hành vào một nhịp thao tác ngắn gọn hơn."
+            badge={
+              <span className="settings-badge">
+                <Settings2 size={18} />
+                Đồng bộ theo bảng màu hệ thống
+              </span>
+            }
+          />
 
           <div className="settings-grid settings-grid--two">
             <SettingsCard
