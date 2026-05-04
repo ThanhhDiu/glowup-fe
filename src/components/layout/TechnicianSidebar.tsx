@@ -51,7 +51,7 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
   const pageMap: Record<string, string> = {
     dashboard: '/provider-dashboard',
     jobs: '/technician/jobs',
-    earnings: '/provider-dashboard',
+    wallet: '/technician/wallet',
     profile: '/technician/profile',
   };
 
@@ -62,18 +62,6 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
     }
 
     nav(pageMap[page] || '/provider-dashboard');
-    wallet: '/technician/wallet',
-    profile: '/provider-profile',
-  };
-
-  const handleNavigate = (itemId: string) => {
-    if (onNavigate) {
-      onNavigate(itemId);
-      return;
-    }
-
-    const target = pageMap[itemId] || '/provider-dashboard';
-    navigate(target);
   };
 
   return (

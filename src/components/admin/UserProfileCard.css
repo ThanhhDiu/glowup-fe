@@ -1,17 +1,26 @@
 .upc-card {
-  background: #fff; border: 1px solid #f1f5f9; border-radius: 20px;
-  padding: 32px; display: flex; justify-content: space-between;
-  align-items: flex-start; gap: 24px; margin-bottom: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.96));
+  border: 1px solid #e3eaf4;
+  border-radius: 28px;
+  padding: 28px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 4px;
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.05);
+  flex-wrap: wrap;
 }
-.upc-left { display: flex; gap: 24px; align-items: flex-start; }
+.upc-left { display: flex; gap: 24px; align-items: flex-start; min-width: 0; flex: 1 1 560px; }
 .upc-avatar-wrapper { position: relative; }
-.upc-avatar { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; }
+.upc-avatar { width: 96px; height: 96px; border-radius: 28px; object-fit: cover; border: 3px solid #e2e8f0; box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12); }
 .upc-verified-badge {
   position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
   background: #10b981; color: #fff; font-size: 10px; font-weight: 700;
   padding: 3px 10px; border-radius: 10px; white-space: nowrap;
   letter-spacing: 0.5px; border: 2px solid #fff;
 }
+.upc-info { min-width: 0; }
 .upc-name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
 .upc-name { font-size: 26px; font-weight: 800; color: #1a1e3b; margin: 0; }
 .upc-id-tag {
@@ -28,7 +37,7 @@
 .upc-stat-label { color: #94a3b8; font-size: 13px; }
 .upc-stat-divider { width: 1px; height: 24px; background: #e2e8f0; }
 
-.upc-actions { display: flex; flex-direction: column; gap: 10px; min-width: 160px; align-items: stretch; }
+.upc-actions { display: flex; flex-direction: column; gap: 10px; min-width: 190px; align-items: stretch; }
 .upc-btn-contact {
   padding: 12px 20px; border-radius: 12px; border: 1px solid #1a1e3b;
   background: #fff; color: #1a1e3b; font-weight: 700; font-size: 14px;
@@ -86,5 +95,5 @@
   .upc-card { flex-direction: column; }
   .upc-left { flex-direction: column; align-items: center; text-align: center; }
   .upc-stats-row { justify-content: center; }
-  .upc-actions { flex-direction: row; }
+  .upc-actions { flex-direction: column; width: 100%; min-width: 0; }
 }

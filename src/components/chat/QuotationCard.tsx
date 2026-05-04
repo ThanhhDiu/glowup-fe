@@ -137,7 +137,7 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
                     >
                         <DatePicker
                             selected={dateTime}
-                            onChange={(date) => setDateTime(date)}
+                            onChange={(date: Date | null) => setDateTime(date)}
                             showTimeSelect
                             timeFormat="HH:mm"
                             timeIntervals={30}

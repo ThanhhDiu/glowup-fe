@@ -5,6 +5,7 @@ import FindProvider from './pages/FindProvider'
 import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
+import AdminSystemSettingsPage from './pages/AdminSystemSettingsPage';
 import AdminUserDetail from './pages/AdminUserDetail'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminVerificationRequests from './pages/AdminVerificationRequests'
@@ -17,6 +18,8 @@ import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
+import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage'
+import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage';
 import { ChatPage } from './pages/ChatPage';
 
 function App() {
@@ -44,6 +47,11 @@ function App() {
                         <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
+                <Route path="profile" element={
+                    <TechnicianLayout activeItem="profile">
+                        <TechnicianProfileSettingsPage />
+                    </TechnicianLayout>
+                } />
             </Route>
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
@@ -54,6 +62,8 @@ function App() {
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
                 <Route path="messages" element={<ChatPage />} />
+                <Route path="settings" element={<CustomerAccountSettingsPage />} />
+                <Route path="account-settings" element={<CustomerAccountSettingsPage />} />
             </Route>
 
 
@@ -81,6 +91,8 @@ function App() {
             <Route path="/admin/verification" element={<AdminVerificationRequests />} />
             <Route path="/admin/verification/:requestId/update" element={<AdminVerificationUpdate />} />
             <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
+            <Route path="/admin/settings" element={<AdminSystemSettingsPage />} />
+
 
         </Routes>
     )

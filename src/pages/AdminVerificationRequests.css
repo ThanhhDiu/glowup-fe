@@ -1,15 +1,21 @@
 .avr-layout {
   display: flex;
   min-height: 100vh;
-  background: #f0f2f5;
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 24%),
+    linear-gradient(180deg, #f5f8fc 0%, #eef3f9 100%);
   text-align: left;
 }
 
 .avr-main {
-  flex: 1;
+  flex: 1 1 auto;
+  width: calc(100% - var(--admin-sidebar-width));
+  max-width: calc(100% - var(--admin-sidebar-width));
+  margin-left: var(--admin-sidebar-width);
   min-width: 0;
-  padding: 28px 36px;
+  padding: 32px var(--admin-page-gutter) 40px;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .avr-breadcrumb {
@@ -220,7 +226,10 @@
 
 @media (max-width: 900px) {
   .avr-main {
-    padding: 20px 16px;
+    width: calc(100% - var(--admin-sidebar-collapsed-width));
+    max-width: calc(100% - var(--admin-sidebar-collapsed-width));
+    margin-left: var(--admin-sidebar-collapsed-width);
+    padding: 20px 16px 28px;
   }
 
   .avr-title {
