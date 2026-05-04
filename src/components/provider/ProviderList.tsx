@@ -23,18 +23,21 @@ const allProviders = [
     avatar: 'https://i.pravatar.cc/150?img=11', titleBadge: 'CHUYÊN GIA KIM CƯƠNG',
     description: 'Chuyên gia Máy lạnh với 8 năm kinh nghiệm và hơn 1.450 đơn hàng hoàn thành.',
     skills: ['Sửa điện lạnh', 'Bảo trì máy lạnh', 'Hệ thống thông gió'],
+    reviewCount: 1450,
   },
   {
     type: 'premium', id: 'p2', name: 'Lê Thị Tuyết',
     avatar: 'https://i.pravatar.cc/150?img=5', titleBadge: 'CHUYÊN GIA BẠCH KIM',
     description: 'Chuyên gia Vệ sinh với 5 năm kinh nghiệm và 900 đơn hàng hoàn thành.',
     skills: ['Dọn dẹp nhà cửa', 'Vệ sinh công nghiệp', 'Giặt ủi chuyên nghiệp'],
+    reviewCount: 900,
   },
   {
     type: 'premium', id: 'p3', name: 'Phạm Hoàng Nam',
     avatar: 'https://i.pravatar.cc/150?img=8', titleBadge: 'CHUYÊN GIA VÀNG',
     description: 'Kỹ thuật viên Điện nước với 6 năm kinh nghiệm, hoàn thành 1.120 đơn hàng.',
     skills: ['Sửa điện dân dụng', 'Sửa ống nước', 'Lắp đặt điện'],
+    reviewCount: 1120,
   },
 
   // === Máy lạnh ===
@@ -174,8 +177,6 @@ export const ProviderList: React.FC<Props> = ({
     if (!matchingSkills) return allProviders;
 
     return allProviders.filter(p => {
-      // Premium cards luôn hiện
-      if (p.type === 'premium') return true;
       // Kiểm tra xem provider có ít nhất 1 skill khớp với dịch vụ
       return p.skills?.some(skill => matchingSkills.includes(skill));
     });
@@ -185,9 +186,11 @@ export const ProviderList: React.FC<Props> = ({
   const sortedProviders = useMemo(() => {
     const sorted = [...filteredProviders];
     sorted.sort((a, b) => {
-      // Premium cards always at top
-      if (a.type === 'premium' && b.type !== 'premium') return -1;
-      if (b.type === 'premium' && a.type !== 'premium') return 1;
+      // Nếu không chọn dịch vụ cụ thể (hiển thị tất cả), ghim Premium lên đầu
+      if (!selectedService) {
+        if (a.type === 'premium' && b.type !== 'premium') return -1;
+        if (b.type === 'premium' && a.type !== 'premium') return 1;
+      }
 
       if (selectedSort === 'PHỔ BIẾN NHẤT') {
         return ((b as any).reviewCount || 0) - ((a as any).reviewCount || 0);
