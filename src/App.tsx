@@ -64,11 +64,11 @@ function App() {
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
                 <Route path="messages" element={<ChatPage />} />
-                <Route path="settings" element={
+                {/* <Route path="settings" element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
                         <CustomerAccountSettingsPage />
                     </CustomerLayout>
-                } />
+                } /> */}
                 <Route path='order-management' element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
                         <OrderManagementPage role="customer" />
