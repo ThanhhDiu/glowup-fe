@@ -1,7 +1,7 @@
 import React from 'react';
 import './AdminHeader.css';
 
-interface AdminHeaderProps {
+git interface AdminHeaderProps {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
