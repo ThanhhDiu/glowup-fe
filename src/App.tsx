@@ -1,25 +1,28 @@
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
-import Provider from './pages/Provider.tsx'
-import ServicesPage from './pages/ServicesPage'
+import FindProvider from './pages/FindProvider.tsx'
 import ProviderProfile from './pages/ProviderProfile'
 import ProviderDashboard from './pages/ProviderDashboard'
 import AdminUserManagement from './pages/AdminUserManagement'
+import AdminSystemSettingsPage from './pages/AdminSystemSettingsPage'
 import AdminUserDetail from './pages/AdminUserDetail'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminVerificationRequests from './pages/AdminVerificationRequests'
 import AdminVerificationDetail from './pages/AdminVerificationDetail'
 import AdminVerificationUpdate from './pages/AdminVerificationUpdate'
 import AdminFinancePage from './pages/AdminFinancePage'
+// import OrderManagementPage from './pages/OrderManagementPage.tsx'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
-import {OrderManagementPage} from "./pages/OrderManagementPage.tsx";
-import TechnicianLayout from "./components/layout/TechnicianLayout.tsx";
+import OrderManagementPage from './pages/OrderManagementPage.tsx'
+import TechnicianLayout from './components/layout/TechnicianLayout.tsx'
 import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
-import { ChatPage } from './pages/ChatPage';
-
+import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage'
+import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage'
+import { ChatPage } from './pages/ChatPage'
+import CustomerLayout from './components/layout/CustomerLayout'
 
 function App() {
     return (
@@ -46,6 +49,11 @@ function App() {
                         <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
+                <Route path="profile" element={
+                    <TechnicianLayout activeItem="profile">
+                        <TechnicianProfileSettingsPage />
+                    </TechnicianLayout>
+                } />
             </Route>
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
@@ -56,6 +64,21 @@ function App() {
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
                 <Route path="messages" element={<ChatPage />} />
+                {/* <Route path="settings" element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <CustomerAccountSettingsPage />
+                    </CustomerLayout>
+                } /> */}
+                <Route path='order-management' element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <OrderManagementPage role="customer" />
+                    </CustomerLayout>
+                } />
+                <Route path="account-settings" element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <CustomerAccountSettingsPage />
+                    </CustomerLayout>
+                } />
             </Route>
 
 
@@ -65,10 +88,33 @@ function App() {
             </Route>
 
             {/*đem mấy này phân theo luồng*/}
+            <Route path="/" element={<HomePage/>}/>
+            <Route path="/find-provider" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <FindProvider/>
+                </CustomerLayout>
+            }/>
+            <Route path="/provider-profile" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <ProviderProfile/>
+                </CustomerLayout>
+            }/>
+            <Route path="/provider-dashboard" element={<ProviderDashboard/>}/>
+            <Route path="/admin/users" element={<AdminUserManagement/>}/>
+            <Route path="/admin/users/:id" element={<AdminUserDetail/>}/>
+            <Route path="/admin/finance" element={<AdminFinancePage/>}/>
+            <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
             <Route path="/" element={<HomePage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/provider" element={<Provider />} />
-            <Route path="/provider-profile" element={<ProviderProfile />} />
+            <Route path="/find-provider" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <FindProvider />
+                </CustomerLayout>
+            } />
+            <Route path="/provider-profile" element={
+                <CustomerLayout activeNavKey="find-provider">
+                    <ProviderProfile />
+                </CustomerLayout>
+            } />
             <Route path="/provider-dashboard" element={<ProviderDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
             <Route path="/admin/users/:id" element={<AdminUserDetail />} />
@@ -78,9 +124,11 @@ function App() {
             <Route path="/admin/verification" element={<AdminVerificationRequests />} />
             <Route path="/admin/verification/:requestId/update" element={<AdminVerificationUpdate />} />
             <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
+            <Route path="/admin/settings" element={<AdminSystemSettingsPage />} />
+
 
         </Routes>
     )
 }
 
-export default App;
+export default App

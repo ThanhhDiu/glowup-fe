@@ -52,17 +52,16 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({ activeItem = 'dashbo
     dashboard: '/provider-dashboard',
     jobs: '/technician/jobs',
     wallet: '/technician/wallet',
-    profile: '/provider-profile',
+    profile: '/technician/profile',
   };
 
-  const handleNavigate = (itemId: string) => {
+  const handleNavigate = (page: string) => {
     if (onNavigate) {
-      onNavigate(itemId);
+      onNavigate(page);
       return;
     }
 
-    const target = pageMap[itemId] || '/provider-dashboard';
-    navigate(target);
+    navigate(pageMap[page] || '/provider-dashboard');
   };
 
   return (
