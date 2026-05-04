@@ -1,0 +1,110 @@
+.report-modal {
+    display: flex;
+    flex-direction: column;
+    width: 550px;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    font-family: var(--font-family);
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 32px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+}
+
+.report-header .title {
+    margin: 0 0 4px 0;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-bold);
+    color: #ef4444; /* Đỏ Danger */
+}
+
+.report-header .sub {
+    font-size: var(--fs-xs);
+    color: var(--text-sub);
+}
+
+.report-body {
+    padding: 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.danger-notice {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    border-left: 4px solid #ef4444;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-bold);
+    color: var(--text-sub);
+    letter-spacing: 0.5px;
+}
+
+.report-select,
+.form-group textarea {
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    color: var(--text-main);
+    outline: none;
+    transition: 0.2s;
+}
+
+.report-select:focus,
+.form-group textarea:focus {
+    border-color: #ef4444;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.report-footer {
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    background: var(--plate-white);
+}
+
+.btn-solid-danger {
+    background: #ef4444;
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: var(--fw-bold);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+}
+
+.btn-solid-danger:hover {
+    background: #dc2626;
+}

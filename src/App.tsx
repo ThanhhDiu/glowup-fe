@@ -19,6 +19,8 @@ import TechnicianWalletPage from './pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 import { ChatPage } from './pages/ChatPage';
+import TechnicianProfileSettingsPage from "./pages/TechnicianProfileSettingsPage.tsx";
+import CustomerAccountSettingsPage from "./pages/CustomerAccountSettingsPage.tsx";
 
 
 function App() {
@@ -46,7 +48,32 @@ function App() {
                         <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
+                <Route
+                    path="profile"
+                    element={
+                        <TechnicianLayout activeItem="profile">
+                            <TechnicianProfileSettingsPage />
+                        </TechnicianLayout>
+                    }
+                />
+                <Route
+                    path="provider-dashboard"
+                    element={
+                        <TechnicianLayout activeItem="dashboard">
+                            <ProviderDashboard />
+                        </TechnicianLayout>
+                    }
+                />
+                {/*<Route*/}
+                {/*    path="messages"*/}
+                {/*    element={*/}
+                {/*        <TechnicianLayout activeItem="messages">*/}
+                {/*            <ChatPage />*/}
+                {/*        </TechnicianLayout>*/}
+                {/*    }*/}
+                {/*/>*/}
             </Route>
+
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
                 {/*<Route path="orders" element={*/}
@@ -55,6 +82,7 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
+                <Route path="settings" element={<CustomerAccountSettingsPage />} />
                 <Route path="messages" element={<ChatPage />} />
             </Route>
 
@@ -69,7 +97,6 @@ function App() {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/provider" element={<Provider />} />
             <Route path="/provider-profile" element={<ProviderProfile />} />
-            <Route path="/provider-dashboard" element={<ProviderDashboard />} />
             <Route path="/admin/users" element={<AdminUserManagement />} />
             <Route path="/admin/users/:id" element={<AdminUserDetail />} />
             <Route path="/admin/finance" element={<AdminFinancePage />} />

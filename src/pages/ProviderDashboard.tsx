@@ -1,35 +1,34 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TechnicianSidebar } from '../components/layout/TechnicianSidebar.tsx';
+// import { useNavigate } from 'react-router-dom';
 import { StatsCards } from '../components/dashboard/StatsCards';
 import { EarningsChart } from '../components/dashboard/EarningsChart';
 import { AvailableTasks } from '../components/dashboard/AvailableTasks';
 import { TodaySchedule } from '../components/dashboard/TodaySchedule';
 import './ProviderDashboard.css';
 
-const pageMap: Record<string, string> = {
-  'home': '/',
-  'find-provider': '/find-provider',
-  'provider-profile': '/provider-profile',
-  'provider-dashboard': '/provider-dashboard',
-  'dashboard': '/provider-dashboard',
-  'jobs': '/technician/jobs',
-  'profile': '/technician/profile',
-  'earnings': '/provider-dashboard',
-  'wallet': '/technician/wallet',
-  'services': '/services',
-};
+// const pageMap: Record<string, string> = {
+//   'home': '/',
+//   'find-provider': '/find-provider',
+//   'provider-profile': '/provider-profile',
+//   'provider-dashboard': '/provider-dashboard',
+//   'dashboard': '/provider-dashboard',
+//   'jobs': '/technician/jobs',
+//   'profile': '/technician/profile',
+//   'earnings': '/provider-dashboard',
+//   'wallet': '/technician/wallet',
+//   'services': '/services',
+// };
 
 const ProviderDashboard: React.FC = () => {
-  const nav = useNavigate();
-  const onNavigate = (page: string, data?: unknown) => {
-    const path = pageMap[page] || '/';
-    nav(path, { state: data });
-  };
+  // const nav = useNavigate();
+  // const onNavigate = (page: string, data?: unknown) => {
+  //   const path = pageMap[page] || '/';
+  //   nav(path, { state: data });
+  // };
 
   return (
     <div className="pd-layout">
-      <TechnicianSidebar activeItem="dashboard" onNavigate={onNavigate} />
+      {/*<TechnicianSidebar activeItem="dashboard" onNavigate={onNavigate} />*/}
 
       <div className="pd-main">
         {/* Top Header Bar */}
