@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './PopularServices.css';
 import { 
   SnowflakeIcon, 
@@ -11,14 +12,14 @@ import {
   CarIcon 
 } from '../common/Icons';
 
-interface ServiceItem {
+export interface ServiceItem {
   id: string;
   name: string;
   description: string;
   icon: React.ReactNode;
 }
 
-const services: ServiceItem[] = [
+export const services: ServiceItem[] = [
   { id: '1', name: 'Máy lạnh', description: 'Vệ sinh & Bảo trì', icon: <SnowflakeIcon /> },
   { id: '2', name: 'Giặt ủi', description: 'Sạch tận cơ sở', icon: <WashingMachineIcon /> },
   { id: '3', name: 'Tủ lạnh', description: 'Bảo trì định kỳ', icon: <FridgeIcon /> },
@@ -30,6 +31,12 @@ const services: ServiceItem[] = [
 ];
 
 export const PopularServices: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleServiceClick = (service: ServiceItem) => {
+    navigate(`/provider?service=${encodeURIComponent(service.name)}`);
+  };
+
   return (
     <section className="services-section">
       <div className="services-header">
@@ -37,12 +44,18 @@ export const PopularServices: React.FC = () => {
           <h2 className="section-title">Dịch vụ phổ biến</h2>
           <p className="section-subtitle">Tất cả những gì bạn cần cho một không gian hoàn hảo.</p>
         </div>
-        <a href="#" className="view-all-link">Xem tất cả dịch vụ →</a>
+        <a href="#" onClick={(e) => { e.preventDefault(); navigate('/services'); }} className="view-all-link">Xem tất cả dịch vụ →</a>
       </div>
 
       <div className="services-grid">
         {services.map(service => (
-          <div key={service.id} className="service-card">
+          <div
+            key={service.id}
+            className="service-card"
+            onClick={() => handleServiceClick(service)}
+            role="button"
+            tabIndex={0}
+          >
             <div className="service-icon-container">
               {service.icon}
             </div>

@@ -1,7 +1,7 @@
 .available-tasks-card {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
   padding: 28px 32px;
 }
 
@@ -15,20 +15,20 @@
 .available-tasks-title {
   font-size: 20px;
   font-weight: 800;
-  color: #1a1e3b;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .view-all-tasks {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .view-all-tasks:hover {
-  color: #3b82f6;
+  color: var(--blue);
 }
 
 .tasks-list {
@@ -42,15 +42,15 @@
   align-items: center;
   gap: 18px;
   padding: 18px 20px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   transition: all 0.25s ease;
   cursor: pointer;
   border: 1px solid transparent;
 }
 
 .task-item:hover {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  background: var(--bg-subtle);
+  border-color: var(--border-default);
   transform: translateX(4px);
 }
 
@@ -58,9 +58,9 @@
   width: 48px;
   height: 48px;
   min-width: 48px;
-  border-radius: 14px;
-  background-color: #f1f5f9;
-  color: #475569;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-muted);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,8 +68,8 @@
 }
 
 .task-item:hover .task-icon-wrapper {
-  background-color: #1a1e3b;
-  color: #ffffff;
+  background-color: var(--primary);
+  color: var(--text-white);
 }
 
 .task-details {
@@ -80,7 +80,7 @@
 .task-name {
   font-size: 15px;
   font-weight: 700;
-  color: #1a1e3b;
+  color: var(--text-primary);
   margin: 0 0 6px 0;
 }
 
@@ -89,7 +89,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-light);
 }
 
 .task-right {
@@ -103,14 +103,14 @@
 .task-price {
   font-size: 16px;
   font-weight: 800;
-  color: #1a1e3b;
+  color: var(--text-primary);
 }
 
 .task-status-badge {
   font-size: 11px;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   letter-spacing: 0.5px;
 }
 

@@ -29,7 +29,8 @@ const mockContact2: Contact = {
 
 const pageMap: Record<string, string> = {
     'home': '/',
-    'find-provider': '/find-provider',
+    'provider': '/provider',
+    'services': '/services',
     'provider-profile': '/provider-profile',
     'provider-dashboard': '/provider-dashboard',
 };
@@ -44,7 +45,7 @@ export const ChatPage: React.FC = () => {
         // Sau này Diễm sẽ gọi API gửi tin nhắn ở đây
     };
 
-    const onNavigate = (page: string, data?: any) => {
+    const onNavigate = (page: string, data?: unknown) => {
         const path = pageMap[page] || '/';
         nav(path, { state: data });
     };
