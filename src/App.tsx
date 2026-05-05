@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import {Routes, Route, Navigate} from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import FindProvider from './pages/FindProvider.tsx'
@@ -23,6 +23,9 @@ import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage
 import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage'
 import { ChatPage } from './pages/ChatPage'
 import CustomerLayout from './components/layout/CustomerLayout'
+import ServicesPage from "./pages/ServicesPage.tsx";
+import Provider from "./pages/Provider.tsx";
+import {ChangePasswordPage, ForgotPasswordPage, LoginPage, RegisterPage} from "./pages/AuthScreens.tsx";
 
 function App() {
     return (
@@ -50,12 +53,41 @@ function App() {
                     </TechnicianLayout>
                 } />
 
-                <Route path="profile" element={
-                    <TechnicianLayout activeItem="profile">
-                        <TechnicianProfileSettingsPage />
-                    </TechnicianLayout>
-                } />
+                <Route
+                    path="profile"
+                    element={
+                        <TechnicianLayout activeItem="profile">
+                            <TechnicianProfileSettingsPage />
+                        </TechnicianLayout>
+                    }
+                />
+                <Route
+                    path="provider-dashboard"
+                    element={
+                        <TechnicianLayout activeItem="dashboard">
+                            <ProviderDashboard />
+                        </TechnicianLayout>
+                    }
+                />
+                {/*<Route*/}
+                {/*    path="chat"*/}
+                {/*    element={*/}
+                {/*        <TechnicianLayout activeItem="chat">*/}
+                {/*            <ChatPage role={"customer"}/>*/}
+                {/*        </TechnicianLayout>*/}
+                {/*    }*/}
+                {/*/>*/}
+
             </Route>
+
+            <Route
+                path="/technician/chat"
+                element={
+                    <TechnicianLayout activeItem="chat">
+                        <ChatPage role="technician" />
+                    </TechnicianLayout>
+                }
+            />
 
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
@@ -65,7 +97,8 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
-              
+
+                <Route path="settings" element={<CustomerAccountSettingsPage />} /> 
                 <Route path="chat" element={<ChatPage />} />
                 {/* <Route path="settings" element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
@@ -82,6 +115,7 @@ function App() {
                         <CustomerAccountSettingsPage />
                     </CustomerLayout>
                 } />
+
             </Route>
 
 
@@ -108,6 +142,8 @@ function App() {
             <Route path="/admin/finance" element={<AdminFinancePage/>}/>
             <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
             <Route path="/" element={<HomePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/provider" element={<Provider />} />
             <Route path="/find-provider" element={
                 <CustomerLayout activeNavKey="find-provider">
                     <FindProvider />
@@ -129,6 +165,14 @@ function App() {
             <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
             <Route path="/admin/settings" element={<AdminSystemSettingsPage />} />
 
+
+            <Route path="/auth">
+                <Route index element={<Navigate to="login" replace />} />
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
+                <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="change-password" element={<ChangePasswordPage />} />
+            </Route>
 
         </Routes>
     )

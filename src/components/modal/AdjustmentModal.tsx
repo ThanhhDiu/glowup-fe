@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaXmark, FaPlus, FaCamera } from 'react-icons/fa6';
-import "./adjustmentModal.css"
+import "./css/adjustmentModal.css"
 
 interface ModalProps {
     currentPrice: number;

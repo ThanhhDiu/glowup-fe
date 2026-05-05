@@ -4,7 +4,7 @@ import {
     FaLocationDot,
     FaPlus, FaCloudArrowUp, FaCheck, FaScrewdriverWrench, FaArrowLeft, FaTruckFast, FaCheckDouble
 } from 'react-icons/fa6';
-import { AdjustmentModal } from './AdjustmentModal';
+import { AdjustmentModal } from '../modal/AdjustmentModal.tsx';
 import './inProgressDetail.css';
 
 interface InProgressProps {

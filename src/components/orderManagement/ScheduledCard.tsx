@@ -3,14 +3,25 @@ import type { UserRole } from '../../types/UserRole';
 import { FaLocationDot, FaClock, FaUser, FaPhone, FaPersonWalkingLuggage, FaMessage } from 'react-icons/fa6';
 import './scheduledCard.css';
 import type {ScheduledOrder} from "../../types/ScheduledOrder.ts";
+import {useNavigate} from "react-router-dom";
 
 interface ScheduledCardProps {
     data: ScheduledOrder;
     role: UserRole;
     onViewDetail: (id: string) => void;
+    onCancel?: (id: string) => void;
 }
 
-export const ScheduledCard: React.FC<ScheduledCardProps> = ({ data, role, onViewDetail }) => {
+export const ScheduledCard: React.FC<ScheduledCardProps> = ({ data, role, onViewDetail, onCancel }) => {
+    const navigate = useNavigate();
+    const handleChatClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Chặn sự kiện click nhầm vào background của Card
+        if (role === 'customer') {
+            navigate('/customer/chat');
+        } else {
+            navigate('/technician/chat');
+        }
+    };
     return (
         <div className="sched-card" onClick={() => onViewDetail(data.id)}>
             <div className="sched-card-main">
@@ -44,16 +55,24 @@ export const ScheduledCard: React.FC<ScheduledCardProps> = ({ data, role, onView
                         <button className="btn-primary">
                             <FaPersonWalkingLuggage /> Tôi đang di chuyển
                         </button>
-                        <button className="btn-secondary">
+                        <button className="btn-secondary" onClick={handleChatClick}>
                             <FaPhone /> Liên hệ khách
                         </button>
                     </>
                 ) : (
                     <>
-                        <button className="btn-primary">
+                        <button className="btn-primary" onClick={handleChatClick}>
                             <FaMessage /> Chat với thợ
                         </button>
-                        <button className="btn-secondary">Hủy đơn</button>
+                        <button
+                            className="btn-secondary"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onCancel?.(data.id);
+                            }}
+                        >
+                            Hủy đơn
+                        </button>
                     </>
                 )}
             </div>
