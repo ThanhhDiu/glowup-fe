@@ -2,40 +2,31 @@ import { useState } from 'react';
 import {
   BadgeCheck,
   Clock3,
-  CreditCard,
-  LogOut,
   MapPinned,
   Save,
-  Shield,
+  Sparkles,
   Trash2,
-  UserRound,
   Wrench,
 } from 'lucide-react';
 import {
   DeleteAccountModal,
+  SettingsActionBar,
   SettingsCard,
   SettingsChipPicker,
   SettingsDangerZone,
+  SettingsFrame,
   SettingsInsightCard,
-  SettingsSidebarCard,
+  SettingsMain,
   SettingsSwitchRow,
   SettingsTextField,
+  SettingsTopline,
   SettingsTextareaField,
-} from '../components/settings/SettingsUI';
-import type { SettingsNavItem } from '../components/settings/SettingsUI';
+} from '../components/settings';
 
 const skillOptions = ['Máy lạnh', 'Máy giặt', 'Tủ lạnh', 'Điện dân dụng', 'Vệ sinh máy lạnh'];
 const areaOptions = ['Quận Bình Thạnh', 'Quận 1', 'Quận 3', 'Quận 7', 'TP. Thủ Đức'];
 
-const sidebarItems: SettingsNavItem[] = [
-  { id: 'personal', label: 'Thông tin cá nhân', icon: <UserRound size={18} /> },
-  { id: 'security', label: 'Đổi mật khẩu', icon: <Shield size={18} /> },
-  { id: 'wallet', label: 'Ví tiền', icon: <CreditCard size={18} /> },
-  { id: 'logout', label: 'Đăng xuất', icon: <LogOut size={18} />, tone: 'danger' },
-];
-
 export default function TechnicianProfileSettingsPage() {
-  const [activeSidebarItem, setActiveSidebarItem] = useState('personal');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [profile, setProfile] = useState({
@@ -57,30 +48,84 @@ export default function TechnicianProfileSettingsPage() {
 
   return (
     <div className="settings-page settings-page--technician">
-      <div className="settings-frame">
-        <SettingsSidebarCard
-          avatar="https://i.pravatar.cc/160?img=12"
-          name="Nguyễn Văn Minh"
-          meta="ID: TECH-8842"
-          items={sidebarItems}
-          activeItem={activeSidebarItem}
-          onSelect={setActiveSidebarItem}
-        />
+      <SettingsFrame as="div" singleColumn className="settings-frame--technician-full">
+        <SettingsMain>
+          <SettingsTopline
+            title="Hồ sơ & kỹ năng"
+            subtitle="Bản nâng cấp này bám theo layout technician hiện có, nhưng gom thông tin cá nhân, khu vực phục vụ và trạng thái nhận việc vào cùng một flow chỉnh sửa mượt hơn."
+            badge={
+              <span className="settings-badge">
+                <BadgeCheck size={18} />
+                Hồ sơ đạt chuẩn GlowUp
+              </span>
+            }
+          />
 
-        <div className="settings-main">
-          <div className="settings-topline">
-            <div>
-              <h1 className="settings-topline__title">Hồ sơ & kỹ năng</h1>
-              <p className="settings-topline__subtitle">
-                Bản nâng cấp này bám theo layout technician hiện có, nhưng gom thông tin cá nhân, khu vực phục vụ
-                và trạng thái nhận việc vào cùng một flow chỉnh sửa mượt hơn.
-              </p>
-            </div>
-            <span className="settings-badge">
-              <BadgeCheck size={18} />
-              Hồ sơ đạt chuẩn GlowUp
-            </span>
-          </div>
+          <section className="tech-settings-overview">
+            <article className="tech-settings-hero">
+              <div className="tech-settings-hero__identity">
+                <img
+                  src="https://i.pravatar.cc/160?img=12"
+                  alt={profile.name}
+                  className="tech-settings-hero__avatar"
+                />
+                <div className="tech-settings-hero__copy">
+                  <span className="tech-settings-hero__eyebrow">Hồ sơ kỹ thuật viên</span>
+                  <h2 className="tech-settings-hero__name">{profile.name}</h2>
+                  <p className="tech-settings-hero__meta">ID: TECH-8842 · Đã xác minh bởi GlowUp</p>
+                  <div className="tech-settings-hero__chips">
+                    <span className={`tech-settings-chip ${isAvailable ? 'is-online' : 'is-offline'}`}>
+                      {isAvailable ? 'Đang nhận đơn' : 'Tạm dừng nhận đơn'}
+                    </span>
+                    <span className="tech-settings-chip">
+                      <Wrench size={14} />
+                      {skills.length} kỹ năng
+                    </span>
+                    <span className="tech-settings-chip">
+                      <MapPinned size={14} />
+                      {areas.length} khu vực
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="tech-settings-hero__note">
+                <div className="tech-settings-hero__note-icon">
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <strong>Hồ sơ rõ ràng giúp tăng chuyển đổi</strong>
+                  <p>
+                    Cập nhật đầy đủ mô tả, kỹ năng và vùng phục vụ để khách hàng tin tưởng hơn trước khi đặt dịch vụ.
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article className="tech-settings-status">
+              <div className="tech-settings-status__header">
+                <span className="tech-settings-status__eyebrow">Điều phối hiện tại</span>
+                <span className={`tech-settings-status__badge ${isAvailable ? 'is-active' : ''}`}>
+                  {isAvailable ? 'Online' : 'Offline'}
+                </span>
+              </div>
+
+              <div className="tech-settings-status__stats">
+                <div className="tech-settings-status__item">
+                  <span className="tech-settings-status__label">Độ hoàn thiện hồ sơ</span>
+                  <strong className="tech-settings-status__value">92%</strong>
+                </div>
+                <div className="tech-settings-status__item">
+                  <span className="tech-settings-status__label">Phản hồi trung bình</span>
+                  <strong className="tech-settings-status__value">8 phút</strong>
+                </div>
+                <div className="tech-settings-status__item">
+                  <span className="tech-settings-status__label">Tỉ lệ nhận đơn</span>
+                  <strong className="tech-settings-status__value">87%</strong>
+                </div>
+              </div>
+            </article>
+          </section>
 
           <SettingsCard
             title="Hồ sơ kỹ thuật viên"
@@ -132,12 +177,12 @@ export default function TechnicianProfileSettingsPage() {
               />
             </div>
 
-            <div className="settings-actions">
+            <SettingsActionBar>
               <button type="button" className="settings-primary-button">
                 <Save size={18} />
                 Lưu thay đổi
               </button>
-            </div>
+            </SettingsActionBar>
           </SettingsCard>
 
           <SettingsDangerZone
@@ -168,8 +213,8 @@ export default function TechnicianProfileSettingsPage() {
               text="Thông tin rõ ràng về kỹ năng và mô tả chuyên môn giúp khách hàng tin tưởng hơn trước khi đặt dịch vụ."
             />
           </div>
-        </div>
-      </div>
+        </SettingsMain>
+      </SettingsFrame>
 
       <DeleteAccountModal
         open={deleteOpen}

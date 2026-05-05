@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import type { ProviderProfile as ProviderProfileType } from '../types/Provider';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
+import { useLocation } from 'react-router-dom';
+import { useCustomerNavigate } from '../components/layout/useCustomerNavigate';
 import { ProfileHeader } from '../components/provider-profile/ProfileHeader';
 import { ProfileTabs } from '../components/provider-profile/ProfileTabs';
 import { AboutTab } from '../components/provider-profile/AboutTab';
@@ -12,25 +10,10 @@ import { ScheduleSidebar, VerificationSidebar, MapSidebar } from '../components/
 import { ChangePasswordTab } from '../components/provider-profile/ChangePasswordTab';
 import './ProviderProfile.css';
 
-const pageMap: Record<string, string> = {
-  'home': '/',
-  'provider': '/provider',
-  'services': '/services',
-  'provider-profile': '/provider-profile',
-  'provider-dashboard': '/provider-dashboard',
-  'customer-settings': '/customer/settings',
-  'login': '/auth/login',
-};
-
 export const ProviderProfile: React.FC = () => {
-  const nav = useNavigate();
+  const onNavigate = useCustomerNavigate();
   const location = useLocation();
-  const providerData = location.state as ProviderProfileType | null;
-
-  const onNavigate = (page: string, data?: unknown) => {
-    const path = pageMap[page] || '/';
-    nav(path, { state: data });
-  };
+  const providerData = location.state as any;
 
   const [activeTab, setActiveTab] = useState(() => providerData?.activeTab || 'about');
   
@@ -60,10 +43,8 @@ export const ProviderProfile: React.FC = () => {
 
   return (
     <div style={{ backgroundColor: '#f4f3ec', minHeight: '100vh' }}>
-      <Header onNavigate={onNavigate} />
-      
       <main className="pp-main-container">
-        <ProfileHeader profile={profileData} onBack={() => onNavigate('provider')} onReviewsClick={() => setActiveTab('reviews')} />
+        <ProfileHeader profile={profileData} onBack={() => onNavigate('find-provider')} onReviewsClick={() => setActiveTab('reviews')} />
         
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} reviewCount={profileData.reviewCount} />
 
@@ -84,8 +65,6 @@ export const ProviderProfile: React.FC = () => {
           )}
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 };
