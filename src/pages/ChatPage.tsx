@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
 import { Header } from '../components/layout/Header';
 import styles from './ChatPage.module.css';
 import { ContactItem } from '../components/chat/ContactItem';
@@ -49,6 +50,10 @@ export const ChatPage: React.FC<{ role?: UserRole }> = ({ role = "customer" }) =
         const path = pageMap[page] || '/';
         nav(path, { state: data });
     };
+
+    useEffect(() => {
+        setIsSidebarOpen(role === "customer");
+    }, [role]);
 
     return (
         <div className={styles.container}>

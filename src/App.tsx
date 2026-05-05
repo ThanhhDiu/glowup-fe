@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import {Routes, Route, Navigate} from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import FindProvider from './pages/FindProvider.tsx'
@@ -23,6 +23,9 @@ import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage
 import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage'
 import { ChatPage } from './pages/ChatPage'
 import CustomerLayout from './components/layout/CustomerLayout'
+import ServicesPage from "./pages/ServicesPage.tsx";
+import Provider from "./pages/Provider.tsx";
+import {ChangePasswordPage, ForgotPasswordPage, LoginPage, RegisterPage} from "./pages/AuthScreens.tsx";
 
 function App() {
     return (
@@ -67,14 +70,24 @@ function App() {
                     }
                 />
                 {/*<Route*/}
-                {/*    path="messages"*/}
+                {/*    path="chat"*/}
                 {/*    element={*/}
-                {/*        <TechnicianLayout activeItem="messages">*/}
-                {/*            <ChatPage />*/}
+                {/*        <TechnicianLayout activeItem="chat">*/}
+                {/*            <ChatPage role={"customer"}/>*/}
                 {/*        </TechnicianLayout>*/}
                 {/*    }*/}
                 {/*/>*/}
+
             </Route>
+
+            <Route
+                path="/technician/chat"
+                element={
+                    <TechnicianLayout activeItem="chat">
+                        <ChatPage role="technician" />
+                    </TechnicianLayout>
+                }
+            />
 
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
@@ -152,6 +165,14 @@ function App() {
             <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
             <Route path="/admin/settings" element={<AdminSystemSettingsPage />} />
 
+
+            <Route path="/auth">
+                <Route index element={<Navigate to="login" replace />} />
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
+                <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="change-password" element={<ChangePasswordPage />} />
+            </Route>
 
         </Routes>
     )
