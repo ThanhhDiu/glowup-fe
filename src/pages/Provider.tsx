@@ -12,7 +12,7 @@ const pageMap: Record<string, string> = {
   'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/provider-dashboard',
-  'customer-settings': '/customer/settings',
+  'customer-settings': '/customer/account-settings',
   'login': '/auth/login',
 };
 

@@ -1,37 +1,69 @@
 import React from 'react';
 import { Footer } from './Footer';
-import { HeaderLogged } from './HeaderLogged';
-import { customerHeaderNavItems } from './customerNavigation';
+import Header from './Header';
+import { SettingsFrame } from './SettingsFrame';
+import { CustomerSettingsSidebar } from '../settings/customer/CustomerSettingsSidebar';
+import '../settings/SettingsUI.css';
 import { useCustomerNavigate } from './useCustomerNavigate';
 import './layout.css';
 
 interface CustomerLayoutProps {
   children: React.ReactNode;
   activeNavKey?: string;
+  activeSidebarItem?: string;
   profilePage?: string;
   searchPlaceholder?: string;
 }
 
 export const CustomerLayout: React.FC<CustomerLayoutProps> = ({
   children,
-  activeNavKey = 'find-provider',
+  activeSidebarItem,
   profilePage = 'customer-settings',
   searchPlaceholder = 'Tìm kiếm dịch vụ...',
 }) => {
   const onNavigate = useCustomerNavigate();
 
+  const handleSidebarSelect = (id: string) => {
+    if (id === 'logout') {
+      onNavigate('login');
+      return;
+    }
+
+    if (id === 'security') {
+      onNavigate('change-password');
+      return;
+    }
+
+    if (id === 'wallet') {
+      onNavigate('order-management');
+      return;
+    }
+
+    onNavigate('customer-settings');
+  };
+
   return (
     <div className="app-wrapper cust-layout-container">
-      <HeaderLogged
+      <Header
         onNavigate={onNavigate}
-        navItems={customerHeaderNavItems}
-        activeNavKey={activeNavKey}
         profilePage={profilePage}
         searchPlaceholder={searchPlaceholder}
       />
 
       <main className="cust-content-area">
-        {children}
+        {activeSidebarItem ? (
+          <div className="settings-page settings-page--customer">
+            <SettingsFrame as="div">
+              <CustomerSettingsSidebar
+                activeItem={activeSidebarItem}
+                onSelect={handleSidebarSelect}
+              />
+              {children}
+            </SettingsFrame>
+          </div>
+        ) : (
+          children
+        )}
       </main>
 
       <Footer />

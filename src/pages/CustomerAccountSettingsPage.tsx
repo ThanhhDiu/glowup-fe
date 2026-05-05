@@ -1,19 +1,14 @@
 import { useState } from 'react';
-import { useCustomerNavigate } from '../components/layout/useCustomerNavigate';
 import {
   CustomerAccountDangerZone,
   CustomerAccountProfileCard,
   CustomerSettingsInsights,
-  CustomerSettingsSidebar,
   DeleteAccountModal,
-  SettingsFrame,
   SettingsMain,
 } from '../components/settings';
 import type { CustomerAccountFormData } from '../components/settings';
 
 export default function CustomerAccountSettingsPage() {
-  const onNavigate = useCustomerNavigate();
-  const [activeSidebarItem, setActiveSidebarItem] = useState('personal');
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [form, setForm] = useState<CustomerAccountFormData>({
     fullName: 'Trần Thị Lan',
@@ -27,33 +22,19 @@ export default function CustomerAccountSettingsPage() {
   };
 
   return (
-    <div className="settings-page settings-page--customer">
-      <SettingsFrame>
-        <CustomerSettingsSidebar
-          activeItem={activeSidebarItem}
-          onSelect={(id) => {
-            if (id === 'logout') {
-              onNavigate('login');
-              return;
-            }
-
-            setActiveSidebarItem(id);
-          }}
+    <>
+      <SettingsMain>
+        <CustomerAccountProfileCard
+          form={form}
+          onFieldChange={updateField}
+          onSave={() => undefined}
+          onUploadAvatar={() => undefined}
         />
 
-        <SettingsMain>
-          <CustomerAccountProfileCard
-            form={form}
-            onFieldChange={updateField}
-            onSave={() => undefined}
-            onUploadAvatar={() => undefined}
-          />
+        <CustomerAccountDangerZone onDelete={() => setDeleteOpen(true)} />
 
-          <CustomerAccountDangerZone onDelete={() => setDeleteOpen(true)} />
-
-          <CustomerSettingsInsights />
-        </SettingsMain>
-      </SettingsFrame>
+        <CustomerSettingsInsights />
+      </SettingsMain>
 
       <DeleteAccountModal
         open={deleteOpen}
@@ -61,6 +42,6 @@ export default function CustomerAccountSettingsPage() {
         onConfirm={() => setDeleteOpen(false)}
         onCancel={() => setDeleteOpen(false)}
       />
-    </div>
+    </>
   );
 }
