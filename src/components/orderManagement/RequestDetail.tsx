@@ -3,14 +3,25 @@ import type {RequestData} from "../../types/RequestData.ts";
 import type {UserRole} from "../../types/UserRole.ts";
 import "./requestDetail.css"
 import {FaLocationDot, FaClock, FaRegCommentDots, FaArrowLeft} from 'react-icons/fa6';
+import {useNavigate} from "react-router-dom";
 
 interface RequestDetailProps {
     data: RequestData;
     role: UserRole;
     onBack: () => void;
+    onCancel?: (id: string) => void;
 }
 
-export const RequestDetail: React.FC<RequestDetailProps> = ({ data, role, onBack }) => {
+export const RequestDetail: React.FC<RequestDetailProps> = ({ data, role, onBack, onCancel }) => {
+    const navigate = useNavigate();
+    const handleChatClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Chặn sự kiện click nhầm vào background của Card
+        if (role === 'customer') {
+            navigate('/customer/chat');
+        } else {
+            navigate('/technician/chat');
+        }
+    };
     return (
         <div className="request-detail">
             <div className="detail-header">
@@ -70,13 +81,16 @@ export const RequestDetail: React.FC<RequestDetailProps> = ({ data, role, onBack
             <div className="detail-footer">
                 {role === 'technician' ? (
                     <>
-                        <button className="btn-large-secondary">Từ chối yêu cầu</button>
-                        {/* Thay đổi icon bình luận */}
-                        <button className="btn-large-primary"><FaRegCommentDots /> Chat & Báo giá ngay</button>
+                        <button className="btn-large-secondary" onClick={() => onCancel?.(data.id)}>
+                            Từ chối yêu cầu
+                        </button>
+                        <button className="btn-large-primary" onClick={handleChatClick}><FaRegCommentDots /> Chat & Báo giá ngay</button>
                     </>
                 ) : (
                     <>
-                        <button className="btn-large-secondary">Hủy yêu cầu</button>
+                        <button className="btn-large-secondary" onClick={() => onCancel?.(data.id)}>
+                            Hủy yêu cầu
+                        </button>
                         <button className="btn-large-primary">Sửa thông tin</button>
                     </>
                 )}

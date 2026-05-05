@@ -6,15 +6,25 @@ import {
 } from 'react-icons/fa6';
 import './scheduledDetail.css';
 import type {ScheduledOrder} from "../../types/ScheduledOrder.ts";
+import {useNavigate} from "react-router-dom";
 
 interface ScheduledDetailProps {
     data: ScheduledOrder;
     role: UserRole;
     onBack: () => void;
+    onCancel?: (id: string) => void;
 }
 
-export const ScheduledDetail: React.FC<ScheduledDetailProps> = ({ data, role, onBack }) => {
-    // State giả lập cho thợ thao tác chuyển đổi trạng thái
+export const ScheduledDetail: React.FC<ScheduledDetailProps> = ({ data, role, onBack, onCancel }) => {
+    const navigate = useNavigate();
+    const handleChatClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Chặn sự kiện click nhầm vào background của Card
+        if (role === 'customer') {
+            navigate('/customer/chat');
+        } else {
+            navigate('/technician/chat');
+        }
+    };
     const [techStatus, setTechStatus] = useState<'moving' | 'arrived'>('moving');
 
     return (
@@ -99,7 +109,15 @@ export const ScheduledDetail: React.FC<ScheduledDetailProps> = ({ data, role, on
 
             {/* Footer Actions (Đa luồng) */}
             <div className="detail-footer">
-                <button className="btn-large-secondary">Hủy đơn</button>
+                <button
+                    className="btn-secondary"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onCancel?.(data.id);
+                    }}
+                >
+                    Hủy đơn
+                </button>
 
                 {role === 'technician' ? (
                     techStatus === 'moving' ? (
@@ -115,7 +133,7 @@ export const ScheduledDetail: React.FC<ScheduledDetailProps> = ({ data, role, on
                         </button>
                     )
                 ) : (
-                    <button className="btn-large-primary">Chat với thợ</button>
+                    <button className="btn-large-primary" onClick={handleChatClick}>Chat với thợ</button>
                 )}
             </div>
         </div>

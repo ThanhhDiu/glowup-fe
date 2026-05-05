@@ -1,0 +1,85 @@
+.cnc-list-card {
+    background: #f8fafc; /* Nền xám nhạt thể hiện đơn không còn active */
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    border: 1px dashed #cbd5e1; /* Viền đứt khúc */
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cnc-list-card:hover {
+    border-color: #ef4444; /* Hover lên viền đỏ */
+    background: #fff;
+}
+
+.cnc-icon-box {
+    width: 48px;
+    height: 48px;
+    background: #fee2e2;
+    color: #ef4444;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.cnc-card-main {
+    flex: 1;
+}
+
+.cnc-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.cnc-status-badge {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.cnc-id {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.cnc-service-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #334155;
+    margin: 0 0 8px 0;
+}
+
+.cnc-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.cnc-who-cancelled {
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.cnc-reason-box {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #475569;
+    border-left: 3px solid #cbd5e1;
+}

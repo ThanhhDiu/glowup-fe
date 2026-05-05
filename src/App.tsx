@@ -50,11 +50,30 @@ function App() {
                     </TechnicianLayout>
                 } />
 
-                <Route path="profile" element={
-                    <TechnicianLayout activeItem="profile">
-                        <TechnicianProfileSettingsPage />
-                    </TechnicianLayout>
-                } />
+                <Route
+                    path="profile"
+                    element={
+                        <TechnicianLayout activeItem="profile">
+                            <TechnicianProfileSettingsPage />
+                        </TechnicianLayout>
+                    }
+                />
+                <Route
+                    path="provider-dashboard"
+                    element={
+                        <TechnicianLayout activeItem="dashboard">
+                            <ProviderDashboard />
+                        </TechnicianLayout>
+                    }
+                />
+                {/*<Route*/}
+                {/*    path="messages"*/}
+                {/*    element={*/}
+                {/*        <TechnicianLayout activeItem="messages">*/}
+                {/*            <ChatPage />*/}
+                {/*        </TechnicianLayout>*/}
+                {/*    }*/}
+                {/*/>*/}
             </Route>
 
             {/*  Luồng của khách hàng*/}
@@ -65,7 +84,8 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
-              
+
+                <Route path="settings" element={<CustomerAccountSettingsPage />} /> 
                 <Route path="chat" element={<ChatPage />} />
                 {/* <Route path="settings" element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
@@ -82,6 +102,7 @@ function App() {
                         <CustomerAccountSettingsPage />
                     </CustomerLayout>
                 } />
+
             </Route>
 
 
@@ -108,6 +129,8 @@ function App() {
             <Route path="/admin/finance" element={<AdminFinancePage/>}/>
             <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
             <Route path="/" element={<HomePage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/provider" element={<Provider />} />
             <Route path="/find-provider" element={
                 <CustomerLayout activeNavKey="find-provider">
                     <FindProvider />

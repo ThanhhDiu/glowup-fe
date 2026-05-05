@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import type { UserRole } from '../../types/UserRole';
 import {
     FaCheck, FaWallet, FaShieldHalved, FaStar,
@@ -6,15 +6,19 @@ import {
     FaArrowLeft, FaTruckFast, FaWrench, FaCheckDouble
 } from 'react-icons/fa6';
 import './completedDetail.css';
+import WarrantyModal from '../modal/WarrantyModal';
+import ReportModal from '../modal/ReportModal';
 
 interface CompletedDetailProps {
     role: UserRole;
     onBack: () => void;
     onOpenRating?: () => void;
-    onOpenWarranty?: () => void;
 }
 
-export const CompletedDetail: React.FC<CompletedDetailProps> = ({ role, onBack, onOpenRating, onOpenWarranty }) => {
+export const CompletedDetail: React.FC<CompletedDetailProps> = ({ role, onBack, onOpenRating }) => {
+    const [showWarrantyModal, setShowWarrantyModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
+
     const orderData = {
         id: '#GU-99210',
         completedAt: '14:30, Ngày 24 Tháng 5, 2024',
@@ -174,10 +178,16 @@ export const CompletedDetail: React.FC<CompletedDetailProps> = ({ role, onBack, 
                                     <p>Sản phẩm/dịch vụ này còn thời hạn bảo hành 3 tháng.</p>
                                 </div>
                             </div>
-                            <button className="btn-outline-dark w-100 mb-3" onClick={onOpenWarranty}>
+                            <button
+                                className="btn-outline-dark w-100 mb-3"
+                                onClick={() => setShowWarrantyModal(true)}
+                            >
                                 Yêu cầu bảo hành
                             </button>
-                            <button className="btn-text-danger w-100 text-center">
+                            <button
+                                className="btn-text-danger w-100 text-center"
+                                onClick={() => setShowReportModal(true)}
+                            >
                                 <FaTriangleExclamation /> Báo cáo sự cố
                             </button>
                         </div>
@@ -201,6 +211,17 @@ export const CompletedDetail: React.FC<CompletedDetailProps> = ({ role, onBack, 
 
                 </div>
             </div>
+
+            <WarrantyModal
+                open={showWarrantyModal}
+                onClose={() => setShowWarrantyModal(false)}
+            />
+
+            <ReportModal
+                open={showReportModal}
+                onClose={() => setShowReportModal(false)}
+            />
+
         </div>
     );
 };
