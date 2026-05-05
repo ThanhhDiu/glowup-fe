@@ -11,6 +11,8 @@ const pageMap: Record<string, string> = {
   'services': '/services',
   'provider-profile': '/provider-profile',
   'provider-dashboard': '/technician/dashboard',
+  'customer-settings': '/customer/account-settings',
+  'login': '/auth/login',
 };
 
 export const ServicesPage: React.FC = () => {
