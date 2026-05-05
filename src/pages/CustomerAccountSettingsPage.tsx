@@ -37,6 +37,16 @@ export default function CustomerAccountSettingsPage() {
               return;
             }
 
+            if (id === 'security') {
+              onNavigate('change-password');
+              return;
+            }
+
+            if (id === 'wallet') {
+              onNavigate('order-management');
+              return;
+            }
+
             setActiveSidebarItem(id);
           }}
         />

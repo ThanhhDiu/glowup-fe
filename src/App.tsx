@@ -21,6 +21,7 @@ import TechnicianWalletTopUpPage from './pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from './pages/TechnicianWalletWithdrawPage'
 import TechnicianProfileSettingsPage from './pages/TechnicianProfileSettingsPage'
 import CustomerAccountSettingsPage from './pages/CustomerAccountSettingsPage'
+import { ChangePasswordPage, LoginPage } from './pages/AuthScreens'
 import { ChatPage } from './pages/ChatPage'
 import CustomerLayout from './components/layout/CustomerLayout'
 import ServicesPage from "./pages/ServicesPage.tsx";
@@ -110,6 +111,11 @@ function App() {
                         <OrderManagementPage role="customer" />
                     </CustomerLayout>
                 } />
+                <Route path="change-password" element={
+                    <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
+                        <ChangePasswordPage />
+                    </CustomerLayout>
+                } />
                 <Route path="account-settings" element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
                         <CustomerAccountSettingsPage />
@@ -123,6 +129,8 @@ function App() {
             <Route path="/admin">
 
             </Route>
+
+            <Route path="/auth/login" element={<LoginPage />} />
 
             {/*đem mấy này phân theo luồng*/}
             <Route path="/" element={<HomePage/>}/>

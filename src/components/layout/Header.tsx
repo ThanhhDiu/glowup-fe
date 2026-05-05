@@ -14,7 +14,7 @@ export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void 
     return currentPath.startsWith(path);
   };
 
-  const goToProfile = () => onNavigate && onNavigate('provider-profile');
+  const goToProfile = () => onNavigate && onNavigate('customer-settings');
   const goToLogout = () => onNavigate && onNavigate('login');
 
   return (
