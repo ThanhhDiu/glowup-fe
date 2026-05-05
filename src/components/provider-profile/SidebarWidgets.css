@@ -1,0 +1,128 @@
+.pc-widget-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  margin-bottom: 24px;
+}
+
+.widget-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000C33;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.mr-2 { margin-right: 8px; }
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.schedule-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-box.full {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.sc-day {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.schedule-box.full .sc-day {
+  color: #94a3b8;
+}
+
+.sc-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000C33;
+}
+
+.schedule-box.full .sc-time {
+  color: #64748b;
+}
+
+/* Verification */
+.verification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.verification-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #4A5E8B;
+  font-weight: 500;
+}
+
+.icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.orange-bg {
+  background-color: rgba(249, 115, 22, 0.1);
+}
+
+.text-orange-500 {
+  color: #f97316;
+}
+
+/* Map Card */
+.map-widget-card {
+  border-radius: 16px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(74, 94, 139, 0.4), rgba(255,255,255,0.1));
+}
+
+.map-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
