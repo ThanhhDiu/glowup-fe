@@ -49,12 +49,14 @@ function App() {
                         <TechnicianWalletWithdrawPage />
                     </TechnicianLayout>
                 } />
+
                 <Route path="profile" element={
                     <TechnicianLayout activeItem="profile">
                         <TechnicianProfileSettingsPage />
                     </TechnicianLayout>
                 } />
             </Route>
+
             {/*  Luồng của khách hàng*/}
             <Route path="/customer">
                 {/*<Route path="orders" element={*/}
@@ -63,7 +65,8 @@ function App() {
                 {/*        <OrderManagementPage role="customer" />*/}
                 {/*    </CustomerLayout>*/}
                 {/*} />*/}
-                <Route path="messages" element={<ChatPage />} />
+              
+                <Route path="chat" element={<ChatPage />} />
                 {/* <Route path="settings" element={
                     <CustomerLayout activeNavKey="account" searchPlaceholder="Tìm kiếm dịch vụ...">
                         <CustomerAccountSettingsPage />

@@ -1,24 +1,27 @@
 import React from "react";
 import Modal from "../common/Modal";
 import "./css/repairRequestModal.css";
-import { X } from "lucide-react";
+import {X} from "lucide-react";
+import {useNavigate} from "react-router-dom";
 
 interface RepairRequestModalProps {
     open: boolean;
     onClose: () => void;
 }
 
-const RepairRequestModal: React.FC<RepairRequestModalProps> = ({ open, onClose }) => {
+const RepairRequestModal: React.FC<RepairRequestModalProps> = ({open, onClose}) => {
+    const navigate = useNavigate();
+
     return (
         <Modal open={open} onClose={onClose}>
             <div className="repair-modal">
                 {/* CLOSE */}
-                <button 
-                    className="repair-close" 
+                <button
+                    className="repair-close"
                     onClick={onClose}
                     aria-label="Close modal"
                 >
-                    <X size={24} />
+                    <X size={24}/>
                 </button>
 
                 {/* HEADER */}
@@ -41,7 +44,7 @@ const RepairRequestModal: React.FC<RepairRequestModalProps> = ({ open, onClose }
                     <div className="form-group">
                         <label>HÌNH ẢNH THỰC TẾ</label>
                         <div className="upload-box">
-                            <div className="upload-icon" />
+                            <div className="upload-icon"/>
                             <p>
                                 Tải lên ảnh để thợ chẩn đoán chính xác hơn (tối đa 3 ảnh)
                             </p>
@@ -71,13 +74,14 @@ const RepairRequestModal: React.FC<RepairRequestModalProps> = ({ open, onClose }
 
                 {/* FOOTER */}
                 <footer className="repair-footer">
-                    <button className="btn-submit" onClick={() => console.log("Submitting repair request")}>
-                        Gửi yêu cầu & Chat ngay
-                    </button>
-                </footer>
-            </div>
-        </Modal>
-    );
+                    <button className="btn-submit" onClick={() => navigate("/customer/chat")}>
+                            Gửi yêu cầu & Chat ngay
+                </button>
+            </footer>
+        </div>
+</Modal>
+)
+    ;
 };
 
-export default RepairRequestModal;
+export default RepairRequestModal;
