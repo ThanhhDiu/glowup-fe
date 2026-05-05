@@ -1,0 +1,238 @@
+/* CONTACT ITEM */
+.contactItem {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.contactItemActive {
+    background: var(--white);
+}
+
+.contactName {
+    font-weight: var(--fw-semibold);
+    margin-bottom: 3px;
+    color: var(--text-main);
+}
+
+.contactTime {
+    font-size: var(--fs-xs);
+    color: var(--text-sub);
+}
+
+.lastMessageSnippet {
+    font-size: var(--fs-sm);
+    display: flex;
+    color: var(--text-sub);
+}
+
+.onlineStatus {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background: #22c55e;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* MESSAGE INPUT */
+.inputContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--white);
+    border-radius: 16px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+}
+
+.iconGroup {
+    display: flex;
+    gap: 6px;
+}
+
+.iconButton {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.textAreaWrapper {
+    flex: 1;
+}
+
+.textInput {
+    width: 100%;
+    padding-top: 7px;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: var(--fs-sm);
+}
+
+.sendButton {
+    background: var(--blueberry-skin);
+    border: none;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* QUOTATION CARD */
+.quotationCard {
+    width: 350px;
+    border-radius: 16px;
+    background: var(--white);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.quotationHeaderLine {
+    height: 4px;
+    background: var(--yogurt-tint);
+}
+
+.quotationBody {
+    padding: 16px;
+}
+
+.quotationTop {
+    display: flex;
+    justify-content: space-between;
+}
+
+.labelCaps {
+    font-size: var(--fs-sm);
+    text-transform: uppercase;
+    display: flex;
+    color: var(--text-sub);
+}
+
+.serviceTitle {
+    margin: 4px 0;
+    font-size: var(--fs-md);
+    font-weight: var(--fw-semibold);
+}
+
+.descriptionSection {
+    margin: 12px 0;
+}
+
+.descriptionText {
+    font-size: var(--fs-sm);
+    color: var(--text-main);
+    text-align: left;
+}
+
+.quotationFooter {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.priceDisplay {
+    display: flex;
+    justify-content: space-between;
+}
+
+.note {
+    color: var(--text-sub);
+    font-size: var(--fs-xs);
+    margin-top: 10px;
+}
+
+.currency {
+    font-size: var(--fs-lg);
+    font-weight: var(--fw-bold);
+}
+
+.actionGroup {
+    display: flex;
+    gap: 8px;
+}
+
+.btnPrimary {
+    flex: 1;
+    background-color: var(--blueberry-skin);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 12px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.btnSecondary {
+    flex: 1;
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+/* DISABLED */
+.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* POPUP */
+.popup {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+/* ACTIONS */
+.popupActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.scheduleContent {
+    align-items: center;
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-bottom: 25px;
+    gap: 10px;
+    background-color: var(--border);
+}
+
+.scheduleLabel {
+    color: var(--text-sub);
+    margin: 0 5px;
+    font-size: var(--fs-sm);
+    text-align: left;
+}
+
+.scheduleValue {
+    color: var(--text-main);
+    margin: 0 5px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-bold);
+    text-align: left;
+}

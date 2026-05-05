@@ -1,0 +1,167 @@
+.about-tab-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.profile-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  text-align: left;
+}
+
+.pc-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #000C33;
+  margin: 0 0 16px 0;
+  text-align: left;
+}
+
+.mb-0 { margin-bottom: 0 !important; }
+
+.pc-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #4A5E8B;
+  margin: 0 0 24px 0;
+}
+
+.pc-skills-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pc-skill-pill {
+  background-color: #f4f3ec;
+  color: #4A5E8B;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+/* Reviews */
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.avg-rating-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avg-rating-num {
+  font-size: 24px;
+  font-weight: 800;
+  color: #000C33;
+}
+
+.avg-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star-solid { color: #fbbf24; }
+.star-empty { color: #e2e8f0; }
+
+.review-count {
+  font-size: 13px;
+  color: #64748b;
+  margin-left: 4px;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.review-item {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 24px;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-item-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.review-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review-author-info {
+  flex-grow: 1;
+}
+
+.review-author-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000C33;
+  margin: 0 0 2px 0;
+}
+
+.review-time {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.review-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.review-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4A5E8B;
+  margin: 0;
+}
+
+.review-attachment {
+  margin-top: 12px;
+}
+
+.review-img {
+  width: 120px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.view-more-btn {
+  width: 100%;
+  background-color: transparent;
+  color: #4A5E8B;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-more-btn:hover {
+  background-color: #f8fafc;
+  color: #000C33;
+}

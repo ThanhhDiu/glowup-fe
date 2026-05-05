@@ -1,0 +1,390 @@
+.ipv-container {
+    margin: 0 auto;
+    background: var(--plate-white);
+    min-height: 100vh;
+    font-family: var(--font-family);
+    padding-bottom: 24px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    margin-bottom: 24px;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    font-weight: var(--fw-bold);
+    color: var(--blueberry-skin);
+    font-size: var(--fs-base);
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font-family);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.req-id {
+    color: var(--stem-grey);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+}
+
+.icon-btn-header {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--stem-grey);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.ipv-alert-banner,
+.ipv-stepper,
+.ipv-card,
+.ipv-total-card,
+.ipv-actions {
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
+/* Banner Cảnh Báo */
+.ipv-alert-banner {
+    background: #fef3c7;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.alert-icon {
+    width: 24px;
+    height: 24px;
+    background: #b45309;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-family: serif;
+}
+
+.alert-content p {
+    margin: 0;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.btn-approve-alert {
+    background: var(--blueberry-skin);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Stepper */
+.stepper-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background: var(--white);
+    margin-bottom: 32px;
+}
+
+.stepper-container .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100px;
+}
+
+.stepper-container .step span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--stem-grey);
+    text-align: center;
+}
+
+.stepper-container .step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #cbd5e1;
+    font-size: 16px;
+}
+
+.stepper-container .step-line {
+    flex: 1;
+    max-width: 80px;
+    height: 2px;
+    background: #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.stepper-container .step.completed .step-icon {
+    background: var(--blueberry-skin);
+    color: var(--white);
+}
+
+.stepper-container .step.completed span {
+    color: var(--blueberry-skin);
+}
+
+.stepper-container .step-line.completed {
+    background: var(--blueberry-skin);
+}
+
+.stepper-container .step.active .step-icon {
+    background: var(--blueberry-skin);
+    color: var(--white);
+    box-shadow: 0 0 0 4px rgba(47, 58, 85, 0.2);
+}
+
+.stepper-container .step.active span {
+    color: var(--blueberry-skin);
+}
+
+/* Thẻ thông tin chung */
+.ipv-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+}
+
+.card-header-split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ipv-card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
+.btn-chat-mini {
+    background: #f1f5f9;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.btn-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--berry-bloom);
+    color: white;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-profile-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+.info h4 {
+    margin: 0 0 4px 0;
+    color: var(--text-main);
+    font-size: 15px;
+}
+
+.info p {
+    margin: 0;
+    color: var(--stem-grey);
+    font-size: 13px;
+}
+
+.location-row {
+    display: flex;
+    gap: 12px;
+    color: var(--stem-grey);
+    font-size: 13px;
+}
+
+.loc-icon {
+    color: #cbd5e1;
+    font-size: 16px;
+}
+
+/* Bảng Linh Kiện */
+.parts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.parts-table th {
+    text-align: left;
+    font-size: 11px;
+    color: var(--stem-grey);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.parts-table td {
+    padding: 16px 0;
+    color: var(--text-main);
+    font-size: 14px;
+    border-bottom: 1px dashed var(--border);
+}
+
+.parts-table td.text-right, .parts-table th.text-right {
+    text-align: right;
+}
+
+/* Ảnh */
+.photo-grid {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.photo-item {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+.upload-box {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed var(--stem-grey);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--stem-grey);
+    cursor: pointer;
+}
+
+.up-icon {
+    font-size: 24px;
+}
+
+.upload-box span {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Total Card */
+.ipv-total-card {
+    background: var(--blueberry-skin);
+    color: white;
+    padding: 24px 32px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+}
+
+.ipv-total-card p {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #cbd5e1;
+    letter-spacing: 0.5px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.total-row h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+.payment-method {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Buttons */
+.ipv-actions {
+    display: flex;
+    gap: 16px;
+}
+
+.btn-outline {
+    flex: 1;
+    padding: 16px;
+    background: white;
+    border: 1px solid var(--blueberry-skin);
+    color: var(--blueberry-skin);
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-solid {
+    flex: 1;
+    padding: 16px;
+    background: var(--blueberry-skin);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-solid.disabled {
+    background: var(--stem-grey);
+    cursor: not-allowed;
+}
