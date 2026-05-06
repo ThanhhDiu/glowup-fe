@@ -4,8 +4,18 @@ import { useLocation } from 'react-router-dom';
 import './Header.css';
 import { SearchIcon, BellIcon } from '../common/Icons';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void }> = ({ onNavigate }) => {
+interface HeaderProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onNavigate?: (page: string, data?: any) => void;
+  profilePage?: string;
+  searchPlaceholder?: string;
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  onNavigate,
+  profilePage = 'customer-settings',
+  searchPlaceholder = 'Tìm kiếm dịch vụ...',
+}) => {
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -14,7 +24,7 @@ export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void 
     return currentPath.startsWith(path);
   };
 
-  const goToProfile = () => onNavigate && onNavigate('provider-profile');
+  const goToProfile = () => onNavigate && onNavigate(profilePage);
   const goToLogout = () => onNavigate && onNavigate('login');
 
   return (
@@ -53,7 +63,7 @@ export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void 
         <div className="header-actions">
           <div className="search-box" style={{ cursor: 'pointer' }} onClick={() => onNavigate && onNavigate('provider')}>
             <SearchIcon className="search-icon" size={16} />
-            <input type="text" placeholder="Tìm kiếm dịch vụ..." className="search-input" />
+            <input type="text" placeholder={searchPlaceholder} className="search-input" />
           </div>
           <div className="action-icon">
             <BellIcon size={20} />
@@ -86,3 +96,5 @@ export const Header: React.FC<{ onNavigate?: (page: string, data?: any) => void 
     </header>
   );
 };
+
+export default Header;
