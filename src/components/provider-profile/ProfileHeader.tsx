@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ProfileHeader.css';
 import {StarIcon, BadgeCheckIcon, ArrowLeftIcon} from '../common/Icons';
-import { useNavigate } from "react-router-dom"; //
+import RepairRequestModal from '../modal/RepairRequestModal';
 
 export interface ProfileHeaderProps {
     name: string;
@@ -21,8 +21,7 @@ export const ProfileHeader: React.FC<{
     onBack?: () => void,
     onReviewsClick?: () => void
 }> = ({profile, onBack, onReviewsClick}) => {
-
-    const navigate = useNavigate();
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
     return (
         <div className="profile-header-container">
@@ -82,7 +81,7 @@ export const ProfileHeader: React.FC<{
                 <div className="ph-action-section">
                     <button
                         className="ph-primary-btn"
-                        onClick={() => navigate("/customer/chat")}
+                        onClick={() => setIsRequestModalOpen(true)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -92,6 +91,18 @@ export const ProfileHeader: React.FC<{
                     </button>
                 </div>
             </div>
+
+            <RepairRequestModal
+                open={isRequestModalOpen}
+                onClose={() => setIsRequestModalOpen(false)}
+                provider={{
+                    name: profile.name,
+                    avatar: profile.avatar,
+                    rating: profile.rating,
+                    responseEta: 'Phản hồi trong ~5 phút',
+                    area: profile.location,
+                }}
+            />
         </div>
     );
 };
