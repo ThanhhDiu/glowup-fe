@@ -26,6 +26,7 @@ import CustomerLayout from './components/layout/CustomerLayout'
 import ServicesPage from "./pages/ServicesPage.tsx";
 import Provider from "./pages/Provider.tsx";
 import {ChangePasswordPage, ForgotPasswordPage, LoginPage, RegisterPage} from "./pages/AuthScreens.tsx";
+import VoucherRewardsPage from './pages/VoucherRewardsPage'
 
 function App() {
     return (
@@ -150,6 +151,7 @@ function App() {
             <Route path="/admin/categories" element={<AdminCategoriesPage/>}/>
             <Route path="/" element={<HomePage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/rewards" element={<VoucherRewardsPage />} />
             <Route path="/provider" element={<Provider />} />
             <Route path="/find-provider" element={
                 <CustomerLayout activeNavKey="find-provider">
