@@ -20,6 +20,7 @@ import ProviderDashboard from '../pages/ProviderDashboard'
 import ProviderProfile from '../pages/ProviderProfile'
 import ServicesPage from '../pages/ServicesPage'
 import TechnicianProfileSettingsPage from '../pages/TechnicianProfileSettingsPage'
+import VoucherRewardsPage from '../pages/VoucherRewardsPage'
 
 export default function AppRouter() {
   return (
@@ -62,6 +63,7 @@ export default function AppRouter() {
       <Route path="/" element={<HomePage />} />
       <Route path="/provider" element={<Provider />} />
       <Route path="/services" element={<ServicesPage />} />
+      <Route path="/rewards" element={<VoucherRewardsPage />} />
       <Route path="/provider-profile" element={<ProviderProfile />} />
 
       {/* Technician routes */}

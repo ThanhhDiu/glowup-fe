@@ -58,7 +58,18 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Chuyên gia
           </a>
-          <a href="#" className="nav-item">Ưu đãi</a>
+          <a
+            href="#"
+            className={`nav-item ${isActive('/rewards') ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('rewards'); }}
+          >
+            Ưu đãi
+          </a>
+          <a
+            href="#"
+            className={`nav-item ${isActive('/') ? 'active' : ''}`}
+            onClick={(e) => { e.preventDefault(); onNavigate && onNavigate('rewards'); }}
+          ></a>
         </nav>
 
         <div className="header-actions">
