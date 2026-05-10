@@ -5,6 +5,7 @@ import './Header.css';
 import { SearchIcon } from '../common/Icons';
 import NotificationMenu from '../common/NotificationMenu';
 import { logoutUser, isAuthenticated  } from '../../services/auth';
+import { customerPageMap } from './customerNavigation';
 interface HeaderProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onNavigate?: (page: string, data?: any) => void;
@@ -14,7 +15,7 @@ interface HeaderProps {
 
 const profileDropdown = (): ReactNode => {
   const navigate = useNavigate()
-    const goToProfile = () => navigate && navigate('customer-settings');
+    const goToProfile = () => navigate && navigate(customerPageMap['customer-settings']);
   const goToLogout = () => {
     logoutUser()
     navigate && navigate('/');
