@@ -4,6 +4,8 @@ import { SettingsCard } from '../cards/SettingsCard';
 import { SettingsTextField } from '../fields/SettingsTextField';
 import { SettingsTextareaField } from '../fields/SettingsTextareaField';
 import type { CustomerAccountFormData } from './types';
+import { getInfo } from '../../../services/getInfo';
+import { useEffect, useState } from 'react';
 
 interface CustomerAccountProfileCardProps {
   form: CustomerAccountFormData;
@@ -12,12 +14,23 @@ interface CustomerAccountProfileCardProps {
   onUploadAvatar?: () => void;
 }
 
+
 export function CustomerAccountProfileCard({
   form,
   onFieldChange,
   onSave,
   onUploadAvatar,
 }: CustomerAccountProfileCardProps) {
+   const [fullname, setFullname] = useState('')
+   const [email, setEmail] = useState('')
+   const [phone, setPhone] = useState('')
+useEffect(()=> {
+ getInfo().then(data => {
+  setFullname(data.fullName)
+  setEmail(data.email)
+  setPhone(data.phone)
+ })
+}, [])  
   return (
     <SettingsCard
       title="Cài đặt tài khoản"
@@ -38,18 +51,18 @@ export function CustomerAccountProfileCard({
       <div className="settings-grid settings-grid--two">
         <SettingsTextField
           label="Họ tên"
-          value={form.fullName}
-          onChange={(value) => onFieldChange('fullName', value)}
+          value={fullname}
+          onChange={(value) => setFullname(value)}
         />
         <SettingsTextField
           label="Số điện thoại"
-          value={form.phone}
-          onChange={(value) => onFieldChange('phone', value)}
+          value={phone}
+          onChange={(value) => setPhone(value)}
         />
         <SettingsTextField
           label="Email"
-          value={form.email}
-          onChange={(value) => onFieldChange('email', value)}
+          value={email}
+          onChange={(value) => setEmail(value)}
           fullWidth
         />
         <SettingsTextareaField
