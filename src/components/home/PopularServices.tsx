@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PopularServices.css';
 import { 
@@ -11,6 +11,7 @@ import {
   MicrowaveIcon, 
   CarIcon 
 } from '../common/Icons';
+import { getCategories, type Category } from '../../services/categoryService';
 
 export interface ServiceItem {
   id: string;
@@ -19,7 +20,7 @@ export interface ServiceItem {
   icon: React.ReactNode;
 }
 
-export const services: ServiceItem[] = [
+const fallbackServices: ServiceItem[] = [
   { id: '1', name: 'Máy lạnh', description: 'Vệ sinh & Bảo trì', icon: <SnowflakeIcon /> },
   { id: '2', name: 'Giặt ủi', description: 'Sạch tận cơ sở', icon: <WashingMachineIcon /> },
   { id: '3', name: 'Tủ lạnh', description: 'Bảo trì định kỳ', icon: <FridgeIcon /> },
@@ -30,12 +31,70 @@ export const services: ServiceItem[] = [
   { id: '8', name: 'Xe hơi', description: 'Rửa & Chăm sóc', icon: <CarIcon /> },
 ];
 
+export const services: ServiceItem[] = fallbackServices;
+
+const iconByTitle: Record<string, React.ReactNode> = {
+  'Máy lạnh': <SnowflakeIcon />,
+  'Giặt ủi': <WashingMachineIcon />,
+  'Tủ lạnh': <FridgeIcon />,
+  'Dọn dẹp': <BroomIcon />,
+  'Điện nước': <WrenchIcon />,
+  'Côn trùng': <BugIcon />,
+  'Lò vi sóng': <MicrowaveIcon />,
+  'Xe hơi': <CarIcon />,
+};
+
+const mapCategoryToServiceItem = (category: Category): ServiceItem => ({
+  id: category.id,
+  name: category.title,
+  description: category.description,
+  icon: category.iconUrl ? (
+    <img
+      src={category.iconUrl}
+      alt={category.title}
+      style={{ width: 32, height: 32, objectFit: 'contain' }}
+    />
+  ) : (
+    iconByTitle[category.title] || <WrenchIcon />
+  ),
+});
+
 export const PopularServices: React.FC = () => {
   const navigate = useNavigate();
+  const [services, setServices] = useState<ServiceItem[]>(fallbackServices);
+  const [loading, setLoading] = useState(true);
 
   const handleServiceClick = (service: ServiceItem) => {
     navigate(`/provider?service=${encodeURIComponent(service.name)}`);
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadServices = async () => {
+      try {
+        setLoading(true);
+        const categories = await getCategories('ACTIVE');
+        const mapped = categories.slice(0, 8).map(mapCategoryToServiceItem);
+
+        if (isMounted && mapped.length > 0) {
+          setServices(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to load popular services:', error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadServices();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <section className="services-section">
@@ -48,7 +107,13 @@ export const PopularServices: React.FC = () => {
       </div>
 
       <div className="services-grid">
-        {services.map(service => (
+        {loading && (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '24px 16px' }}>
+            Đang tải dịch vụ...
+          </div>
+        )}
+
+        {!loading && services.slice(0, 8).map(service => (
           <div
             key={service.id}
             className="service-card"

@@ -1,0 +1,87 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: be-e-commerce
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: public
+    open-in-view: false
+    # Run data.sql AFTER Hibernate auto-creates the schema.
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      # Load src/main/resources/data.sql every startup (idempotent via ON CONFLICT).
+      mode: always
+      continue-on-error: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  access-token-expiration: 900000        # 15 minutes in ms
+  refresh-token-expiration: 604800000    # 7 days in ms
+  password-reset-expiration: 3600000     # 1 hour in ms
+
+# Application custom properties
+app:
+  name: Glowup
+  version: 1.0.0
+  frontend-url: http://localhost:5173
+  cors:
+    allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:4200
+  wallet:
+    default-currency: VND
+    topup-min-amount: 10000
+    withdraw-min-amount: 50000
+    withdraw-fee: 5000
+    topup-expiry-minutes: 30
+    qr:
+      bank-name: Techcombank
+      account-name: GLOWUP SERVICE
+      account-number: 123456789
+      transfer-prefix: VQR-GLOWUP-03
+  payment:
+    vnpay:
+      tmn-code: ${VNPAY_TMN_CODE:}
+      secret-key: ${VNPAY_SECRET_KEY:}
+      pay-url: ${VNPAY_PAY_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+      return-url: ${VNPAY_RETURN_URL:http://localhost:3000/wallet/topup-result}
+      ip-address: ${VNPAY_IP_ADDRESS:127.0.0.1}
+  upload:
+    base-dir: ${UPLOAD_BASE_DIR:uploads}
+    public-url: ${UPLOAD_PUBLIC_URL:/uploads}
+
+logging:
+  level:
+    com.example.becommerce: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG

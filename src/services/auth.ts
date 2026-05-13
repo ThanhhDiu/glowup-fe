@@ -43,7 +43,6 @@ export const registerUser = async (userData: RegisterUserData, setSuccessMessage
 export interface LoginUserData {
   identifier: string
   password: string
-  role: 'customer' | 'technician'
 }
 
 export interface User {
@@ -67,6 +66,17 @@ export interface LoginResponse {
   }
 }
 
+export interface RefreshTokenResponse {
+  success: boolean
+  data: {
+    accessToken: string
+  }
+}
+
+type FetchWithAuthOptions = RequestInit & {
+  skipAuth?: boolean
+}
+
 export const loginUser = async (
   userData: LoginUserData
 ): Promise<LoginResponse> => {
@@ -78,7 +88,6 @@ export const loginUser = async (
     body: JSON.stringify({
       identifier: userData.identifier,
       password: userData.password,
-      role: userData.role,
     }),
   })
 
@@ -92,6 +101,74 @@ export const loginUser = async (
     localStorage.setItem('accessToken',  accessToken )
     localStorage.setItem('refreshToken', refreshToken )
   return data
+}
+
+export const refreshAccessToken = async (): Promise<string | null> => {
+  const refreshToken = localStorage.getItem('refreshToken')
+
+  if (!refreshToken) {
+    return null
+  }
+
+  const response = await fetch(`${API_URL}/auth/refresh-token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ refreshToken }),
+  })
+
+  const data: RefreshTokenResponse = await response.json()
+
+  if (!response.ok) {
+    throw new Error('Làm mới token thất bại')
+  }
+
+  localStorage.setItem('accessToken', data.data.accessToken)
+  return data.data.accessToken
+}
+
+export const fetchWithAuth = async (
+  input: RequestInfo | URL,
+  init: FetchWithAuthOptions = {},
+  retryOnUnauthorized: boolean = true
+): Promise<Response> => {
+  const { skipAuth, headers, ...rest } = init
+  const nextHeaders = new Headers(headers || undefined)
+
+  if (!nextHeaders.has('Content-Type')) {
+    nextHeaders.set('Content-Type', 'application/json')
+  }
+
+  if (!skipAuth) {
+    const accessToken = getAccessToken()
+    if (accessToken) {
+      nextHeaders.set('Authorization', `Bearer ${accessToken}`)
+    }
+  }
+
+  const response = await fetch(input, {
+    ...rest,
+    headers: nextHeaders,
+  })
+
+  if (response.status !== 401 || !retryOnUnauthorized || skipAuth) {
+    return response
+  }
+
+  const refreshedAccessToken = await refreshAccessToken()
+  if (!refreshedAccessToken) {
+    logoutUser()
+    return response
+  }
+
+  const retryHeaders = new Headers(nextHeaders)
+  retryHeaders.set('Authorization', `Bearer ${refreshedAccessToken}`)
+
+  return fetch(input, {
+    ...rest,
+    headers: retryHeaders,
+  })
 }
 
 export const logoutUser = () => {
@@ -109,5 +186,9 @@ export const getAccessToken = (): string | null => {
         return null
     }
   return localStorage.getItem('accessToken')
+}
+
+export const getRefreshToken = (): string | null => {
+  return localStorage.getItem('refreshToken')
 }
 
