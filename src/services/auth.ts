@@ -43,7 +43,6 @@ export const registerUser = async (userData: RegisterUserData, setSuccessMessage
 export interface LoginUserData {
   identifier: string
   password: string
-  role: 'customer' | 'technician'
 }
 
 export interface User {
@@ -78,7 +77,6 @@ export const loginUser = async (
     body: JSON.stringify({
       identifier: userData.identifier,
       password: userData.password,
-      role: userData.role,
     }),
   })
 

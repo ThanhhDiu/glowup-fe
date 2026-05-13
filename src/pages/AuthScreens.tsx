@@ -336,7 +336,6 @@ function loginSideItems(): InfoItem[] {
 
 export function LoginPage() {
   const navigate = useNavigate()
-  const [accountType, setAccountType] = useState<AccountType>('customer')
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(true)
@@ -376,13 +375,12 @@ export function LoginPage() {
     try {
       await loginUser({
         identifier: identifier,
-        password: password,
-        role: accountType,
+        password: password
       })
       window.setTimeout(() => {
         setIsSubmitting(false)
         setSuccessMessage(
-          `Đăng nhập thành công với vai trò ${accountType === 'customer' ? 'Người dùng' : 'Thợ'}${rememberMe ? ' và đã ghi nhớ phiên đăng nhập.' : '.'}`,
+          `Đăng nhập thành công và đã ghi nhớ phiên đăng nhập.' : '.'}`,
         )
         navigate('/')
       }, 1100)
@@ -412,7 +410,6 @@ export function LoginPage() {
         {successMessage ? <StatusBanner type="success" title="Hoàn tất" description={successMessage} /> : null}
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
-          <ToggleGroup value={accountType} onChange={setAccountType} />
 
           <TextField
             name="identifier"
