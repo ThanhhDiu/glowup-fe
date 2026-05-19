@@ -236,3 +236,157 @@ WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99300');
 --   SELECT code, title FROM categories ORDER BY code;
 --   SELECT code, status FROM orders ORDER BY code;
 -- =====================================================================
+
+-- ---------------------------------------------------------------------
+-- ADDITIONAL SEED: bulk users, categories and 30 orders for dashboard demo
+-- Idempotent inserts (ON CONFLICT DO NOTHING)
+-- ---------------------------------------------------------------------
+
+-- 1) Bulk technicians (100)
+INSERT INTO users (code, full_name, email, phone, password, role, status, district, address, bio, avatar, deleted, created_at, updated_at)
+SELECT 'USR-T-' || LPAD(s::text,3,'0') AS code,
+       'Kỹ thuật viên ' || s AS full_name,
+       'tech' || s || '@example.com' AS email,
+       ('0900' || LPAD(s::text,4,'0')) AS phone,
+       '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy' AS password,
+       'TECHNICIAN' AS role,
+       'ACTIVE' AS status,
+       'Quận 1' AS district,
+       ('Địa chỉ kỹ thuật viên ' || s) AS address,
+       NULL AS bio,
+       ('https://i.pravatar.cc/150?img=' || ((s % 70) + 1)) AS avatar,
+       FALSE, NOW(), NOW()
+FROM generate_series(1,100) s
+ON CONFLICT (code) DO NOTHING;
+
+-- 2) Bulk customers (300)
+INSERT INTO users (code, full_name, email, phone, password, role, status, district, address, bio, avatar, deleted, created_at, updated_at)
+SELECT 'USR-C-' || LPAD(s::text,3,'0') AS code,
+       'Khách hàng ' || s AS full_name,
+       'cust' || s || '@example.com' AS email,
+       ('0910' || LPAD(s::text,4,'0')) AS phone,
+       '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy' AS password,
+       'CUSTOMER' AS role,
+       'ACTIVE' AS status,
+       'Quận 7' AS district,
+       ('Địa chỉ khách hàng ' || s) AS address,
+       NULL AS bio,
+       ('https://i.pravatar.cc/150?img=' || ((s % 70) + 10)) AS avatar,
+       FALSE, NOW(), NOW()
+FROM generate_series(1,300) s
+ON CONFLICT (code) DO NOTHING;
+
+-- 3) Ensure required categories exist (Sửa điện, Sửa nước, Vệ sinh máy lạnh)
+INSERT INTO categories (code, title, description, icon_url, priority, status, deleted, created_at, updated_at)
+VALUES
+  ('CAT-SD', 'Sửa điện', 'Sửa chữa, đấu nối điện dân dụng, thay aptomat, sửa ổ cắm, bóng đèn', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW()),
+  ('CAT-SW', 'Sửa nước', 'Sửa ống nước, thay vòi, xử lý rò rỉ, thông tắc', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW()),
+  ('CAT-VML', 'Vệ sinh máy lạnh', 'Vệ sinh, bảo trì, nạp gas và kiểm tra hiệu suất máy lạnh', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW())
+ON CONFLICT (code) DO NOTHING;
+
+-- 4) 30 Orders with varied completed_at across 2024-2026
+-- A) Explicit important timestamps to cover the required cases
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-001', 'Sửa điện tại nhà', 'Sửa điện', 'Hệ thống điện gia đình', 'Sửa aptomat và ổ cắm', 'Hẻm 123, Quận 1',
+       TIMESTAMP '2026-01-09 09:00:00', TIMESTAMP '2026-01-09 09:10:00', TIMESTAMP '2026-01-10 11:00:00',
+       300000, 450000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-01-08', TIMESTAMP '2026-01-10'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-001');
+
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-002', 'Sửa nước tại nhà', 'Sửa nước', 'Đường ống gia đình', 'Sửa rò rỉ ống nước', 'Số 5, Quận 3',
+       TIMESTAMP '2026-02-19 10:00:00', TIMESTAMP '2026-02-19 10:10:00', TIMESTAMP '2026-02-20 12:30:00',
+        250000, 350000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-02-18', TIMESTAMP '2026-02-20'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-002');
+
+-- March 2026 specific days
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-003', 'Vệ sinh máy lạnh', 'Vệ sinh máy lạnh', 'Điều hòa Panasonic', 'Vệ sinh + kiểm tra gas', 'Số 21, Quận 7',
+       TIMESTAMP '2026-03-05 08:30:00', TIMESTAMP '2026-03-05 08:45:00', TIMESTAMP '2026-03-05 11:00:00',
+       400000, 600000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-03-04', TIMESTAMP '2026-03-05'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-003');
+
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-004', 'Vệ sinh máy lạnh - lần 2', 'Vệ sinh máy lạnh', 'Điều hòa LG', 'Vệ sinh + thay keo', 'Số 99, Quận Phú Nhuận',
+       TIMESTAMP '2026-03-14 14:00:00', TIMESTAMP '2026-03-14 14:15:00', TIMESTAMP '2026-03-15 16:30:00',
+        350000, 550000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-03-13', TIMESTAMP '2026-03-15'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-004');
+
+-- Q2/2025 examples
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-005', 'Sửa điện lớn', 'Sửa điện', 'Bảng điện gia đình', 'Thay aptomat, đấu lại bóng đèn', 'Khu A, Quận 2',
+       TIMESTAMP '2025-04-14 09:00:00', TIMESTAMP '2025-04-14 09:30:00', TIMESTAMP '2025-04-15 12:00:00',
+       500000, 1200000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-04-10', TIMESTAMP '2025-04-15'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-005');
+
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-006', 'Sửa rò rỉ nước', 'Sửa nước', 'Hệ thống ống', 'Xử lý rò rỉ, thay gioăng', 'Khu B, Quận 5',
+       TIMESTAMP '2025-05-04 10:00:00', TIMESTAMP '2025-05-04 10:20:00', TIMESTAMP '2025-05-05 13:00:00',
+        220000, 280000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-05-01', TIMESTAMP '2025-05-05'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-006');
+
+-- Additional historical orders (2025, 2024)
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-007', 'Sửa nhỏ', 'Sửa điện', 'Thiết bị điện nhỏ', 'Sửa ổ cắm', 'Quận Tân Bình',
+       TIMESTAMP '2025-03-09 08:00:00', TIMESTAMP '2025-03-09 08:15:00', TIMESTAMP '2025-03-10 09:30:00',
+        200000, 300000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-03-01', TIMESTAMP '2025-03-10'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-007');
+
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-008', 'Vệ sinh máy lạnh cũ', 'Vệ sinh máy lạnh', 'Điều hòa cũ', 'Vệ sinh sâu, kiểm tra gas', 'Quận 4',
+       TIMESTAMP '2024-07-20 09:00:00', TIMESTAMP '2024-07-20 09:20:00', TIMESTAMP '2024-07-22 11:00:00',
+       300000, 450000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2024-07-19', TIMESTAMP '2024-07-22'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-008');
+
+-- B) Generate remaining orders to reach 30 total (we already inserted 8 explicit above)
+WITH seq AS (
+  SELECT generate_series(1,22) AS s
+), gen AS (
+  SELECT
+    'GU-SEED-G' || LPAD(s::text,3,'0') AS code,
+    (ARRAY['Sửa điện','Sửa nước','Vệ sinh máy lạnh'])[1 + (floor(random()*3))] AS service_category,
+    now() - ((random() * extract(epoch FROM (now() - timestamp '2024-01-01')) ) * interval '1 second') AS completed_at,
+    s
+  FROM seq
+)
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT g.code,
+       g.service_category || ' (dịch vụ thử nghiệm) ',
+       g.service_category,
+       'Thiết bị mẫu',
+       'Mô tả demo cho đơn',
+       'Địa chỉ demo ' || g.s,
+       CASE WHEN g.s <= 10 THEN g.completed_at - interval '1 day' ELSE g.completed_at - interval '2 hours' END AS scheduled_at,
+       CASE WHEN g.s <= 10 THEN g.completed_at - interval '23 hours' ELSE g.completed_at - interval '1 hour' END AS started_at,
+       g.completed_at,
+       (floor(random() * (2000000 - 200000) + 200000))::bigint AS estimated_price,
+       (floor(random() * (2000000 - 200000) + 200000))::bigint AS final_price,
+        CASE WHEN random() < 0.5 THEN 'MOMO' ELSE 'BANK_TRANSFER' END,
+       0,
+       'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1),
+       FALSE,
+       g.completed_at - interval '1 day',
+       g.completed_at
+FROM gen g
+WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.code = g.code);
+
+-- Verify: at least 30 orders from seed
+-- SELECT count(*) FROM orders WHERE code LIKE 'GU-SEED-%';
+
