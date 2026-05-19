@@ -324,7 +324,7 @@ function loginSideItems(): InfoItem[] {
     },
     {
       title: 'Bảo mật rõ ràng',
-      description: 'Quy trình xác thực tách bạch cho người dùng và thợ.',
+      description: 'Quy trình xác thực thống nhất, phù hợp cho mọi tài khoản.',
       icon: <ShieldCheck size={16} />,
     },
     {
@@ -415,7 +415,7 @@ export function LoginPage() {
     <AuthShell
       badge="Giao diện xác thực tối giản"
       title="Đăng nhập nhanh, rõ ràng và an toàn"
-      description="Một trải nghiệm auth hiện đại cho người dùng và thợ, tối ưu cho desktop lẫn mobile."
+      description="Một trải nghiệm auth hiện đại, tối ưu cho desktop lẫn mobile."
       accentTitle="Trải nghiệm giống SaaS hiện đại"
       accentDescription="Card trung tâm, trạng thái rõ ràng, icon trực quan và luồng đổi mật khẩu liền mạch."
       items={loginSideItems()}
@@ -431,8 +431,6 @@ export function LoginPage() {
         {successMessage ? <StatusBanner type="success" title="Hoàn tất" description={successMessage} /> : null}
 
         <form className="auth-form" onSubmit={onSubmit} noValidate>
-          <ToggleGroup value={accountType} onChange={setAccountType} />
-
           <TextField
             name="identifier"
             label="Email hoặc số điện thoại"
