@@ -15,13 +15,13 @@ import com.example.becommerce.dto.response.admin.WithdrawApproveResponse;
 import com.example.becommerce.dto.response.admin.WithdrawRequestsResponse;
 
 public interface AdminService {
-    AdminStatsResponse getStats();
+    AdminStatsResponse getStats(String mode, Integer year, Integer quarter, Integer month);
 
-    RevenueStatsResponse getRevenueStats(String range);
+    RevenueStatsResponse getRevenueStats(String mode, Integer year, Integer quarter, Integer month);
 
-    ServiceDistributionResponse getServiceDistribution();
+    ServiceDistributionResponse getServiceDistribution(String mode, Integer year, Integer quarter, Integer month);
 
-    RecentOrdersResponse getRecentOrders(int limit);
+    RecentOrdersResponse getRecentOrders(String mode, Integer year, Integer quarter, Integer month, int limit);
 
     AdminTransactionsResponse getTransactions(String type, String date, int page, int limit);
 
@@ -36,4 +36,6 @@ public interface AdminService {
     AdminSettingsRequest getSettings();
 
     AdminSettingsSavedResponse updateSettings(AdminSettingsRequest request);
+
+    AdminStatsResponse getStats();
 }

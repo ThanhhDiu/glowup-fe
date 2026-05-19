@@ -43,6 +43,10 @@ public class WalletTransaction {
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private TransactionType type;

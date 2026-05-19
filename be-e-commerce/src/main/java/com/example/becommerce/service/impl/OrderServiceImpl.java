@@ -19,20 +19,27 @@ import com.example.becommerce.entity.OrderPriceAdjustment;
 import com.example.becommerce.entity.OrderPriceAdjustmentPart;
 import com.example.becommerce.entity.OrderStatusHistory;
 import com.example.becommerce.entity.User;
+import com.example.becommerce.entity.Wallet;
+import com.example.becommerce.entity.WalletTransaction;
 import com.example.becommerce.entity.enums.OrderActor;
 import com.example.becommerce.entity.enums.OrderStatus;
 import com.example.becommerce.entity.enums.PriceAdjustmentStatus;
 import com.example.becommerce.entity.enums.Role;
+import com.example.becommerce.entity.enums.TransactionStatus;
+import com.example.becommerce.entity.enums.TransactionType;
 import com.example.becommerce.exception.AppException;
 import com.example.becommerce.repository.OrderPriceAdjustmentRepository;
 import com.example.becommerce.repository.OrderRepository;
 import com.example.becommerce.repository.UserRepository;
+import com.example.becommerce.repository.WalletRepository;
+import com.example.becommerce.repository.WalletTransactionRepository;
 import com.example.becommerce.entity.enums.NotificationType;
 import com.example.becommerce.service.NotificationService;
 import com.example.becommerce.service.OrderService;
 import com.example.becommerce.service.WsEventPublisher;
 import com.example.becommerce.utils.OrderCodeGenerator;
 import com.example.becommerce.utils.OrderSpecification;
+import com.example.becommerce.utils.TransactionCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,6 +52,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +79,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository                 orderRepository;
     private final OrderPriceAdjustmentRepository  adjustmentRepository;
     private final UserRepository                  userRepository;
+    private final WalletRepository                walletRepository;
+    private final WalletTransactionRepository     walletTransactionRepository;
     private final OrderMapper                     orderMapper;
     private final OrderCodeGenerator              codeGenerator;
+    private final TransactionCodeGenerator        transactionCodeGenerator;
     private final WsEventPublisher                eventPublisher;
     private final NotificationService             notificationService;
 
@@ -597,5 +608,52 @@ public class OrderServiceImpl implements OrderService {
             log.warn("Failed to create notification for {} on order {}: {}",
                     recipient.getCode(), orderCode, ex.getMessage());
         }
+    }
+
+    // ===============================================================
+    // Payment flow
+    // ===============================================================
+
+    @Override
+    @Transactional
+    public void createPaymentTransactionForOrder(Long orderId) {
+        // 1. Find order by id and check status = COMPLETED
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> AppException.notFound("Đơn hàng không tìm thấy"));
+
+        if (order.getStatus() != OrderStatus.COMPLETED) {
+            throw AppException.badRequest(ErrorCode.INVALID_ORDER_STATUS_TRANSITION,
+                    "Đơn phải ở trạng thái hoàn thành mới có thể thanh toán");
+        }
+
+        // 2. Get customer wallet
+        Wallet wallet = order.getCustomer().getWallet();
+        if (wallet == null) {
+            throw AppException.badRequest(ErrorCode.BAD_REQUEST, "Không tìm thấy ví khách hàng");
+        }
+
+        // 3. Create WalletTransaction with type=PAYMENT, status=SUCCESS
+        BigDecimal finalPrice = BigDecimal.valueOf(order.getFinalPrice() != null ? order.getFinalPrice() : 0L);
+        WalletTransaction transaction = WalletTransaction.builder()
+                .transactionCode(transactionCodeGenerator.generateTransactionCode(TransactionType.PAYMENT))
+                .wallet(wallet)
+                .type(TransactionType.PAYMENT)
+                .category("PAYMENT")
+                .title("Thanh toán đơn hàng " + order.getCode())
+                .amount(finalPrice)
+                .fee(BigDecimal.ZERO)
+                .netAmount(finalPrice)
+                .status(TransactionStatus.SUCCESS)
+                .order(order)
+                .processedAt(LocalDateTime.now())
+                .build();
+
+        walletTransactionRepository.save(transaction);
+
+        // 4. Update wallet balance
+        wallet.setBalance(wallet.getBalance().add(transaction.getNetAmount()));
+        walletRepository.save(wallet);
+
+        log.info("Payment transaction created for order {} with amount {}", order.getCode(), finalPrice);
     }
 }

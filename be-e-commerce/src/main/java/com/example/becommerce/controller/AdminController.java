@@ -40,24 +40,41 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @GetMapping("/stats")
-    public ResponseEntity<ApiResponse<AdminStatsResponse>> getStats() {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getStats()));
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<ApiResponse<AdminStatsResponse>> getStats(
+            @RequestParam(defaultValue = "month") String mode,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer quarter,
+            @RequestParam(required = false) Integer month) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getStats(mode, year, quarter, month)));
     }
 
-    @GetMapping("/stats/revenue")
-    public ResponseEntity<ApiResponse<RevenueStatsResponse>> getRevenueStats(@RequestParam(defaultValue = "7days") String range) {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getRevenueStats(range)));
+    @GetMapping("/dashboard/revenue")
+    public ResponseEntity<ApiResponse<RevenueStatsResponse>> getRevenueStats(
+            @RequestParam(defaultValue = "month") String mode,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer quarter,
+            @RequestParam(required = false) Integer month) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getRevenueStats(mode, year, quarter, month)));
     }
 
     @GetMapping("/stats/service-distribution")
-    public ResponseEntity<ApiResponse<ServiceDistributionResponse>> getServiceDistribution() {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getServiceDistribution()));
+    public ResponseEntity<ApiResponse<ServiceDistributionResponse>> getServiceDistribution(
+            @RequestParam(defaultValue = "month") String mode,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer quarter,
+            @RequestParam(required = false) Integer month) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getServiceDistribution(mode, year, quarter, month)));
     }
 
-    @GetMapping("/orders/recent")
-    public ResponseEntity<ApiResponse<RecentOrdersResponse>> getRecentOrders(@RequestParam(defaultValue = "5") @Min(1) int limit) {
-        return ResponseEntity.ok(ApiResponse.success(adminService.getRecentOrders(limit)));
+    @GetMapping("/dashboard/recent-orders")
+    public ResponseEntity<ApiResponse<RecentOrdersResponse>> getRecentOrders(
+            @RequestParam(defaultValue = "month") String mode,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer quarter,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(defaultValue = "5") @Min(1) int limit) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getRecentOrders(mode, year, quarter, month, limit)));
     }
 
     @GetMapping("/transactions")
