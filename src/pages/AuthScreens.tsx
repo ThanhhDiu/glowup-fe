@@ -373,16 +373,18 @@ export function LoginPage() {
     setSuccessMessage('')
 
     try {
-      await loginUser({
+      const loginResponse = await loginUser({
         identifier: identifier,
         password: password
       })
+      const redirectPath = loginResponse.data.user.role.toLowerCase() === 'admin'
+        ? '/admin/dashboard'
+        : '/'
+
       window.setTimeout(() => {
         setIsSubmitting(false)
-        setSuccessMessage(
-          `Đăng nhập thành công và đã ghi nhớ phiên đăng nhập.' : '.'}`,
-        )
-        navigate('/')
+        setSuccessMessage('Đăng nhập thành công.')
+        navigate(redirectPath)
       }, 1100)
 
     } catch (error) {
