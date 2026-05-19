@@ -46,4 +46,27 @@ public interface WalletTransactionRepository extends JpaRepository<WalletTransac
             @Param("to") LocalDateTime to);
 
     boolean existsByTransactionCode(String transactionCode);
+
+    // Revenue analytics queries (group by month/day from COMPLETED orders)
+    @Query(value = "SELECT to_char(o.completed_at, 'YYYY-MM') as month, COALESCE(SUM(t.net_amount), 0) as total " +
+            "FROM wallet_transactions t " +
+            "JOIN orders o ON t.order_id = o.id " +
+            "WHERE t.status = 'SUCCESS' AND t.type = 'PAYMENT' AND o.status = 'COMPLETED' " +
+            "AND o.completed_at >= :from AND o.completed_at < :to " +
+            "GROUP BY to_char(o.completed_at, 'YYYY-MM') " +
+            "ORDER BY month ASC", nativeQuery = true)
+    List<Object[]> sumRevenueGroupByMonth(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to);
+
+    @Query(value = "SELECT to_char(o.completed_at, 'YYYY-MM-DD') as day, COALESCE(SUM(t.net_amount), 0) as total " +
+            "FROM wallet_transactions t " +
+            "JOIN orders o ON t.order_id = o.id " +
+            "WHERE t.status = 'SUCCESS' AND t.type = 'PAYMENT' AND o.status = 'COMPLETED' " +
+            "AND o.completed_at >= :from AND o.completed_at < :to " +
+            "GROUP BY to_char(o.completed_at, 'YYYY-MM-DD') " +
+            "ORDER BY day ASC", nativeQuery = true)
+    List<Object[]> sumRevenueGroupByDay(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to);
 }

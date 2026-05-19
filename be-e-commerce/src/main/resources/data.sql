@@ -236,462 +236,157 @@ WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99300');
 --   SELECT code, title FROM categories ORDER BY code;
 --   SELECT code, status FROM orders ORDER BY code;
 -- =====================================================================
--- =====================================================================
--- EXTRA DEMO DATA — nhiều data hơn để test list/filter/pagination
--- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 1. EXTRA USERS: thêm 6 customers + 5 technicians
+-- ADDITIONAL SEED: bulk users, categories and 30 orders for dashboard demo
+-- Idempotent inserts (ON CONFLICT DO NOTHING)
 -- ---------------------------------------------------------------------
 
+-- 1) Bulk technicians (100)
 INSERT INTO users (code, full_name, email, phone, password, role, status, district, address, bio, avatar, deleted, created_at, updated_at)
-VALUES
-    ('USR-006', 'Lê Minh Anh', 'minhanh@email.com', '0910000006',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'Quận 10', '88 Sư Vạn Hạnh, Quận 10', NULL,
-     'https://i.pravatar.cc/150?img=21', FALSE, NOW(), NOW()),
+SELECT 'USR-T-' || LPAD(s::text,3,'0') AS code,
+       'Kỹ thuật viên ' || s AS full_name,
+       'tech' || s || '@example.com' AS email,
+       ('0900' || LPAD(s::text,4,'0')) AS phone,
+       '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy' AS password,
+       'TECHNICIAN' AS role,
+       'ACTIVE' AS status,
+       'Quận 1' AS district,
+       ('Địa chỉ kỹ thuật viên ' || s) AS address,
+       NULL AS bio,
+       ('https://i.pravatar.cc/150?img=' || ((s % 70) + 1)) AS avatar,
+       FALSE, NOW(), NOW()
+FROM generate_series(1,100) s
+ON CONFLICT (code) DO NOTHING;
 
-    ('USR-007', 'Ngô Bảo Châu', 'baochau@email.com', '0910000007',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'Quận Tân Bình', '19 Cộng Hòa, Tân Bình', NULL,
-     'https://i.pravatar.cc/150?img=22', FALSE, NOW(), NOW()),
+-- 2) Bulk customers (300)
+INSERT INTO users (code, full_name, email, phone, password, role, status, district, address, bio, avatar, deleted, created_at, updated_at)
+SELECT 'USR-C-' || LPAD(s::text,3,'0') AS code,
+       'Khách hàng ' || s AS full_name,
+       'cust' || s || '@example.com' AS email,
+       ('0910' || LPAD(s::text,4,'0')) AS phone,
+       '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy' AS password,
+       'CUSTOMER' AS role,
+       'ACTIVE' AS status,
+       'Quận 7' AS district,
+       ('Địa chỉ khách hàng ' || s) AS address,
+       NULL AS bio,
+       ('https://i.pravatar.cc/150?img=' || ((s % 70) + 10)) AS avatar,
+       FALSE, NOW(), NOW()
+FROM generate_series(1,300) s
+ON CONFLICT (code) DO NOTHING;
 
-    ('USR-008', 'Vũ Hải Nam', 'hainam@email.com', '0910000008',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'Quận Gò Vấp', '41 Phan Văn Trị, Gò Vấp', NULL,
-     'https://i.pravatar.cc/150?img=23', FALSE, NOW(), NOW()),
-
-    ('USR-009', 'Đặng Thu Hà', 'thuha@email.com', '0910000009',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'TP Thủ Đức', '12 Võ Văn Ngân, Thủ Đức', NULL,
-     'https://i.pravatar.cc/150?img=24', FALSE, NOW(), NOW()),
-
-    ('USR-010', 'Bùi Quang Huy', 'quanghuy@email.com', '0910000010',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'Quận Bình Tân', '77 Tên Lửa, Bình Tân', NULL,
-     'https://i.pravatar.cc/150?img=25', FALSE, NOW(), NOW()),
-
-    ('USR-011', 'Hoàng Yến Nhi', 'yennhi@email.com', '0910000011',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'CUSTOMER', 'ACTIVE', 'Quận 5', '36 Trần Hưng Đạo, Quận 5', NULL,
-     'https://i.pravatar.cc/150?img=26', FALSE, NOW(), NOW()),
-
-    ('USR-012', 'Lê Công Thành', 'thanh@glowup.pro', '0987000012',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'TECHNICIAN', 'ACTIVE', 'Quận 10', '10 Lý Thường Kiệt, Quận 10',
-     'Chuyên sửa điện dân dụng, lắp đặt ổ cắm, đèn và CB.',
-     'https://i.pravatar.cc/150?img=40', FALSE, NOW(), NOW()),
-
-    ('USR-013', 'Phạm Đức Long', 'long@glowup.pro', '0987000013',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'TECHNICIAN', 'ACTIVE', 'Quận Tân Phú', '55 Lũy Bán Bích, Tân Phú',
-     'Kỹ thuật viên sửa máy nước nóng, máy lọc nước, thiết bị nhà bếp.',
-     'https://i.pravatar.cc/150?img=41', FALSE, NOW(), NOW()),
-
-    ('USR-014', 'Nguyễn Hoàng Phúc', 'phuc@glowup.pro', '0987000014',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'TECHNICIAN', 'ACTIVE', 'TP Thủ Đức', '90 Kha Vạn Cân, Thủ Đức',
-     'Chuyên bảo trì tủ lạnh, thay block, xử lý rò rỉ gas.',
-     'https://i.pravatar.cc/150?img=42', FALSE, NOW(), NOW()),
-
-    ('USR-015', 'Trương Quốc Việt', 'viet@glowup.pro', '0987000015',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'TECHNICIAN', 'ACTIVE', 'Quận 8', '28 Phạm Thế Hiển, Quận 8',
-     'Chuyên sửa máy giặt, máy sấy, vệ sinh lồng giặt.',
-     'https://i.pravatar.cc/150?img=43', FALSE, NOW(), NOW()),
-
-    ('USR-016', 'Mai Tấn Lộc', 'loc@glowup.pro', '0987000016',
-     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
-     'TECHNICIAN', 'INACTIVE', 'Quận 6', '14 Hậu Giang, Quận 6',
-     'Tạm ngưng nhận đơn trong tuần này.',
-     'https://i.pravatar.cc/150?img=44', FALSE, NOW(), NOW())
-    ON CONFLICT (code) DO NOTHING;
-
--- ---------------------------------------------------------------------
--- 2. EXTRA CATEGORIES
--- ---------------------------------------------------------------------
-
+-- 3) Ensure required categories exist (Sửa điện, Sửa nước, Vệ sinh máy lạnh)
 INSERT INTO categories (code, title, description, icon_url, priority, status, deleted, created_at, updated_at)
 VALUES
-    ('CAT-006', 'Điện dân dụng', 'Sửa chập điện, CB, ổ cắm, đèn, quạt trần.', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW()),
-    ('CAT-007', 'Máy lọc nước', 'Thay lõi, sửa rò nước, vệ sinh máy lọc nước.', NULL, 'NORMAL', 'ACTIVE', FALSE, NOW(), NOW()),
-    ('CAT-008', 'Bếp từ', 'Sửa bếp từ không nóng, báo lỗi, chập mạch.', NULL, 'NORMAL', 'ACTIVE', FALSE, NOW(), NOW()),
-    ('CAT-009', 'Máy sấy', 'Sửa máy sấy không nóng, không quay, kêu lớn.', NULL, 'LOW', 'ACTIVE', FALSE, NOW(), NOW()),
-    ('CAT-010', 'Quạt điện', 'Sửa quạt đứng, quạt treo tường, quạt trần.', NULL, 'LOW', 'ACTIVE', FALSE, NOW(), NOW())
-    ON CONFLICT (code) DO NOTHING;
+  ('CAT-SD', 'Sửa điện', 'Sửa chữa, đấu nối điện dân dụng, thay aptomat, sửa ổ cắm, bóng đèn', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW()),
+  ('CAT-SW', 'Sửa nước', 'Sửa ống nước, thay vòi, xử lý rò rỉ, thông tắc', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW()),
+  ('CAT-VML', 'Vệ sinh máy lạnh', 'Vệ sinh, bảo trì, nạp gas và kiểm tra hiệu suất máy lạnh', NULL, 'HIGH', 'ACTIVE', FALSE, NOW(), NOW())
+ON CONFLICT (code) DO NOTHING;
 
--- ---------------------------------------------------------------------
--- 3. EXTRA TECHNICIAN PROFILES
--- ---------------------------------------------------------------------
+-- 4) 30 Orders with varied completed_at across 2024-2026
+-- A) Explicit important timestamps to cover the required cases
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-001', 'Sửa điện tại nhà', 'Sửa điện', 'Hệ thống điện gia đình', 'Sửa aptomat và ổ cắm', 'Hẻm 123, Quận 1',
+       TIMESTAMP '2026-01-09 09:00:00', TIMESTAMP '2026-01-09 09:10:00', TIMESTAMP '2026-01-10 11:00:00',
+       300000, 450000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-01-08', TIMESTAMP '2026-01-10'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-001');
 
-INSERT INTO technician_profiles (user_id, cover_image, service_category, price_per_hour, is_available,
-                                 type, title_badge, years_experience, verification_status,
-                                 last_active_at, joined_at, updated_at)
-SELECT u.id, 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e',
-       'Điện dân dụng', 200000, TRUE, 'NORMAL', NULL, 6, 'APPROVED',
-       NOW(), NOW() - INTERVAL '18 months', NOW()
-FROM users u WHERE u.code = 'USR-012'
-ON CONFLICT (user_id) DO NOTHING;
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-002', 'Sửa nước tại nhà', 'Sửa nước', 'Đường ống gia đình', 'Sửa rò rỉ ống nước', 'Số 5, Quận 3',
+       TIMESTAMP '2026-02-19 10:00:00', TIMESTAMP '2026-02-19 10:10:00', TIMESTAMP '2026-02-20 12:30:00',
+        250000, 350000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-02-18', TIMESTAMP '2026-02-20'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-002');
 
-INSERT INTO technician_profiles (user_id, cover_image, service_category, price_per_hour, is_available,
-                                 type, title_badge, years_experience, verification_status,
-                                 last_active_at, joined_at, updated_at)
-SELECT u.id, 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789',
-       'Máy nước nóng', 220000, TRUE, 'NORMAL', NULL, 4, 'APPROVED',
-       NOW(), NOW() - INTERVAL '10 months', NOW()
-FROM users u WHERE u.code = 'USR-013'
-ON CONFLICT (user_id) DO NOTHING;
+-- March 2026 specific days
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-003', 'Vệ sinh máy lạnh', 'Vệ sinh máy lạnh', 'Điều hòa Panasonic', 'Vệ sinh + kiểm tra gas', 'Số 21, Quận 7',
+       TIMESTAMP '2026-03-05 08:30:00', TIMESTAMP '2026-03-05 08:45:00', TIMESTAMP '2026-03-05 11:00:00',
+       400000, 600000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-03-04', TIMESTAMP '2026-03-05'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-003');
 
-INSERT INTO technician_profiles (user_id, cover_image, service_category, price_per_hour, is_available,
-                                 type, title_badge, years_experience, verification_status,
-                                 last_active_at, joined_at, updated_at)
-SELECT u.id, 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1',
-       'Tủ lạnh', 280000, TRUE, 'PREMIUM', 'THỢ GIỎI KHU VỰC', 9, 'APPROVED',
-       NOW(), NOW() - INTERVAL '3 years', NOW()
-FROM users u WHERE u.code = 'USR-014'
-ON CONFLICT (user_id) DO NOTHING;
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-004', 'Vệ sinh máy lạnh - lần 2', 'Vệ sinh máy lạnh', 'Điều hòa LG', 'Vệ sinh + thay keo', 'Số 99, Quận Phú Nhuận',
+       TIMESTAMP '2026-03-14 14:00:00', TIMESTAMP '2026-03-14 14:15:00', TIMESTAMP '2026-03-15 16:30:00',
+        350000, 550000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2026-03-13', TIMESTAMP '2026-03-15'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-004');
 
-INSERT INTO technician_profiles (user_id, cover_image, service_category, price_per_hour, is_available,
-                                 type, title_badge, years_experience, verification_status,
-                                 last_active_at, joined_at, updated_at)
-SELECT u.id, 'https://images.unsplash.com/photo-1581578731548-c64695cc6952',
-       'Máy giặt', 190000, TRUE, 'NORMAL', NULL, 5, 'APPROVED',
-       NOW(), NOW() - INTERVAL '14 months', NOW()
-FROM users u WHERE u.code = 'USR-015'
-ON CONFLICT (user_id) DO NOTHING;
+-- Q2/2025 examples
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-005', 'Sửa điện lớn', 'Sửa điện', 'Bảng điện gia đình', 'Thay aptomat, đấu lại bóng đèn', 'Khu A, Quận 2',
+       TIMESTAMP '2025-04-14 09:00:00', TIMESTAMP '2025-04-14 09:30:00', TIMESTAMP '2025-04-15 12:00:00',
+       500000, 1200000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-04-10', TIMESTAMP '2025-04-15'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-005');
 
-INSERT INTO technician_profiles (user_id, cover_image, service_category, price_per_hour, is_available,
-                                 type, title_badge, years_experience, verification_status,
-                                 last_active_at, joined_at, updated_at)
-SELECT u.id, 'https://images.unsplash.com/photo-1521207418485-99c705420785',
-       'Quạt điện', 150000, FALSE, 'NORMAL', NULL, 3, 'PENDING',
-       NOW() - INTERVAL '3 days', NOW() - INTERVAL '6 months', NOW()
-FROM users u WHERE u.code = 'USR-016'
-ON CONFLICT (user_id) DO NOTHING;
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-006', 'Sửa rò rỉ nước', 'Sửa nước', 'Hệ thống ống', 'Xử lý rò rỉ, thay gioăng', 'Khu B, Quận 5',
+       TIMESTAMP '2025-05-04 10:00:00', TIMESTAMP '2025-05-04 10:20:00', TIMESTAMP '2025-05-05 13:00:00',
+        220000, 280000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-05-01', TIMESTAMP '2025-05-05'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-006');
 
--- ---------------------------------------------------------------------
--- 4. EXTRA SKILLS
--- ---------------------------------------------------------------------
+-- Additional historical orders (2025, 2024)
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-007', 'Sửa nhỏ', 'Sửa điện', 'Thiết bị điện nhỏ', 'Sửa ổ cắm', 'Quận Tân Bình',
+       TIMESTAMP '2025-03-09 08:00:00', TIMESTAMP '2025-03-09 08:15:00', TIMESTAMP '2025-03-10 09:30:00',
+        200000, 300000, 'BANK_TRANSFER', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2025-03-01', TIMESTAMP '2025-03-10'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-007');
 
-INSERT INTO technician_skills (profile_id, skill)
-SELECT tp.id, s.skill
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (
-    VALUES ('Sửa chập điện'), ('Lắp CB'), ('Thay ổ cắm'), ('Đi dây điện')
-        ) AS s(skill)
-WHERE u.code = 'USR-012'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_skills ts WHERE ts.profile_id = tp.id AND ts.skill = s.skill
-);
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT 'GU-SEED-008', 'Vệ sinh máy lạnh cũ', 'Vệ sinh máy lạnh', 'Điều hòa cũ', 'Vệ sinh sâu, kiểm tra gas', 'Quận 4',
+       TIMESTAMP '2024-07-20 09:00:00', TIMESTAMP '2024-07-20 09:20:00', TIMESTAMP '2024-07-22 11:00:00',
+       300000, 450000, 'MOMO', 0, 'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1), FALSE, TIMESTAMP '2024-07-19', TIMESTAMP '2024-07-22'
+WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-SEED-008');
 
-INSERT INTO technician_skills (profile_id, skill)
-SELECT tp.id, s.skill
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (
-    VALUES ('Sửa máy nước nóng'), ('Thay lõi lọc nước'), ('Xử lý rò nước')
-        ) AS s(skill)
-WHERE u.code = 'USR-013'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_skills ts WHERE ts.profile_id = tp.id AND ts.skill = s.skill
-);
+-- B) Generate remaining orders to reach 30 total (we already inserted 8 explicit above)
+WITH seq AS (
+  SELECT generate_series(1,22) AS s
+), gen AS (
+  SELECT
+    'GU-SEED-G' || LPAD(s::text,3,'0') AS code,
+    (ARRAY['Sửa điện','Sửa nước','Vệ sinh máy lạnh'])[1 + (floor(random()*3))] AS service_category,
+    now() - ((random() * extract(epoch FROM (now() - timestamp '2024-01-01')) ) * interval '1 second') AS completed_at,
+    s
+  FROM seq
+)
+INSERT INTO orders (code, service_name, service_category, device_name, description, address, scheduled_at, started_at, completed_at, estimated_price, final_price, payment_method, warranty_months, status, customer_id, technician_id, deleted, created_at, updated_at)
+SELECT g.code,
+       g.service_category || ' (dịch vụ thử nghiệm) ',
+       g.service_category,
+       'Thiết bị mẫu',
+       'Mô tả demo cho đơn',
+       'Địa chỉ demo ' || g.s,
+       CASE WHEN g.s <= 10 THEN g.completed_at - interval '1 day' ELSE g.completed_at - interval '2 hours' END AS scheduled_at,
+       CASE WHEN g.s <= 10 THEN g.completed_at - interval '23 hours' ELSE g.completed_at - interval '1 hour' END AS started_at,
+       g.completed_at,
+       (floor(random() * (2000000 - 200000) + 200000))::bigint AS estimated_price,
+       (floor(random() * (2000000 - 200000) + 200000))::bigint AS final_price,
+        CASE WHEN random() < 0.5 THEN 'MOMO' ELSE 'BANK_TRANSFER' END,
+       0,
+       'COMPLETED',
+       (SELECT id FROM users WHERE role = 'CUSTOMER' ORDER BY random() LIMIT 1),
+       (SELECT id FROM users WHERE role = 'TECHNICIAN' ORDER BY random() LIMIT 1),
+       FALSE,
+       g.completed_at - interval '1 day',
+       g.completed_at
+FROM gen g
+WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.code = g.code);
 
-INSERT INTO technician_skills (profile_id, skill)
-SELECT tp.id, s.skill
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (
-    VALUES ('Sửa tủ lạnh'), ('Thay block'), ('Nạp gas tủ lạnh'), ('Sửa board inverter')
-        ) AS s(skill)
-WHERE u.code = 'USR-014'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_skills ts WHERE ts.profile_id = tp.id AND ts.skill = s.skill
-);
+-- Verify: at least 30 orders from seed
+-- SELECT count(*) FROM orders WHERE code LIKE 'GU-SEED-%';
 
-INSERT INTO technician_skills (profile_id, skill)
-SELECT tp.id, s.skill
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (
-    VALUES ('Sửa máy giặt'), ('Vệ sinh lồng giặt'), ('Thay motor xả'), ('Sửa máy sấy')
-        ) AS s(skill)
-WHERE u.code = 'USR-015'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_skills ts WHERE ts.profile_id = tp.id AND ts.skill = s.skill
-);
-
--- ---------------------------------------------------------------------
--- 5. EXTRA SERVICE AREAS
--- ---------------------------------------------------------------------
-
-INSERT INTO technician_service_areas (profile_id, area)
-SELECT tp.id, a.area
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (VALUES ('Quận 10'), ('Quận 11'), ('Quận Tân Bình')) AS a(area)
-WHERE u.code = 'USR-012'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_service_areas ta WHERE ta.profile_id = tp.id AND ta.area = a.area
-);
-
-INSERT INTO technician_service_areas (profile_id, area)
-SELECT tp.id, a.area
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (VALUES ('Quận Tân Phú'), ('Quận Bình Tân'), ('Quận 6')) AS a(area)
-WHERE u.code = 'USR-013'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_service_areas ta WHERE ta.profile_id = tp.id AND ta.area = a.area
-);
-
-INSERT INTO technician_service_areas (profile_id, area)
-SELECT tp.id, a.area
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (VALUES ('TP Thủ Đức'), ('Quận 9'), ('Quận Bình Thạnh')) AS a(area)
-WHERE u.code = 'USR-014'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_service_areas ta WHERE ta.profile_id = tp.id AND ta.area = a.area
-);
-
-INSERT INTO technician_service_areas (profile_id, area)
-SELECT tp.id, a.area
-FROM technician_profiles tp
-         JOIN users u ON tp.user_id = u.id
-         CROSS JOIN LATERAL (VALUES ('Quận 8'), ('Quận 5'), ('Quận 7')) AS a(area)
-WHERE u.code = 'USR-015'
-  AND NOT EXISTS (
-    SELECT 1 FROM technician_service_areas ta WHERE ta.profile_id = tp.id AND ta.area = a.area
-);
-
--- ---------------------------------------------------------------------
--- 6. EXTRA ORDERS — nhiều trạng thái để test
--- ---------------------------------------------------------------------
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, started_at, completed_at,
-                    estimated_price, final_price, payment_method, warranty_months,
-                    status, customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99301', 'Sửa tủ lạnh', 'Tủ không lạnh', 'Tủ lạnh',
-       'Samsung Inverter 320L',
-       'Tủ lạnh ngăn mát không lạnh, ngăn đá đóng tuyết nhiều.',
-       '90 Kha Vạn Cân, TP Thủ Đức',
-       NOW() - INTERVAL '10 days',
-    NOW() - INTERVAL '10 days' + INTERVAL '20 minutes',
-    NOW() - INTERVAL '10 days' + INTERVAL '3 hours',
-    700000, 850000, 'VNPAY', 6,
-    'COMPLETED',
-    (SELECT id FROM users WHERE code = 'USR-009'),
-    (SELECT id FROM users WHERE code = 'USR-014'),
-    FALSE, NOW() - INTERVAL '11 days', NOW() - INTERVAL '10 days'
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99301');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, started_at, completed_at,
-                    estimated_price, final_price, payment_method, warranty_months,
-                    status, customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99302', 'Sửa điện dân dụng', 'Thay CB tổng', 'Điện dân dụng',
-       'CB Schneider 40A',
-       'CB tổng thường xuyên nhảy khi bật máy lạnh và bếp từ.',
-       '88 Sư Vạn Hạnh, Quận 10',
-       NOW() - INTERVAL '7 days',
-    NOW() - INTERVAL '7 days' + INTERVAL '15 minutes',
-    NOW() - INTERVAL '7 days' + INTERVAL '90 minutes',
-    400000, 420000, 'MOMO', 3,
-    'COMPLETED',
-    (SELECT id FROM users WHERE code = 'USR-006'),
-    (SELECT id FROM users WHERE code = 'USR-012'),
-    FALSE, NOW() - INTERVAL '8 days', NOW() - INTERVAL '7 days'
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99302');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, started_at, completed_at,
-                    estimated_price, final_price, payment_method, warranty_months,
-                    status, customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99303', 'Sửa máy giặt', 'Máy không xả nước', 'Máy giặt',
-       'Toshiba 8kg cửa trên',
-       'Máy giặt báo lỗi E2, nước không xả ra ngoài.',
-       '28 Phạm Thế Hiển, Quận 8',
-       NOW() - INTERVAL '6 days',
-    NOW() - INTERVAL '6 days' + INTERVAL '10 minutes',
-    NOW() - INTERVAL '6 days' + INTERVAL '2 hours',
-    350000, 380000, 'BANK_TRANSFER', 2,
-    'COMPLETED',
-    (SELECT id FROM users WHERE code = 'USR-010'),
-    (SELECT id FROM users WHERE code = 'USR-015'),
-    FALSE, NOW() - INTERVAL '7 days', NOW() - INTERVAL '6 days'
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99303');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, estimated_price, status,
-                    customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99304', 'Vệ sinh máy lạnh', 'Vệ sinh định kỳ', 'Máy lạnh',
-       'LG Dual Inverter 1.5HP',
-       'Máy lạnh lâu ngày chưa vệ sinh, gió yếu.',
-       '19 Cộng Hòa, Tân Bình',
-       NOW() + INTERVAL '3 hours',
-    250000,
-    'ASSIGNED',
-    (SELECT id FROM users WHERE code = 'USR-007'),
-    (SELECT id FROM users WHERE code = 'USR-004'),
-    FALSE, NOW() - INTERVAL '1 day', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99304');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, estimated_price, status,
-                    customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99305', 'Sửa máy nước nóng', 'Không nóng nước', 'Máy nước nóng',
-       'Ariston 30L',
-       'Máy nước nóng bật đèn nhưng nước không nóng.',
-       '55 Lũy Bán Bích, Tân Phú',
-       NOW() + INTERVAL '1 day',
-    500000,
-    'ASSIGNED',
-    (SELECT id FROM users WHERE code = 'USR-011'),
-    (SELECT id FROM users WHERE code = 'USR-013'),
-    FALSE, NOW() - INTERVAL '3 hours', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99305');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, estimated_price, status,
-                    customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99306', 'Sửa tủ lạnh', 'Tủ kêu lớn', 'Tủ lạnh',
-       'Aqua 250L',
-       'Tủ lạnh phát tiếng kêu lớn vào ban đêm.',
-       '41 Phan Văn Trị, Gò Vấp',
-       NOW() + INTERVAL '2 days',
-    600000,
-    'COMPLETED',
-    (SELECT id FROM users WHERE code = 'USR-008'),
-    (SELECT id FROM users WHERE code = 'USR-014'),
-    FALSE, NOW() - INTERVAL '4 hours', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99306');
-
-INSERT INTO orders (code, service_name, service_category, device_name, description,
-                    address, expected_time, estimated_price,
-                    status, customer_id, deleted, created_at, updated_at)
-SELECT 'GU-99307',
-       NULL, 'Điện dân dụng',
-       'Ổ cắm âm tường',
-       'Ổ cắm phòng khách bị cháy xém, cần thay gấp.',
-       '12 Võ Văn Ngân, TP Thủ Đức',
-       NOW() + INTERVAL '5 hours',
-    250000,
-    'NEW',
-    (SELECT id FROM users WHERE code = 'USR-009'),
-    FALSE, NOW() - INTERVAL '30 minutes', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99307');
-
-INSERT INTO orders (code, service_name, service_category, device_name, description,
-                    address, expected_time, estimated_price,
-                    status, customer_id, deleted, created_at, updated_at)
-SELECT 'GU-99308',
-       NULL, 'Máy lọc nước',
-       'Karofi KAQ-P95',
-       'Máy lọc nước chảy yếu, nghi cần thay lõi.',
-       '77 Tên Lửa, Bình Tân',
-       NOW() + INTERVAL '1 day',
-    300000,
-    'NEW',
-    (SELECT id FROM users WHERE code = 'USR-010'),
-    FALSE, NOW() - INTERVAL '1 hour', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99308');
-
-INSERT INTO orders (code, service_name, service_category, device_name, description,
-                    address, expected_time, estimated_price,
-                    status, customer_id, deleted, created_at, updated_at)
-SELECT 'GU-99309',
-       NULL, 'Bếp từ',
-       'Bếp từ Sunhouse',
-       'Bếp từ báo lỗi E0 và không nhận nồi.',
-       '36 Trần Hưng Đạo, Quận 5',
-       NOW() + INTERVAL '2 days',
-    400000,
-    'NEW',
-    (SELECT id FROM users WHERE code = 'USR-011'),
-    FALSE, NOW() - INTERVAL '90 minutes', NOW()
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99309');
-
-INSERT INTO orders (code, service_name, sub_service, service_category, device_name, description,
-                    address, scheduled_at, estimated_price, status,
-                    customer_id, technician_id, deleted, created_at, updated_at)
-SELECT 'GU-99310', 'Sửa máy lạnh', 'Máy không lạnh', 'Máy lạnh',
-       'Daikin Inverter 1HP',
-       'Máy lạnh vẫn chạy nhưng không lạnh.',
-       '123 Nguyễn Văn Linh, Quận 7',
-       NOW() - INTERVAL '1 day',
-    550000,
-    'CANCELLED',
-    (SELECT id FROM users WHERE code = 'USR-002'),
-    (SELECT id FROM users WHERE code = 'USR-004'),
-    FALSE, NOW() - INTERVAL '2 days', NOW() - INTERVAL '1 day'
-WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99310');
-
--- ---------------------------------------------------------------------
--- 7. EXTRA ORDER IMAGES
--- ---------------------------------------------------------------------
-
-INSERT INTO order_images (order_id, url, role, created_at)
-SELECT o.id, img.url, img.role, NOW()
-FROM orders o
-         JOIN (
-    VALUES
-        ('GU-99301', 'https://images.unsplash.com/photo-1584568694244-14fbdf83bd30', 'request'),
-        ('GU-99302', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64', 'request'),
-        ('GU-99303', 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1', 'request'),
-        ('GU-99304', 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789', 'request'),
-        ('GU-99305', 'https://images.unsplash.com/photo-1600566752355-35792bedcfea', 'request'),
-        ('GU-99306', 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5', 'request')
-) AS img(order_code, url, role) ON img.order_code = o.code
-WHERE NOT EXISTS (
-    SELECT 1 FROM order_images oi WHERE oi.order_id = o.id AND oi.url = img.url
-);
-
--- ---------------------------------------------------------------------
--- 8. EXTRA REVIEWS
--- ---------------------------------------------------------------------
-
-INSERT INTO reviews (code, order_id, author_id, technician_id, rating, content, created_at)
-SELECT 'REV-002', o.id,
-       (SELECT id FROM users WHERE code = 'USR-009'),
-       (SELECT id FROM users WHERE code = 'USR-014'),
-       4,
-       'Thợ sửa tốt, tủ lạnh chạy ổn lại. Giá hơi cao nhưng có giải thích rõ.',
-       NOW() - INTERVAL '9 days'
-FROM orders o
-WHERE o.code = 'GU-99301'
-  AND NOT EXISTS (SELECT 1 FROM reviews WHERE code = 'REV-002');
-
-INSERT INTO reviews (code, order_id, author_id, technician_id, rating, content, created_at)
-SELECT 'REV-003', o.id,
-       (SELECT id FROM users WHERE code = 'USR-006'),
-       (SELECT id FROM users WHERE code = 'USR-012'),
-       5,
-       'Làm nhanh, thay CB gọn gàng, tư vấn thêm cách dùng điện an toàn.',
-       NOW() - INTERVAL '6 days'
-FROM orders o
-WHERE o.code = 'GU-99302'
-  AND NOT EXISTS (SELECT 1 FROM reviews WHERE code = 'REV-003');
-
-INSERT INTO reviews (code, order_id, author_id, technician_id, rating, content, created_at)
-SELECT 'REV-004', o.id,
-       (SELECT id FROM users WHERE code = 'USR-010'),
-       (SELECT id FROM users WHERE code = 'USR-015'),
-       4,
-       'Máy giặt đã xả nước bình thường, thợ đến hơi trễ nhưng xử lý ổn.',
-       NOW() - INTERVAL '5 days'
-FROM orders o
-WHERE o.code = 'GU-99303'
-  AND NOT EXISTS (SELECT 1 FROM reviews WHERE code = 'REV-004');
-
--- ---------------------------------------------------------------------
--- 9. VERIFY
--- ---------------------------------------------------------------------
-
--- SELECT code, full_name, role, status FROM users ORDER BY code;
--- SELECT code, title FROM categories ORDER BY code;
--- SELECT u.code, u.full_name, tp.service_category, tp.is_available, tp.verification_status
--- FROM technician_profiles tp JOIN users u ON tp.user_id = u.id ORDER BY u.code;
--- SELECT code, service_category, status FROM orders ORDER BY code;
--- SELECT code, rating FROM reviews ORDER BY code;

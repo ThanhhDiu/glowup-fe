@@ -20,7 +20,7 @@ interface AdminStatsApi {
   totalRevenue: AdminMetricApi
   totalProfit: AdminMetricApi
   activeTechnicians: AdminMetricApi
-  ordersToday: AdminMetricApi
+  totalOrders: AdminMetricApi
 }
 
 interface RevenueItemApi {
@@ -51,7 +51,7 @@ interface RecentOrderPersonApi {
 interface RecentOrderItemApi {
   id: string
   customer: RecentOrderPersonApi
-  technician: RecentOrderPersonApi
+  technician: RecentOrderPersonApi | null
   serviceName: string
   status: string
   scheduledAt: string
@@ -125,21 +125,29 @@ const normalizeDirection = (direction: string): 'up' | 'down' | 'neutral' => {
   return 'neutral'
 }
 
-const toRevenueRange = (filter: DashboardTimeFilter): string => {
-  if (filter.mode === 'month') {
-    const daysInMonth = new Date(filter.year, filter.month, 0).getDate()
-    return `${daysInMonth}days`
+const buildDashboardQuery = (filter: DashboardTimeFilter, includeLimit = false): string => {
+  const params = new URLSearchParams()
+
+  params.set('mode', filter.mode)
+
+  if (filter.mode === 'year' || filter.mode === 'quarter' || filter.mode === 'month') {
+    params.set('year', String(filter.year))
   }
 
   if (filter.mode === 'quarter') {
-    return '90days'
+    params.set('quarter', String(filter.quarter))
   }
 
-  if (filter.mode === 'year') {
-    return '90days'
+  if (filter.mode === 'month') {
+    params.set('month', String(filter.month))
   }
 
-  return '90days'
+  if (includeLimit) {
+    params.set('limit', '5')
+  }
+
+  const query = params.toString()
+  return query ? `?${query}` : ''
 }
 
 const mapMetric = (title: string, metric?: AdminMetricApi): DashboardStatCardData => {
@@ -147,7 +155,7 @@ const mapMetric = (title: string, metric?: AdminMetricApi): DashboardStatCardDat
   const change = parseNumber(metric?.change)
   const direction = normalizeDirection(metric?.changeDirection || 'neutral')
 
-  const valueText = title === 'Số thợ hoạt động' || title === 'Đơn hàng hôm nay'
+  const valueText = title === 'Số thợ hoạt động' || title === 'Tổng đơn hàng'
     ? Math.round(value).toLocaleString('vi-VN')
     : formatCurrency(value)
 
@@ -164,74 +172,24 @@ const mapStats = (stats: AdminStatsApi): DashboardStatCardData[] => {
     mapMetric('Tổng doanh thu', stats.totalRevenue),
     mapMetric('Tổng lợi nhuận', stats.totalProfit),
     mapMetric('Số thợ hoạt động', stats.activeTechnicians),
-    mapMetric('Đơn hàng hôm nay', stats.ordersToday),
+    mapMetric('Tổng đơn hàng', stats.totalOrders),
   ]
 }
 
-const aggregateRevenueByMonth = (items: RevenueItemApi[]): RevenueChartDataPoint[] => {
-  const monthMap = new Map<string, number>()
+const mapRevenue = (revenue: RevenueStatsApi): RevenueChartDataPoint[] => {
+  const sortedItems = [...(revenue.items || [])].sort((a, b) => a.date.localeCompare(b.date))
 
-  items.forEach((item) => {
-    const date = new Date(item.date)
-    if (Number.isNaN(date.getTime())) {
-      return
-    }
-    const key = `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`
-    monthMap.set(key, (monthMap.get(key) || 0) + parseNumber(item.value))
-  })
-
-  const points = Array.from(monthMap.entries()).map(([label, value]) => ({ day: label, value, max: 0 }))
-  const maxValue = Math.max(...points.map((point) => point.value), 1)
-
-  return points.map((point) => ({
-    ...point,
-    value: Math.round((point.value / maxValue) * 100),
-    max: 100,
-  }))
-}
-
-const aggregateRevenueByWeekChunk = (items: RevenueItemApi[]): RevenueChartDataPoint[] => {
-  if (items.length === 0) {
+  if (sortedItems.length === 0) {
     return []
   }
 
-  const chunkSize = Math.ceil(items.length / 4)
-  const chunks: RevenueChartDataPoint[] = []
+  const maxValue = Math.max(...sortedItems.map((item) => parseNumber(item.value)), 1)
 
-  for (let i = 0; i < 4; i += 1) {
-    const start = i * chunkSize
-    const end = start + chunkSize
-    const chunk = items.slice(start, end)
-    if (chunk.length === 0) {
-      continue
-    }
-
-    const total = chunk.reduce((sum, item) => sum + parseNumber(item.value), 0)
-    chunks.push({ day: `Tuần ${i + 1}`, value: total, max: 0 })
-  }
-
-  const maxValue = Math.max(...chunks.map((point) => point.value), 1)
-
-  return chunks.map((point) => ({
-    ...point,
-    value: Math.round((point.value / maxValue) * 100),
+  return sortedItems.map((item) => ({
+    day: item.label,
+    value: Math.round((parseNumber(item.value) / maxValue) * 100),
     max: 100,
   }))
-}
-
-const mapRevenue = (revenue: RevenueStatsApi, filter: DashboardTimeFilter): RevenueChartDataPoint[] => {
-  const sortedItems = [...(revenue.items || [])].sort((a, b) => a.date.localeCompare(b.date))
-
-  if (filter.mode === 'month') {
-    return aggregateRevenueByWeekChunk(sortedItems)
-  }
-
-  if (filter.mode === 'quarter') {
-    const monthlyPoints = aggregateRevenueByMonth(sortedItems)
-    return monthlyPoints.slice(-3)
-  }
-
-  return aggregateRevenueByMonth(sortedItems)
 }
 
 const mapServices = (services: ServiceDistributionApi): ServiceDistributionDataPoint[] => {
@@ -243,13 +201,13 @@ const mapServices = (services: ServiceDistributionApi): ServiceDistributionDataP
 }
 
 const mapOrderStatus = (status: string): 'Đã hoàn thành' | 'Đang xử lý' | 'Chờ xác nhận' => {
-  const normalized = (status || '').toLowerCase()
+  const normalized = (status || '').toLowerCase().replace(/_/g, '-')
 
-  if (['completed', 'done', 'success'].includes(normalized)) {
+  if (normalized === 'completed') {
     return 'Đã hoàn thành'
   }
 
-  if (['in_progress', 'processing', 'accepted'].includes(normalized)) {
+  if (['in-progress', 'processing', 'accepted', 'assigned', 'scheduled'].includes(normalized)) {
     return 'Đang xử lý'
   }
 
@@ -298,18 +256,19 @@ const requestApi = async <T>(path: string): Promise<T> => {
 }
 
 export const getAdminDashboardData = async (timeFilter: DashboardTimeFilter): Promise<AdminDashboardData> => {
-  const revenueRange = toRevenueRange(timeFilter)
+  const query = buildDashboardQuery(timeFilter)
+  const recentOrdersQuery = buildDashboardQuery(timeFilter, true)
 
   const [stats, revenue, services, recentOrders] = await Promise.all([
-    requestApi<AdminStatsApi>('/admin/stats'),
-    requestApi<RevenueStatsApi>(`/admin/stats/revenue?range=${encodeURIComponent(revenueRange)}`),
-    requestApi<ServiceDistributionApi>('/admin/stats/service-distribution'),
-    requestApi<RecentOrdersApi>('/admin/orders/recent?limit=5'),
+    requestApi<AdminStatsApi>(`/admin/dashboard/stats${query}`),
+    requestApi<RevenueStatsApi>(`/admin/dashboard/revenue${query}`),
+    requestApi<ServiceDistributionApi>(`/admin/stats/service-distribution${query}`),
+    requestApi<RecentOrdersApi>(`/admin/dashboard/recent-orders${recentOrdersQuery}`),
   ])
 
   return {
     stats: mapStats(stats),
-    revenue: mapRevenue(revenue, timeFilter),
+    revenue: mapRevenue(revenue),
     services: mapServices(services),
     recentOrders: mapRecentOrders(recentOrders),
   }
