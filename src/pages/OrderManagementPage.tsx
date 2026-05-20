@@ -30,7 +30,6 @@ const OrderManagementContent: React.FC<OrderPageProps> = ({ role }) => {
     const {
         state,
         visibleOrders,
-        selectedOrder,
         selectOrder,
         setActiveTab,
         setPage,
@@ -93,14 +92,14 @@ const OrderManagementContent: React.FC<OrderPageProps> = ({ role }) => {
             <div className="main-content">
                 <main className="page-body bg-plate-white">
                     <div className="orders-container">
-                        {selectedOrder ? (
+                        {state.selectedOrder ? (
                             state.loadingDetail ? (
                                 <div className="order-alert loading">Đang tải chi tiết đơn hàng...</div>
                             ) : state.detailError ? (
                                 <div className="order-alert error">{state.detailError}</div>
                             ) : (
                                 <OrderDetailPanel
-                                    order={selectedOrder}
+                                    order={state.selectedOrder}
                                     role={role}
                                     onBack={clearSelectedOrder}
                                     onCancel={openCancelModal}

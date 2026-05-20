@@ -12,6 +12,7 @@ import {
 export interface OrderManagementContextValue {
     role: UserRole;
     state: OrderManagementState;
+    selectedOrder: OrderResponse | null;
     visibleOrders: OrderResponse[];
     refreshOrders: () => Promise<void>;
     selectOrder: (orderId: string) => Promise<void>;
@@ -92,6 +93,7 @@ export const OrderManagementProvider: React.FC<OrderManagementProviderProps> = (
         () => ({
             role,
             state,
+            selectedOrder: state.selectedOrder,
             visibleOrders,
             refreshOrders: async () => {
                 await refreshOrders();
