@@ -165,30 +165,30 @@ const OrderManagementContent: React.FC<OrderPageProps> = ({ role }) => {
                         )}
 
                         {state.showCancelModal && (
-                            <div className="modal-overlay" style={{ zIndex: 9999 }}>
-                                <div className="modal-content" style={{ width: '500px' }}>
-                                    <div className="modal-header">
+                            <div className="modal-overlay order-cancel-modal-overlay" style={{ zIndex: 9999 }}>
+                                <div className="modal-content order-cancel-modal-content" style={{ width: '500px' }}>
+                                    <div className="modal-header order-cancel-modal-header">
                                         <h2 style={{ color: '#ef4444' }}>
                                             {role === 'technician' ? 'Từ chối yêu cầu' : 'Xác nhận hủy đơn'}
                                         </h2>
                                     </div>
-                                    <div className="modal-body">
+                                    <div className="modal-body order-cancel-modal-body">
                                         <p style={{ fontSize: '14px', color: 'var(--stem-grey)', marginBottom: '16px' }}>
                                             Vui lòng cho biết lý do bạn muốn {role === 'technician' ? 'từ chối' : 'hủy'} đơn hàng <strong>{state.orderToCancelId}</strong>.
                                         </p>
                                         <textarea
-                                            className="reason-input"
+                                            className="reason-input order-cancel-reason-input"
                                             placeholder="Nhập lý do chi tiết..."
                                             value={state.cancelReason}
                                             onChange={(event) => setCancelReason(event.target.value)}
                                             style={{ minHeight: '120px' }}
                                         />
                                     </div>
-                                    <div className="modal-footer">
-                                        <button className="btn-outline" onClick={closeCancelModal}>
+                                    <div className="modal-footer order-cancel-modal-footer">
+                                        <button className="btn-outline order-cancel-btn-back" onClick={closeCancelModal}>
                                             Quay lại
                                         </button>
-                                        <button className="btn-solid" style={{ background: '#ef4444', color: '#fff' }} onClick={confirmCancel}>
+                                        <button className="btn-solid order-cancel-btn-confirm" style={{ background: '#ef4444', color: '#fff' }} onClick={confirmCancel}>
                                             Xác nhận
                                         </button>
                                     </div>
