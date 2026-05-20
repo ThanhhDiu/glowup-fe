@@ -1,30 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { AdminHeader } from '../components/admin/AdminHeader';
 import { AdminSidebar } from '../components/admin/AdminSidebar';
-import { OrderTable, type OrderTableItem } from '../components/orderManagement/OrderTable';
-import AdminOrderDetailDrawer from '../components/orderManagement/AdminOrderDetailDrawer';
+import { OrderTable } from '../components/orderManagement/OrderTable';
 import {
   getAdminOrders,
-  getOrderDetail,
-  getOrderStats,
-  type OrderDetailViewModel,
   type OrderStatsSummary,
   type OrderTableRow,
-  type OrderTableItem as OrderTableItemFromService,
 } from '../services/orderService';
 import './AdminOrdersPage.css';
-
-const STATUS_TABS = ['Tất cả', 'NEW', 'ASSIGNED', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const;
-type StatusTab = (typeof STATUS_TABS)[number];
-
-const DEFAULT_STATS: OrderStatsSummary = {
-  totalOrders: 0,
-  processing: 0,
-  completed: 0,
-  cancelled: 0,
-  disputes: 0,
-  pendingPriceReview: 0,
-};
 
 const formatDateForFilter = (value?: string | null): Date | null => {
   if (!value) return null;
@@ -37,6 +20,41 @@ const parsePrice = (value?: string | null): number => {
   const normalized = value.replace(/[^\d]/g, '');
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const DASHBOARD_FETCH_LIMIT = 1000;
+
+const buildOrderStats = (orders: OrderTableRow[]): OrderStatsSummary => {
+  return orders.reduce(
+    (acc, order) => {
+      switch (order.status) {
+        case 'NEW':
+        case 'ASSIGNED':
+        case 'SCHEDULED':
+        case 'IN_PROGRESS':
+          acc.processing += 1;
+          break;
+        case 'COMPLETED':
+          acc.completed += 1;
+          break;
+        case 'CANCELLED':
+          acc.cancelled += 1;
+          break;
+        default:
+          break;
+      }
+
+      return acc;
+    },
+    {
+      totalOrders: orders.length,
+      processing: 0,
+      completed: 0,
+      cancelled: 0,
+      disputes: 0,
+      pendingPriceReview: 0,
+    },
+  );
 };
 
 const isWithinTimeFilter = (order: OrderTableRow, filter: string): boolean => {
@@ -76,7 +94,6 @@ const isWithinPriceFilter = (order: OrderTableRow, filter: string): boolean => {
 };
 
 const AdminOrdersPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<StatusTab>('Tất cả');
   const [statusFilter, setStatusFilter] = useState('Tất cả');
   const [timeFilter, setTimeFilter] = useState('Tất cả');
   const [paymentFilter, setPaymentFilter] = useState('Tất cả');
@@ -88,20 +105,11 @@ const AdminOrdersPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const [orders, setOrders] = useState<OrderTableRow[]>([]);
+  const [fullData, setFullData] = useState<OrderTableRow[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState<string | null>(null);
 
-  const [stats, setStats] = useState<OrderStatsSummary>(DEFAULT_STATS);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [statsError, setStatsError] = useState<string | null>(null);
-
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [selectedDetail, setSelectedDetail] = useState<OrderDetailViewModel | null>(null);
-  const [totalItems, setTotalItems] = useState(0);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailError, setDetailError] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(searchText.trim()), 300);
@@ -111,69 +119,41 @@ const AdminOrdersPage: React.FC = () => {
   useEffect(() => {
     let active = true;
 
-    const loadStats = async () => {
-      try {
-        setStatsLoading(true);
-        setStatsError(null);
-        const nextStats = await getOrderStats();
-        if (!active) return;
-        setStats(nextStats);
-      } catch (error: any) {
-        if (!active) return;
-        setStats(DEFAULT_STATS);
-        setStatsError(error?.message || 'Không thể tải thống kê đơn hàng');
-      } finally {
-        if (active) {
-          setStatsLoading(false);
-        }
-      }
-    };
-
-    loadStats();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let active = true;
-
     const loadOrders = async () => {
       try {
         setOrdersLoading(true);
         setOrdersError(null);
 
-        const serverStatus = activeTab !== 'Tất cả'
-          ? activeTab
-          : statusFilter !== 'Tất cả'
-            ? statusFilter
-            : undefined;
-
-        const result = await getAdminOrders({
-          status: serverStatus as any,
-          keyword: debouncedSearch || undefined,
-          page: currentPage,
-          limit: itemsPerPage,
+        const firstPage = await getAdminOrders({
+          page: 1,
+          limit: DASHBOARD_FETCH_LIMIT,
         });
 
         if (!active) return;
 
-        setTotalItems(result.totalElements);
-        const nextOrders = result.items.filter((order) => {
-          if (!isWithinTimeFilter(order, timeFilter)) return false;
-          if (paymentFilter !== 'Tất cả' && order.rawPaymentMethod?.toUpperCase() !== paymentFilter.toUpperCase()) return false;
-          if (technicianFilter !== 'Tất cả' && order.rawTechnician !== technicianFilter) return false;
-          if (areaFilter !== 'Tất cả' && order.rawArea !== areaFilter) return false;
-          if (!isWithinPriceFilter(order, priceFilter)) return false;
-          return true;
-        });
+        const totalPages = Math.max(1, Math.ceil((firstPage.totalElements || 0) / DASHBOARD_FETCH_LIMIT));
+        let nextOrders = [...firstPage.items];
 
-        setOrders(nextOrders);
+        if (totalPages > 1) {
+          const remainingPages = await Promise.all(
+            Array.from({ length: totalPages - 1 }, (_, index) => {
+              return getAdminOrders({
+                page: index + 2,
+                limit: DASHBOARD_FETCH_LIMIT,
+              });
+            }),
+          );
+
+          if (!active) return;
+
+          nextOrders = [...nextOrders, ...remainingPages.flatMap((page) => page.items)];
+        }
+
+        setFullData(nextOrders);
         setSelectedIds((current) => current.filter((id) => nextOrders.some((order) => order.id === id)));
       } catch (error: any) {
         if (!active) return;
-        setOrders([]);
+        setFullData([]);
         setOrdersError(error?.message || 'Không thể tải danh sách đơn hàng');
       } finally {
         if (active) {
@@ -187,107 +167,116 @@ const AdminOrdersPage: React.FC = () => {
     return () => {
       active = false;
     };
-  }, [activeTab, areaFilter, debouncedSearch, paymentFilter, priceFilter, statusFilter, technicianFilter, timeFilter, currentPage, itemsPerPage]);
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [areaFilter, debouncedSearch, paymentFilter, priceFilter, statusFilter, technicianFilter, timeFilter]);
 
   const filteredTechnicians = useMemo(() => {
-    return ['Tất cả', ...Array.from(new Set(orders.map((order) => order.rawTechnician).filter(Boolean) as string[]))];
-  }, [orders]);
+    return ['Tất cả', ...Array.from(new Set(fullData.map((order) => order.rawTechnician).filter(Boolean) as string[]))];
+  }, [fullData]);
 
   const filteredAreas = useMemo(() => {
-    return ['Tất cả', ...Array.from(new Set(orders.map((order) => order.rawArea).filter(Boolean) as string[]))];
-  }, [orders]);
+    return ['Tất cả', ...Array.from(new Set(fullData.map((order) => order.rawArea).filter(Boolean) as string[]))];
+  }, [fullData]);
 
   const paymentOptions = useMemo(() => {
-    return ['Tất cả', ...Array.from(new Set(orders.map((order) => order.rawPaymentMethod).filter(Boolean) as string[]))];
-  }, [orders]);
+    return ['Tất cả', ...Array.from(new Set(fullData.map((order) => order.rawPaymentMethod).filter(Boolean) as string[]))];
+  }, [fullData]);
 
-  const visibleOrders = orders;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const filteredData = useMemo(() => {
+    return fullData.filter((order) => {
+      if (statusFilter !== 'Tất cả' && order.status !== statusFilter) return false;
+      if (!isWithinTimeFilter(order, timeFilter)) return false;
+      if (paymentFilter !== 'Tất cả' && order.rawPaymentMethod?.toUpperCase() !== paymentFilter.toUpperCase()) return false;
+      if (technicianFilter !== 'Tất cả' && order.rawTechnician !== technicianFilter) return false;
+      if (areaFilter !== 'Tất cả' && order.rawArea !== areaFilter) return false;
+      if (!isWithinPriceFilter(order, priceFilter)) return false;
 
-  const openOrderDetail = async (order: OrderTableRow) => {
-    setSelectedCode(order.id);
-    setSelectedDetail(null);
-    setDetailError(null);
-    setDetailLoading(true);
+      if (debouncedSearch) {
+        const keyword = debouncedSearch.toLowerCase();
+        const searchable = [
+          order.id,
+          order.code,
+          order.customer,
+          order.service,
+          order.technician,
+          order.status,
+          order.area || '',
+          order.payment || '',
+          order.createdAt,
+          order.appointment,
+        ].join(' ').toLowerCase();
 
-    try {
-      const detail = await getOrderDetail(order.id);
-      setSelectedDetail(detail);
-    } catch (error: any) {
-      setDetailError(error?.message || 'Không thể tải chi tiết đơn hàng');
-      setSelectedDetail(null);
-    } finally {
-      setDetailLoading(false);
+        if (!searchable.includes(keyword)) return false;
+      }
+
+      return true;
+    });
+  }, [areaFilter, debouncedSearch, fullData, paymentFilter, priceFilter, statusFilter, technicianFilter, timeFilter]);
+
+  const totalItems = filteredData.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
-  };
+  }, [currentPage, totalPages]);
 
-  const reloadSelectedDetail = async () => {
-    if (!selectedCode) return;
+  const paginatedData = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(start, start + itemsPerPage);
+  }, [currentPage, filteredData, itemsPerPage]);
 
-    setSelectedDetail(null);
-    setDetailError(null);
-    setDetailLoading(true);
+  const visibleOrders = paginatedData;
+  const stats = useMemo(() => buildOrderStats(filteredData), [filteredData]);
 
-    try {
-      const detail = await getOrderDetail(selectedCode);
-      setSelectedDetail(detail);
-    } catch (error: any) {
-      setDetailError(error?.message || 'Không thể tải chi tiết đơn hàng');
-      setSelectedDetail(null);
-    } finally {
-      setDetailLoading(false);
-    }
-  };
-
-  const closeDrawer = () => {
-    setSelectedCode(null);
-    setSelectedDetail(null);
-    setDetailLoading(false);
-    setDetailError(null);
-  };
+  const openOrderDetail = () => {};
 
   const retryOrderList = async () => {
     setOrdersLoading(true);
     setOrdersError(null);
+
     try {
-      const serverStatus = activeTab !== 'Tất cả'
-        ? activeTab
-        : statusFilter !== 'Tất cả'
-          ? statusFilter
-          : undefined;
-
-      const result = await getAdminOrders({
-        status: serverStatus as any,
-        keyword: debouncedSearch || undefined,
-        page: currentPage,
-        limit: itemsPerPage,
+      const firstPage = await getAdminOrders({
+        page: 1,
+        limit: DASHBOARD_FETCH_LIMIT,
       });
 
-      setTotalItems(result.totalElements);
+      const totalPages = Math.max(1, Math.ceil((firstPage.totalElements || 0) / DASHBOARD_FETCH_LIMIT));
+      let nextOrders = [...firstPage.items];
 
-      const nextOrders = result.items.filter((order) => {
-        if (!isWithinTimeFilter(order, timeFilter)) return false;
-        if (paymentFilter !== 'Tất cả' && order.rawPaymentMethod?.toUpperCase() !== paymentFilter.toUpperCase()) return false;
-        if (technicianFilter !== 'Tất cả' && order.rawTechnician !== technicianFilter) return false;
-        if (areaFilter !== 'Tất cả' && order.rawArea !== areaFilter) return false;
-        if (!isWithinPriceFilter(order, priceFilter)) return false;
-        return true;
-      });
+      if (totalPages > 1) {
+        const remainingPages = await Promise.all(
+          Array.from({ length: totalPages - 1 }, (_, index) => {
+            return getAdminOrders({
+              page: index + 2,
+              limit: DASHBOARD_FETCH_LIMIT,
+            });
+          }),
+        );
 
-      setOrders(nextOrders);
+        nextOrders = [...nextOrders, ...remainingPages.flatMap((page) => page.items)];
+      }
+
+      setFullData(nextOrders);
+      setSelectedIds((current) => current.filter((id) => nextOrders.some((order) => order.id === id)));
     } catch (error: any) {
+      setFullData([]);
       setOrdersError(error?.message || 'Không thể tải danh sách đơn hàng');
     } finally {
       setOrdersLoading(false);
     }
   };
 
-  const totalOrders = statsLoading ? '...' : stats.totalOrders.toLocaleString('vi-VN');
-  const processingOrders = statsLoading ? '...' : stats.processing.toLocaleString('vi-VN');
-  const completedOrders = statsLoading ? '...' : stats.completed.toLocaleString('vi-VN');
-  const cancelledOrders = statsLoading ? '...' : stats.cancelled.toLocaleString('vi-VN');
-  const disputesOrders = statsLoading ? '...' : stats.disputes.toLocaleString('vi-VN');
-  const pendingPriceReviewOrders = statsLoading ? '...' : stats.pendingPriceReview.toLocaleString('vi-VN');
+  const totalOrders = ordersLoading ? '...' : stats.totalOrders.toLocaleString('vi-VN');
+  const processingOrders = ordersLoading ? '...' : stats.processing.toLocaleString('vi-VN');
+  const completedOrders = ordersLoading ? '...' : stats.completed.toLocaleString('vi-VN');
+  const cancelledOrders = ordersLoading ? '...' : stats.cancelled.toLocaleString('vi-VN');
+  const disputesOrders = ordersLoading ? '...' : stats.disputes.toLocaleString('vi-VN');
+  const pendingPriceReviewOrders = ordersLoading ? '...' : stats.pendingPriceReview.toLocaleString('vi-VN');
 
   const statSkeleton = <div style={{ height: 22, width: '55%', borderRadius: 8, background: 'linear-gradient(90deg, #e2e8f0 25%, #f8fafc 37%, #e2e8f0 63%)' }} />;
 
@@ -352,9 +341,9 @@ const AdminOrdersPage: React.FC = () => {
           </div>
         </div>
 
-        {(ordersError || statsError) && (
+        {ordersError && (
           <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 10, background: '#fee2e2', color: '#991b1b' }}>
-            {ordersError || statsError}
+            {ordersError}
             <button type="button" onClick={retryOrderList} style={{ marginLeft: 12, border: 'none', background: 'transparent', color: '#991b1b', fontWeight: 700, cursor: 'pointer' }}>
               Thử lại
             </button>
@@ -362,7 +351,7 @@ const AdminOrdersPage: React.FC = () => {
         )}
 
         <section className="orders-stats-row">
-          {statsLoading
+          {ordersLoading
             ? Array.from({ length: 6 }).map((_, index) => (
               <div key={`stat-skeleton-${index}`} className="stat-card" style={{ minHeight: 74, position: 'relative', overflow: 'hidden' }}>
                 <div className="stat-title" style={{ opacity: 0.5 }}>Đang tải...</div>
@@ -443,7 +432,7 @@ const AdminOrdersPage: React.FC = () => {
         <section className="orders-main">
           <div className="orders-left">
             {renderOrderTable()}
-            {!ordersLoading && orders.length > 0 && (
+            {!ordersLoading && totalItems > 0 && (
               <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
                 <button
                   type="button"
@@ -488,15 +477,6 @@ const AdminOrdersPage: React.FC = () => {
             )}
           </div>
 
-          {/* <div className="orders-right" style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto' }}>
-            <AdminOrderDetailDrawer
-              detail={selectedDetail}
-              loading={detailLoading}
-              error={detailError}
-              onClose={closeDrawer}
-              onRetry={reloadSelectedDetail}
-            />
-          </div> */}
         </section>
       </main>
     </div>
