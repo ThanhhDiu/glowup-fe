@@ -134,17 +134,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 3. Optional role check
-        if (request.getRole() != null && !request.getRole().isBlank()) {
-            try {
-                Role expectedRole = Role.valueOf(request.getRole().toUpperCase());
-                if (user.getRole() != expectedRole) {
-                    throw AppException.badRequest(ErrorCode.INVALID_CREDENTIALS,
-                            "Tài khoản không tồn tại với vai trò này");
-                }
-            } catch (IllegalArgumentException e) {
-                throw AppException.badRequest(ErrorCode.ROLE_NOT_ALLOWED, "Vai trò không hợp lệ");
-            }
-        }
+//        if (request.getRole() != null && !request.getRole().isBlank()) {
+//            try {
+//                Role expectedRole = Role.valueOf(request.getRole().toUpperCase());
+//                if (user.getRole() != expectedRole) {
+//                    throw AppException.badRequest(ErrorCode.INVALID_CREDENTIALS,
+//                            "Tài khoản không tồn tại với vai trò này");
+//                }
+//            } catch (IllegalArgumentException e) {
+//                throw AppException.badRequest(ErrorCode.ROLE_NOT_ALLOWED, "Vai trò không hợp lệ");
+//            }
+//        }
 
         // 4. Check account status
         if (user.getStatus() == UserStatus.LOCKED) {

@@ -22,5 +22,5 @@ public class LoginRequest {
      * Optional role check — ensures user is logging in with expected role.
      * If provided, must match the user's actual role.
      */
-    private String role;
+//    private String role;
 }
