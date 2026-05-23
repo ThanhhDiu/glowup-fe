@@ -17,6 +17,7 @@ import AdminUserManagement from '../pages/AdminUserManagement'
 import AdminVerificationDetail from '../pages/AdminVerificationDetail'
 import AdminVerificationRequests from '../pages/AdminVerificationRequests'
 import AdminVerificationUpdate from '../pages/AdminVerificationUpdate'
+import AdminOrdersPage from '../pages/AdminOrdersPage'
 import CustomerAccountSettingsPage from '../pages/CustomerAccountSettingsPage'
 import FindProvider from '../pages/FindProvider'
 import HomePage from '../pages/HomePage'
@@ -70,6 +71,7 @@ export default function AppRouter() {
 
       <Route path="/admin">
         <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="orders" element={<AdminOrdersPage />} />
         <Route path="users" element={<AdminUserManagement />} />
         <Route path="users/:id" element={<AdminUserDetail />} />
         <Route path="finance" element={<AdminFinancePage />} />
