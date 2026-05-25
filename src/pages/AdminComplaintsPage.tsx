@@ -1,535 +1,363 @@
-import React, { useMemo, useState } from "react";
-import { AdminHeader } from "../components/admin/AdminHeader";
-import { AdminSidebar } from "../components/admin/AdminSidebar";
-import "./AdminComplaintsPage.css";
+import { useEffect, useMemo, useState } from 'react';
+import { AdminHeader } from '../components/admin/AdminHeader';
+import { AdminSidebar } from '../components/admin/AdminSidebar';
+import {
+	getAdminComplaintStats,
+	getAdminComplaints,
+	type AdminComplaintItem,
+	type ComplaintStats,
+	type ComplaintStatusApi,
+} from '../services/adminComplaintService';
+import './AdminComplaintsPage.css';
 
-const complaintsMock = [
-{
-id:"1",
-code:"KN-000125",
-order:"GU-99210",
-customer:"Nguyễn Văn A",
-worker:"Trần Văn B",
-reason:"Thợ đến trễ",
-date:"20/05/2024 08:15",
-status:"Mới",
-description:
-"Tôi đặt lịch 8h sáng nhưng 10h thợ mới đến. Làm ảnh hưởng công việc của tôi.",
-timeline:[
-"20/05 08:15 Khách gửi khiếu nại",
-"20/05 08:20 Hệ thống tiếp nhận",
-"20/05 09:10 Admin tiếp nhận",
-"20/05 09:15 Đã liên hệ thợ"
-]
-},
+const ITEMS_PER_PAGE = 10;
 
-{
-id:"2",
-code:"KN-000124",
-order:"GU-99209",
-customer:"Lê Thị C",
-worker:"Hoàng Văn D",
-reason:"Chất lượng dịch vụ kém",
-date:"19/05/2024",
-status:"Đang xử lý",
-description:"Điều hòa sau vệ sinh vẫn không lạnh",
-timeline:[]
-},
+const statusClassMap: Record<ComplaintStatusApi, string> = {
+	open: 'order-status--red',
+	investigating: 'order-status--yellow',
+	resolved: 'order-status--green',
+	dismissed: 'order-status--gray',
+};
 
-{
-id:"3",
-code:"KN-000123",
-order:"GU-99208",
-customer:"Phạm Văn E",
-worker:"Nguyễn Văn F",
-reason:"Thợ không đến",
-date:"19/05/2024",
-status:"Chờ phản hồi",
-description:"Đợi 2 tiếng không ai đến",
-timeline:[]
-}
+const defaultStats: ComplaintStats = {
+	open: 0,
+	investigating: 0,
+	resolved: 0,
+	dismissed: 0,
+	total: 0,
+};
 
-]
+const buildStatusClass = (status: ComplaintStatusApi): string => statusClassMap[status] || 'order-status--gray';
 
-export default function AdminComplaintsPage(){
+const statusOptions: Array<{ label: string; value: 'all' | ComplaintStatusApi }> = [
+	{ label: 'Tất cả', value: 'all' },
+	{ label: 'Mới', value: 'open' },
+	{ label: 'Đang xử lý', value: 'investigating' },
+	{ label: 'Đã giải quyết', value: 'resolved' },
+	{ label: 'Đã từ chối', value: 'dismissed' },
+];
 
-const [selected,setSelected]=useState<any>(null)
+export default function AdminComplaintsPage() {
+	const [selected, setSelected] = useState<AdminComplaintItem | null>(null);
+	const [rows, setRows] = useState<AdminComplaintItem[]>([]);
+	const [stats, setStats] = useState<ComplaintStats>(defaultStats);
+	const [statusFilter, setStatusFilter] = useState<'all' | ComplaintStatusApi>('all');
+	const [keyword, setKeyword] = useState('');
+	const [debouncedKeyword, setDebouncedKeyword] = useState('');
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-const stats = [
-{
-title:"Khiếu nại mới",
-value:8,
-sub:"Chờ tiếp nhận",
-icon:"🔴"
-},
+	useEffect(() => {
+		const timer = window.setTimeout(() => setDebouncedKeyword(keyword.trim()), 350);
+		return () => window.clearTimeout(timer);
+	}, [keyword]);
 
-{
-title:"Đang xử lý",
-value:12,
-sub:"Đang xác minh",
-icon:"🟡"
-},
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [statusFilter, debouncedKeyword]);
 
-{
-title:"Chờ phản hồi",
-value:7,
-sub:"Chờ KH hoặc thợ",
-icon:"🔵"
-},
+	useEffect(() => {
+		let active = true;
 
-{
-title:"Đã giải quyết",
-value:95,
-sub:"Trong 30 ngày",
-icon:"🟢"
-},
+		const loadStats = async () => {
+			try {
+				const nextStats = await getAdminComplaintStats();
+				if (!active) return;
+				setStats(nextStats);
+			} catch {
+				if (!active) return;
+				setStats(defaultStats);
+			}
+		};
 
-{
-title:"Đã từ chối",
-value:5,
-sub:"Trong 30 ngày",
-icon:"⚫"
-}
+		loadStats();
 
-]
+		return () => {
+			active = false;
+		};
+	}, []);
 
-const statusClass=(status:string)=>{
+	useEffect(() => {
+		let active = true;
 
-switch(status){
+		const loadComplaints = async () => {
+			setLoading(true);
+			setError(null);
 
-case "Mới":
-return "order-status--red"
+			try {
+				const payload = await getAdminComplaints({
+					page: currentPage,
+					limit: ITEMS_PER_PAGE,
+					status: statusFilter,
+					keyword: debouncedKeyword,
+				});
 
-case "Đang xử lý":
-return "order-status--yellow"
+				if (!active) return;
 
-case "Chờ phản hồi":
-return "order-status--blue"
+				setRows(payload.items);
+				setTotalPages(Math.max(1, payload.totalPages || Math.ceil((payload.totalElements || 0) / ITEMS_PER_PAGE) || 1));
 
-case "Đã giải quyết":
-return "order-status--green"
+				setSelected((current) => {
+					if (!current) return null;
+					return payload.items.find((item) => item.id === current.id) || null;
+				});
+			} catch (err: any) {
+				if (!active) return;
+				setRows([]);
+				setTotalPages(1);
+				setSelected(null);
+				setError(err?.message || 'Không thể tải danh sách khiếu nại');
+			} finally {
+				if (active) {
+					setLoading(false);
+				}
+			}
+		};
 
-default:
-return "order-status--gray"
+		loadComplaints();
 
-}
+		return () => {
+			active = false;
+		};
+	}, [currentPage, debouncedKeyword, statusFilter]);
 
-}
+	const statCards = useMemo(
+		() => [
+			{
+				title: 'Khiếu nại mới',
+				value: stats.open,
+				sub: 'Chờ tiếp nhận',
+				icon: '🔴',
+			},
+			{
+				title: 'Đang xử lý',
+				value: stats.investigating,
+				sub: 'Đang xác minh',
+				icon: '🟡',
+			},
+			{
+				title: 'Đã giải quyết',
+				value: stats.resolved,
+				sub: 'Đã hoàn tất',
+				icon: '🟢',
+			},
+			{
+				title: 'Đã từ chối',
+				value: stats.dismissed,
+				sub: 'Không đủ cơ sở',
+				icon: '⚫',
+			},
+		],
+		[stats],
+	);
 
-return(
+	return (
+		<div className="acp-layout">
+			<AdminSidebar activeItem="complaints" />
 
-<div className="acp-layout">
+			<main className="acp-main">
+				<AdminHeader />
 
-<AdminSidebar activeItem="complaints"/>
+				<div className="acp-header-row">
+					<h1>Quản lý khiếu nại</h1>
+				</div>
 
-<main className="acp-main">
+				<section className="orders-stats-row">
+					{statCards.map((item) => (
+						<div className="complaint-stat-card" key={item.title}>
+							<div className="complaint-stat-top">
+								<div className="complaint-icon">{item.icon}</div>
+								<div>
+									<div className="stat-title">{item.title}</div>
+									<div className="stat-value">{item.value}</div>
+									<div className="complaint-sub">{item.sub}</div>
+								</div>
+							</div>
+						</div>
+					))}
+				</section>
 
-<AdminHeader/>
-
-<div className="acp-header-row">
-<h1>Quản lý khiếu nại</h1>
+				<section className="orders-controls complaints-controls">
+					<div className="filters-row complaints-filter-row">
+						<div className="complaints-search-box">
+	<input
+		className="complaints-search-input"
+		placeholder="Tìm mã khiếu nại, mã đơn, nội dung mô tả..."
+		value={keyword}
+		onChange={(event) => setKeyword(event.target.value)}
+	/>
 </div>
-
-
-<section className="orders-stats-row">
-
-{stats.map((item)=>(
-
-<div
-className="complaint-stat-card"
-key={item.title}
->
-
-<div className="complaint-stat-top">
-
-<div className="complaint-icon">
-
-{item.icon}
-
-</div>
-
-<div>
-
-<div className="stat-title">
-
-{item.title}
-
-</div>
-
-<div className="stat-value">
-
-{item.value}
-
-</div>
-
-<div className="complaint-sub">
-
-{item.sub}
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-))}
-
-</section>
-
-
-<section className="orders-controls">
-
-<div className="filters-row">
-
-<div className="orders-search-wrap">
-<input
-className="orders-search"
-placeholder="Tìm mã KN, đơn hàng..."
-/>
-</div>
-
-<div className="filter-item">
-
-<label>Trạng thái</label>
-
-<select>
-<option>Tất cả</option>
-<option>Mới</option>
-<option>Đang xử lý</option>
-<option>Chờ phản hồi</option>
-</select>
-
-</div>
-
-<div className="filter-item">
-
-<label>Lý do</label>
-
-<select>
-
-<option>Tất cả</option>
-<option>Thợ đến trễ</option>
-<option>Không đến</option>
-
-</select>
-
-</div>
-
-</div>
-
-</section>
-
-
-
-<div className="order-table-shell">
-
-<table className="order-table">
-
-<thead>
-
-<tr>
-
-<th>Mã KN</th>
-<th>Đơn</th>
-<th>Khách</th>
-<th>Thợ</th>
-<th>Lý do</th>
-<th>Ngày gửi</th>
-<th>Trạng thái</th>
-<th></th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{complaintsMock.map(item=>(
-
-<tr
-className="complaint-row"
-key={item.id}
-onClick={()=>setSelected(item)}
->
-
-<td>{item.code}</td>
-
-<td>{item.order}</td>
-
-<td>{item.customer}</td>
-
-<td>{item.worker}</td>
-
-<td>{item.reason}</td>
-
-<td>{item.date}</td>
-
-<td>
-
-<span
-className={`order-status ${statusClass(item.status)}`}
->
-
-{item.status}
-
-</span>
-
-</td>
-
-<td>
-
-<button
-className="view-btn"
-onClick={(e)=>{
-e.stopPropagation()
-setSelected(item)
-}}
->
-
-👁
-
-</button>
-
-</td>
-
-</tr>
-
-))}
-
-</tbody>
-
-</table>
-
-</div>
-
-
-
-{selected && (
-
-<div
-className="complaint-modal-overlay"
-onClick={()=>setSelected(null)}
->
-
-<div
-className="complaint-modal"
-onClick={(e)=>e.stopPropagation()}
->
-
-<div className="modal-header">
-
-<div>
-
-<h2>
-
-Chi tiết khiếu nại {selected.code}
-
-</h2>
-
-<div
-className={`order-status ${statusClass(selected.status)}`}
->
-
-{selected.status}
-
-</div>
-
-</div>
-
-<button
-className="close-btn"
-onClick={()=>setSelected(null)}
->
-
-✕
-
-</button>
-
-</div>
-
-
-
-<div className="modal-grid">
-
-
-<div className="modal-card">
-
-<h4>Thông tin đơn hàng</h4>
-
-<div className="complaint-grid">
-
-<span>Mã đơn</span>
-<span>{selected.order}</span>
-
-<span>Dịch vụ</span>
-<span>Vệ sinh máy lạnh</span>
-
-<span>Ngày đặt</span>
-<span>19/05/2024</span>
-
-<span>Thanh toán</span>
-<span>Ví điện tử</span>
-
-</div>
-
-</div>
-
-
-<div className="modal-card">
-
-<h4>Khách hàng</h4>
-
-<div className="complaint-grid">
-
-<span>Tên</span>
-<span>{selected.customer}</span>
-
-<span>SĐT</span>
-<span>0901234567</span>
-
-<span>Email</span>
-<span>abc@gmail.com</span>
-
-</div>
-
-</div>
-
-
-
-<div className="modal-card">
-
-<h4>Thợ thực hiện</h4>
-
-<div className="complaint-grid">
-
-<span>Tên</span>
-<span>{selected.worker}</span>
-
-<span>Đánh giá</span>
-<span>⭐4.8 (120)</span>
-
-<span>SĐT</span>
-<span>0909999999</span>
-
-</div>
-
-</div>
-
-
-<div className="modal-card">
-
-<h4>Lý do</h4>
-
-{selected.reason}
-
-</div>
-
-
-<div className="modal-card wide">
-
-<h4>Mô tả</h4>
-
-<p>{selected.description}</p>
-
-</div>
-
-
-
-<div className="modal-card">
-
-<h4>Bằng chứng</h4>
-
-<div className="evidence-list">
-
-<div className="evidence-item">
-Ảnh
-</div>
-
-<div className="evidence-item">
-Map
-</div>
-
-<div className="evidence-item">
-Chat
-</div>
-
-<div className="evidence-item">
-+2
-</div>
-
-</div>
-
-</div>
-
-
-<div className="modal-card wide">
-
-<h4>Timeline</h4>
-
-<div className="timeline">
-
-{selected.timeline.map(
-(item:any)=>
-
-<div className="timeline-item">
-
-{item}
-
-</div>
-
-)}
-
-</div>
-
-</div>
-
-</div>
-
-
-<div className="action-grid">
-
-<button className="action-btn primary">
-Tiếp nhận
-</button>
-
-<button className="action-btn">
-Liên hệ thợ
-</button>
-
-<button className="action-btn">
-Yêu cầu bổ sung
-</button>
-
-<button className="action-btn warning">
-Cảnh cáo
-</button>
-
-<button className="action-btn">
-Hoàn tiền
-</button>
-
-<button className="action-btn danger">
-Khóa tài khoản
-</button>
-
-<button className="action-btn">
-Đóng khiếu nại
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-)}
-
-</main>
-
-</div>
-
-)
-
+						<div className="filter-item complaints-status-filter">
+							<label>Trạng thái</label>
+							<select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as 'all' | ComplaintStatusApi)}>
+								{statusOptions.map((option) => (
+									<option key={option.value} value={option.value}>
+										{option.label}
+									</option>
+								))}
+							</select>
+						</div>
+
+						
+					</div>
+				</section>
+
+				<div className="order-table-shell">
+					<table className="order-table">
+						<thead>
+							<tr>
+								<th>Mã KN</th>
+								<th>Đơn</th>
+								<th>Khách</th>
+								<th>Thợ</th>
+								<th>Lý do</th>
+								<th>Ngày gửi</th>
+								<th>Trạng thái</th>
+								<th></th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{!loading && rows.length === 0 ? (
+								<tr>
+									<td colSpan={8} className="complaints-empty-row">
+										{error ? `Lỗi: ${error}` : 'Không có khiếu nại phù hợp bộ lọc'}
+									</td>
+								</tr>
+							) : null}
+
+							{loading ? (
+								<tr>
+									<td colSpan={8} className="complaints-empty-row">
+										Đang tải dữ liệu khiếu nại...
+									</td>
+								</tr>
+							) : null}
+
+							{!loading
+								? rows.map((item) => (
+										<tr className="complaint-row" key={item.id} onClick={() => setSelected(item)}>
+											<td>{item.code}</td>
+											<td>{item.orderCode}</td>
+											<td>{item.customerName}</td>
+											<td>{item.technicianName}</td>
+											<td>{item.reasonLabel}</td>
+											<td>{item.createdAt}</td>
+											<td>
+												<span className={`order-status ${buildStatusClass(item.status)}`}>{item.statusLabel}</span>
+											</td>
+											<td>
+												<button
+													className="view-btn"
+													onClick={(event) => {
+														event.stopPropagation();
+														setSelected(item);
+													}}
+												>
+													👁
+												</button>
+											</td>
+										</tr>
+									))
+								: null}
+						</tbody>
+					</table>
+				</div>
+
+				<div className="complaints-pagination">
+					<button
+						className="complaints-page-btn"
+						disabled={currentPage <= 1 || loading}
+						onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+					>
+						Trang trước
+					</button>
+					<span className="complaints-page-text">
+						Trang {currentPage} / {Math.max(1, totalPages)}
+					</span>
+					<button
+						className="complaints-page-btn"
+						disabled={currentPage >= totalPages || loading}
+						onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+					>
+						Trang sau
+					</button>
+				</div>
+
+				{selected ? (
+					<div className="complaint-modal-overlay" onClick={() => setSelected(null)}>
+						<div className="complaint-modal" onClick={(event) => event.stopPropagation()}>
+							<div className="modal-header">
+								<div>
+									<h2>Chi tiết khiếu nại {selected.code}</h2>
+									<div className={`order-status ${buildStatusClass(selected.status)}`}>{selected.statusLabel}</div>
+								</div>
+
+								<button className="close-btn" onClick={() => setSelected(null)}>
+									✕
+								</button>
+							</div>
+
+							<div className="modal-grid">
+								<div className="modal-card">
+									<h4>Thông tin khiếu nại</h4>
+									<div className="complaint-grid">
+										<span>Mã KN</span>
+										<span>{selected.code}</span>
+
+										<span>Mã đơn</span>
+										<span>{selected.orderCode}</span>
+
+										<span>Ngày gửi</span>
+										<span>{selected.createdAt}</span>
+
+										<span>Lý do</span>
+										<span>{selected.reasonLabel}</span>
+									</div>
+								</div>
+
+								<div className="modal-card">
+									<h4>Khách hàng</h4>
+									<div className="complaint-grid">
+										<span>Tên</span>
+										<span>{selected.customerName}</span>
+									</div>
+								</div>
+
+								<div className="modal-card">
+									<h4>Thợ thực hiện</h4>
+									<div className="complaint-grid">
+										<span>Tên</span>
+										<span>{selected.technicianName}</span>
+									</div>
+								</div>
+
+								<div className="modal-card wide">
+									<h4>Mô tả</h4>
+									<p>{selected.description}</p>
+								</div>
+
+								<div className="modal-card wide">
+									<h4>Bằng chứng</h4>
+									{selected.evidenceImages.length > 0 ? (
+										<div className="evidence-list">
+											{selected.evidenceImages.map((url, index) => (
+												<a href={url} className="evidence-link" target="_blank" rel="noreferrer" key={`${selected.id}-${index}`}>
+													Ảnh #{index + 1}
+												</a>
+											))}
+										</div>
+									) : (
+										<div className="complaints-muted">Không có ảnh bằng chứng</div>
+									)}
+								</div>
+							</div>
+						</div>
+					</div>
+				) : null}
+			</main>
+		</div>
+	);
 }
