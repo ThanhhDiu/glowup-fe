@@ -204,6 +204,35 @@
 	color: #64748b;
 }
 
+.complaint-modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #e2e8f0;
+}
+
+.complaint-modal-btn {
+	min-width: 120px;
+	height: 40px;
+	border-radius: 10px;
+	border: 1px solid #cbd5e1;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.complaint-modal-btn--ghost {
+	background: #fff;
+	color: #334155;
+}
+
+.complaint-modal-btn--primary {
+	border-color: #16a34a;
+	background: linear-gradient(135deg, #22c55e, #16a34a);
+	color: #fff;
+}
+
 .complaint-stat-card {
 	background: #fff;
 	border: 1px solid #e2e8f0;
