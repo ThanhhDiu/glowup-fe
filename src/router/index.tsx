@@ -18,6 +18,8 @@ import AdminVerificationDetail from '../pages/AdminVerificationDetail'
 import AdminVerificationRequests from '../pages/AdminVerificationRequests'
 import AdminVerificationUpdate from '../pages/AdminVerificationUpdate'
 import AdminOrdersPage from '../pages/AdminOrdersPage'
+import AdminComplaintsPage from '../pages/AdminComplaintsPage'
+import AdminComplaintResolvePage from '../pages/AdminComplaintResolvePage'
 import CustomerAccountSettingsPage from '../pages/CustomerAccountSettingsPage'
 import FindProvider from '../pages/FindProvider'
 import HomePage from '../pages/HomePage'
@@ -33,6 +35,7 @@ import TechnicianWalletPage from '../pages/TechnicianWalletPage'
 import TechnicianWalletTopUpPage from '../pages/TechnicianWalletTopUpPage'
 import TechnicianWalletWithdrawPage from '../pages/TechnicianWalletWithdrawPage'
 import VoucherRewardsPage from '../pages/VoucherRewardsPage'
+
 
 export default function AppRouter() {
   return (
@@ -80,6 +83,8 @@ export default function AppRouter() {
         <Route path="verification/:requestId" element={<AdminVerificationDetail />} />
         <Route path="verification/:requestId/update" element={<AdminVerificationUpdate />} />
         <Route path="settings" element={<AdminSystemSettingsPage />} />
+        <Route path="complaints" element={<AdminComplaintsPage />} />
+        <Route path="complaints/:complaintId/resolve" element={<AdminComplaintResolvePage />} />
       </Route>
 
       <Route path="/auth">

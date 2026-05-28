@@ -360,12 +360,12 @@ const AdminOrdersPage: React.FC = () => {
             ))
             : (
               <>
-                <div className="stat-card"><div className="stat-title">Tổng đơn hàng</div><div className="stat-value">{totalOrders}</div></div>
-                <div className="stat-card"><div className="stat-title">Đang xử lý</div><div className="stat-value">{processingOrders}</div></div>
-                <div className="stat-card"><div className="stat-title">Hoàn thành</div><div className="stat-value">{completedOrders}</div></div>
-                <div className="stat-card"><div className="stat-title">Đã hủy</div><div className="stat-value">{cancelledOrders}</div></div>
-                <div className="stat-card"><div className="stat-title">Tranh chấp</div><div className="stat-value">{disputesOrders}</div></div>
-                <div className="stat-card"><div className="stat-title">Chờ duyệt giá</div><div className="stat-value">{pendingPriceReviewOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Tổng đơn hàng</div><div className="stat-value-card">{totalOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Đang xử lý</div><div className="stat-value-card">{processingOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Hoàn thành</div><div className="stat-value-card">{completedOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Đã hủy</div><div className="stat-value-card">{cancelledOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Tranh chấp</div><div className="stat-value-card">{disputesOrders}</div></div>
+                <div className="stat-card"><div className="stat-title">Chờ duyệt giá</div><div className="stat-value-card">{pendingPriceReviewOrders}</div></div>
               </>
             )}
         </section>
