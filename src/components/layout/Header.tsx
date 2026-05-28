@@ -13,13 +13,12 @@ interface HeaderProps {
   searchPlaceholder?: string;
 }
 
-const profileDropdown = (): ReactNode => {
-  const navigate = useNavigate()
-    const goToProfile = () => navigate && navigate(customerPageMap['customer-settings']);
+const profileDropdown = (onNavigate?: (page: string) => void, navigate?: ReturnType<typeof useNavigate>): ReactNode => {
+  const goToProfile = () => navigate && navigate(customerPageMap['customer-settings']);
   const goToLogout = () => {
-    logoutUser()
-    navigate && navigate('/');
-  }
+    logoutUser();
+    onNavigate && onNavigate('login');
+  };
   return (<div className="profile-dropdown">
             <button className="profile-btn" type="button" aria-haspopup="menu" aria-label="Tài khoản của tôi">
               <img src="https://i.pravatar.cc/150?img=32" alt="Avatar" className="avatar-img" />
@@ -44,10 +43,25 @@ const profileDropdown = (): ReactNode => {
             </div>
           </div>)}
 
-const loginButton = (onNavigate: any)=> (
-  <button className="profile-menu__item profile-menu__item--danger" type="button" onClick={()=> onNavigate && onNavigate('login')} role="menuitem">
+const loginButton = (onNavigate?: (page: string) => void) => (
+  <button 
+    className="login-btn" 
+    style={{
+      padding: '8px 16px',
+      borderRadius: '20px',
+      border: 'none',
+      backgroundColor: '#3b82f6',
+      color: '#ffffff',
+      fontWeight: '600',
+      cursor: 'pointer',
+      fontSize: '14px',
+      transition: 'background-color 0.2s ease'
+    }}
+    type="button" 
+    onClick={() => onNavigate && onNavigate('login')}
+  >
     Đăng nhập
-  </button> 
+  </button>
 )
 export const Header: React.FC<HeaderProps> = ({
   onNavigate,
@@ -55,6 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
   searchPlaceholder = 'Tìm kiếm dịch vụ...',
 }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => {
@@ -113,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
             <input type="text" placeholder={searchPlaceholder} className="search-input" />
           </div>
           <NotificationMenu badgeStyle="dot" />
-          {isAuthenticated() ? profileDropdown() :  loginButton(onNavigate)}
+          {isAuthenticated() ? profileDropdown(onNavigate, navigate) :  loginButton(onNavigate)}
         </div>
       </div>
     </header>

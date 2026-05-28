@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { userService } from '../services/userService';
+import { technicianService } from '../services/technicianService';
 import {
   BadgeCheck,
   Clock3,
@@ -30,12 +32,85 @@ export default function TechnicianProfileSettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isAvailable, setIsAvailable] = useState(true);
   const [profile, setProfile] = useState({
-    name: 'Nguyễn Văn Minh',
-    phone: '098 765 4321',
-    bio: 'Kỹ thuật viên hơn 10 năm kinh nghiệm trong lĩnh vực điện lạnh và thiết bị gia dụng. Chuyên sửa chữa máy điều hòa, máy giặt và tủ lạnh với quy trình minh bạch, đúng hẹn.',
+    name: '',
+    phone: '',
+    bio: '',
   });
-  const [skills, setSkills] = useState(['Máy lạnh', 'Máy giặt', 'Tủ lạnh']);
-  const [areas, setAreas] = useState(['Quận Bình Thạnh', 'Quận 1', 'Quận 3']);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [areas, setAreas] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    userService.getMe()
+      .then((res) => {
+        const u = res.data;
+        setUserId(u.id?.toString() || '');
+        setProfile({
+          name: u.fullName || '',
+          phone: u.phone || '',
+          bio: '', // Might want to fetch from technician profile API specifically if backend splits it
+        });
+        
+        if (u.id) {
+          // If the backend has a specific getTechnicianById that returns these
+          technicianService.getTechnicianById(u.id.toString())
+            .then(techRes => {
+              if (techRes.data) {
+                const t = techRes.data;
+                setIsAvailable(t.isAvailable ?? true);
+                setSkills(t.skills || []);
+                setAreas(t.district ? [t.district] : []); // Just using district as an example, maybe multiple areas later
+                // If bio is part of technician model:
+                // setProfile(prev => ({ ...prev, bio: t.bio || '' }))
+              }
+            })
+            .catch(err => console.log('Could not load technician specific profile, maybe not initialized yet', err));
+        }
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải thông tin user:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  const handleSave = async () => {
+    if (!userId) return;
+    try {
+      // First update user basics (name, phone)
+      await userService.updateUserProfile(userId, {
+        fullName: profile.name,
+        phone: profile.phone,
+      });
+
+      // Then update technician profile (skills, etc.)
+      await technicianService.updateTechnicianProfile(userId, {
+        skills,
+        district: areas[0] || '', // Using first area for district 
+      });
+
+      alert('Lưu thay đổi thành công!');
+    } catch (err) {
+      console.error(err);
+      alert('Lưu thay đổi thất bại.');
+    }
+  };
+
+  const handleToggleAvailable = async () => {
+    const newState = !isAvailable;
+    setIsAvailable(newState);
+    if (userId) {
+      try {
+        await technicianService.updateTechnicianAvailability(userId, newState);
+      } catch (err) {
+        console.error('Error updating availability', err);
+        setIsAvailable(!newState); // revert on failure
+        alert('Cập nhật trạng thái thất bại');
+      }
+    }
+  };
 
   const toggleSelection = (
     value: string,
@@ -142,7 +217,7 @@ export default function TechnicianProfileSettingsPage() {
               title="Sẵn sàng nhận đơn"
               description="Bật để hệ thống ưu tiên hiển thị bạn trong luồng đề xuất và điều phối đơn gần khu vực."
               checked={isAvailable}
-              onToggle={() => setIsAvailable((current) => !current)}
+              onToggle={handleToggleAvailable}
             />
 
             <div className="settings-grid settings-grid--two">
@@ -178,7 +253,7 @@ export default function TechnicianProfileSettingsPage() {
             </div>
 
             <SettingsActionBar>
-              <button type="button" className="settings-primary-button">
+              <button type="button" className="settings-primary-button" onClick={handleSave}>
                 <Save size={18} />
                 Lưu thay đổi
               </button>

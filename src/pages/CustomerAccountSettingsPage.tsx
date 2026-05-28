@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { userService } from '../services/userService';
 import {
   CustomerAccountDangerZone,
   CustomerAccountProfileCard,
@@ -11,15 +12,55 @@ import type { CustomerAccountFormData } from '../components/settings';
 export default function CustomerAccountSettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [form, setForm] = useState<CustomerAccountFormData>({
-    fullName: 'Trần Thị Lan',
-    phone: '090 123 4567',
-    email: 'lan.tran@email.com',
-    address: '123 Nguyễn Văn Linh, Quận 7, TP.HCM',
+    fullName: '',
+    phone: '',
+    email: '',
+    address: '',
   });
+  const [userId, setUserId] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    userService.getMe()
+      .then((res) => {
+        const u = res.data;
+        setUserId(u.id?.toString() || '');
+        setForm({
+          fullName: u.fullName || '',
+          phone: u.phone || '',
+          email: u.email || '',
+          address: '', // Update if backend adds address field later
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Lỗi khi tải thông tin user:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const updateField = (field: keyof CustomerAccountFormData, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
   };
+
+  const handleSave = async () => {
+    if (!userId) return;
+    try {
+      await userService.updateUserProfile(userId, {
+        fullName: form.fullName,
+        phone: form.phone,
+        email: form.email,
+      });
+      alert('Cập nhật thông tin thành công!');
+    } catch (err) {
+      console.error(err);
+      alert('Cập nhật thất bại. Vui lòng thử lại.');
+    }
+  };
+
+  if (loading) {
+    return <div style={{ padding: '40px', textAlign: 'center' }}>Đang tải thông tin...</div>;
+  }
 
   return (
     <>
@@ -27,7 +68,7 @@ export default function CustomerAccountSettingsPage() {
         <CustomerAccountProfileCard
           form={form}
           onFieldChange={updateField}
-          onSave={() => undefined}
+          onSave={handleSave}
           onUploadAvatar={() => undefined}
         />
 

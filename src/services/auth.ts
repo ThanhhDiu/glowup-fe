@@ -8,35 +8,28 @@ interface RegisterUserData {
   accountType: 'customer' | 'technician'
 }
 
-export const registerUser = async (userData: RegisterUserData, setSuccessMessage: (message: string) => void) => {
-    setSuccessMessage('')
+export const registerUser = async (userData: RegisterUserData): Promise<void> => {
     const { fullName, email, phone, password, accountType } = userData
-    try {
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName,
-          email,
-          phone,
-          password,
-          role: accountType,
-        }),
-      })
+    
+    // Dòng fetch phát đi yêu cầu
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fullName,
+        email,
+        phone,
+        password,
+        role: accountType === 'customer' ? 'CUSTOMER' : 'TECHNICIAN',
+      }),
+    })
   
-      const data = await response.json()
+    const data = await response.json()
   
-      if (!response.ok) {
-        throw new Error(data.message || 'Đăng ký thất bại')
-      }
-  
-      setSuccessMessage('Đăng ký thành công')
-      console.log(data)
-    } catch (error) {
-      console.error(error)
-      setSuccessMessage('Có lỗi xảy ra')
+    if (!response.ok) {
+      throw new Error(data.message || 'Đăng ký thất bại')
     }
   }
 
@@ -136,7 +129,7 @@ export const fetchWithAuth = async (
   const { skipAuth, headers, ...rest } = init
   const nextHeaders = new Headers(headers || undefined)
 
-  if (!nextHeaders.has('Content-Type')) {
+  if (!nextHeaders.has('Content-Type') && !(rest.body instanceof FormData)) {
     nextHeaders.set('Content-Type', 'application/json')
   }
 
@@ -190,5 +183,21 @@ export const getAccessToken = (): string | null => {
 
 export const getRefreshToken = (): string | null => {
   return localStorage.getItem('refreshToken')
+}
+
+export const verifyEmail = async (data: { token: string }): Promise<void> => {
+  const response = await fetch(`${API_URL}/auth/verify-email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  const responseData = await response.json()
+
+  if (!response.ok) {
+    throw new Error(responseData.message || 'Xác nhận email thất bại')
+  }
 }
 

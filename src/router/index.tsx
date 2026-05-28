@@ -8,6 +8,8 @@ import {
   LoginPage,
   RegisterPage,
 } from '../pages/AuthScreens'
+import { VerifyEmailPage } from '../pages/VerifyEmailPage'
+import { PendingEmailVerificationPage } from '../pages/PendingEmailVerificationPage'
 import AdminCategoriesPage from '../pages/AdminCategoriesPage'
 import AdminDashboard from '../pages/AdminDashboard'
 import AdminFinancePage from '../pages/AdminFinancePage'
@@ -51,6 +53,9 @@ export default function AppRouter() {
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth/change-password" element={<ChangePasswordPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/pending-email-verification" element={<PendingEmailVerificationPage />} />
+      <Route path="/reset-password" element={<ChangePasswordPage />} />
 
       <Route path="/technician">
         <Route path="jobs" element={<TechnicianLayout activeItem="jobs"><OrderManagementPage role="technician" /></TechnicianLayout>} />
