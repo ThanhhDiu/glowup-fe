@@ -195,13 +195,14 @@ const AdminDashboard: React.FC = () => {
         <DashboardStatsCards stats={dashboardData?.stats || []} isLoading={loading} />
 
         {/* Charts Section */}
-        <div className="ad-charts-container">
-          <div className="ad-chart-wrapper ad-chart-large">
+        <div className="ad-chart-wrapper ad-chart-large">
             <div className="ad-chart-header">
               <h2 className="ad-chart-title">Tăng trưởng đơn hàng</h2>
             </div>
             <RevenueChart chartData={dashboardData?.revenue || []} isLoading={loading} />
           </div>
+        {/* <div className="ad-charts-container">
+          
 
           <div className="ad-chart-wrapper ad-chart-small">
             <div className="ad-chart-header">
@@ -209,7 +210,7 @@ const AdminDashboard: React.FC = () => {
             </div>
             <ServiceDistributionChart services={dashboardData?.services || []} isLoading={loading} />
           </div>
-        </div>
+        </div> */}
 
         {/* Recent Orders Table */}
         <RecentOrdersTable orders={dashboardData?.recentOrders || []} isLoading={loading} />

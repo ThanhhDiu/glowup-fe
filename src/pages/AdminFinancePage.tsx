@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { AdminHeader } from '../components/admin/AdminHeader';
 import { AdminSidebar } from '../components/admin/AdminSidebar';
-import { FaArrowUpRightDots, FaBuildingColumns, FaEllipsis, FaGear, FaMoneyBillTransfer } from 'react-icons/fa6';
+import { FaArrowUpRightDots, FaEllipsis, FaGear } from 'react-icons/fa6';
 import './AdminFinancePage.css';
 
 type TxStatus = 'done' | 'pending';
@@ -18,24 +18,7 @@ type FinanceTx = {
   status: TxStatus;
 };
 
-const withdrawRequests = [
-  {
-    id: 'wr-1',
-    name: 'Trần Anh Tuấn',
-    amount: 2500000,
-    bank: 'Vietcombank',
-    account: '0071901232***',
-    avatar: 'TA',
-  },
-  {
-    id: 'wr-2',
-    name: 'Lê Minh Hoàng',
-    amount: 1200000,
-    bank: 'MB Bank',
-    account: '190332884***',
-    avatar: 'LM',
-  },
-];
+
 
 const transactions: FinanceTx[] = [
   {
@@ -70,6 +53,14 @@ const transactions: FinanceTx[] = [
   },
 ];
 
+const technicians = [
+  { id: 'wr-1', name: 'Trần Anh Tuấn', balance: 125000, status: 'normal', totalDeducted: 2450000, lastOrder: '#TXN-882910', lastOrderDate: '24/05/2024 14:20' },
+  { id: 'wr-2', name: 'Lê Minh Hoàng', balance: 18000, status: 'low', totalDeducted: 1980000, lastOrder: '#TXN-882905', lastOrderDate: '24/05/2024 13:15' },
+  { id: 'wr-3', name: 'Phạm Văn Đức', balance: 5000, status: 'locked', totalDeducted: 3120000, lastOrder: '#TXN-882899', lastOrderDate: '24/05/2024 12:05' },
+  { id: 'wr-4', name: 'Nguyễn Thị Hằng', balance: 68000, status: 'normal', totalDeducted: 1560000, lastOrder: '#TXN-882888', lastOrderDate: '23/05/2024 16:30' },
+  { id: 'wr-5', name: 'Hoàng Quốc Bảo', balance: 21000, status: 'low', totalDeducted: 1230000, lastOrder: '#TXN-882880', lastOrderDate: '23/05/2024 09:20' },
+];
+
 const typeLabel: Record<TxType, string> = {
   commission: 'HOA HỒNG',
   withdraw: 'RÚT TIỀN',
@@ -84,19 +75,10 @@ const statusLabel: Record<TxStatus, string> = {
 const money = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('vi-VN')}đ`;
 
 const AdminFinancePage: React.FC = () => {
-  const [commissionPercent, setCommissionPercent] = useState('15');
+  const [commissionFixed, setCommissionFixed] = useState('10000');
+  const [minBalance, setMinBalance] = useState('20000');
   const [txTypeFilter, setTxTypeFilter] = useState<'all' | TxType>('all');
-
-  const feePreview = useMemo(() => {
-    const input = Number(commissionPercent.replace(/\D/g, '')) || 0;
-    const sampleOrder = 1000000;
-    const fee = Math.round((sampleOrder * input) / 100);
-
-    return {
-      fee,
-      remaining: sampleOrder - fee,
-    };
-  }, [commissionPercent]);
+  const [techFilter, setTechFilter] = useState<'all' | 'normal' | 'low' | 'locked'>('all');
 
   const filteredTransactions = useMemo(() => {
     if (txTypeFilter === 'all') return transactions;
@@ -121,107 +103,108 @@ const AdminFinancePage: React.FC = () => {
         </section>
 
         <section className="afp-card-grid">
-          <article className="afp-card">
+          <article className="afp-card afp-commission-card">
             <header className="afp-card-head">
               <h2>
                 <FaGear />
-                Cấu hình hoa hồng
+                Cài đặt phí hoa hồng
               </h2>
               <button type="button" aria-label="Settings">
                 <FaEllipsis />
               </button>
             </header>
 
-            <label className="afp-label" htmlFor="commission-percent">Chiết khấu hệ thống (%)</label>
-            <div className="afp-input-affix">
-              <input
-                id="commission-percent"
-                value={commissionPercent}
-                onChange={(event) => setCommissionPercent(event.target.value.replace(/\D/g, ''))}
-                inputMode="numeric"
-              />
-              <span>%</span>
-            </div>
-
-            <div className="afp-preview-box">
-              <p>Xem trước trên đơn 1.000.000đ</p>
-              <div>
-                <span>Hoa hồng GlowUp ({commissionPercent || 0}%)</span>
-                <strong>{feePreview.fee.toLocaleString('vi-VN')}đ</strong>
+            <div className="afp-commission-inner">
+              <div className="afp-commission-left">
+                <label className="afp-label">PHÍ HOA HỒNG CỐ ĐỊNH</label>
+                <div className="afp-input-affix">
+                  <input
+                    value={commissionFixed}
+                    onChange={(e) => setCommissionFixed(e.target.value.replace(/\D/g, ''))}
+                    inputMode="numeric"
+                  />
+                  <span>đ</span>
+                </div>
+                <small className="afp-help">Phí này sẽ được tự động trừ từ ví hoa hồng của thợ khi đơn hàng hoàn thành.</small>
+                <div className="afp-commission-meta">Cập nhật lần cuối: 24/05/2024 10:30 bởi Admin</div>
               </div>
-              <div>
-                <span>Thợ nhận được</span>
-                <strong>{feePreview.remaining.toLocaleString('vi-VN')}đ</strong>
+              <div className="afp-commission-right">
+                <span className="afp-status-badge active">Đang áp dụng</span>
+                <button className="afp-primary-btn" type="button">Lưu thay đổi</button>
               </div>
             </div>
-
-            <button className="afp-primary-btn" type="button">Cập nhật cấu hình</button>
           </article>
 
-          <article className="afp-card">
+          <article className="afp-card afp-rules-card">
             <header className="afp-card-head">
               <h2>
                 <FaArrowUpRightDots />
-                Điều chỉnh thủ công
+                Quy tắc áp dụng
               </h2>
             </header>
 
-            <div className="afp-form-grid">
-              <label>
-                <span>Mã/tên thợ</span>
-                <input type="text" placeholder="Nhập ID hoặc họ tên..." />
-              </label>
-              <label>
-                <span>Số tiền (VND)</span>
-                <input type="text" placeholder="0" inputMode="numeric" />
-              </label>
-              <label>
-                <span>Loại</span>
-                <select defaultValue="commission-minus">
-                  <option value="commission-plus">Cộng tiền (+)</option>
-                  <option value="commission-minus">Trừ tiền (-)</option>
-                </select>
-              </label>
+            <div className="afp-rules-body">
+              <ul>
+                <li>Phí hoa hồng được áp dụng cho tất cả đơn hàng hoàn thành.</li>
+                <li>Hệ thống sẽ trừ trước từ ví hoa hồng của thợ.</li>
+                <li>Nếu số dư ví hoa hồng không đủ, thợ sẽ bị khóa nhận đơn mới.</li>
+              </ul>
+
+              <label className="afp-label">QUY ĐỊNH SỐ DƯ TỐI THIỂU</label>
+              <div className="afp-input-affix">
+                <input value={minBalance} onChange={(e) => setMinBalance(e.target.value.replace(/\D/g, ''))} inputMode="numeric" />
+                <span>đ</span>
+              </div>
+
+              <button className="afp-secondary-btn" type="button">Cập nhật</button>
             </div>
-
-            <label className="afp-note-area">
-              <span>Lý do điều chỉnh</span>
-              <textarea placeholder="Nhập lý do chi tiết..." rows={4} />
-            </label>
-
-            <button className="afp-secondary-btn" type="button">Xác nhận điều chỉnh</button>
           </article>
 
-          <article className="afp-card">
-            <header className="afp-card-head">
-              <h2>
-                <FaMoneyBillTransfer />
-                Yêu cầu rút tiền
-              </h2>
-              <span className="afp-badge">3 chờ duyệt</span>
-            </header>
+          
+        </section>
 
-            <div className="afp-request-list">
-              {withdrawRequests.map((item) => (
-                <div className="afp-request-item" key={item.id}>
-                  <div className="afp-request-top">
-                    <div className="afp-avatar">{item.avatar}</div>
+        <section className="afp-tech-status">
+          <div className="afp-tech-status-head">
+            <h3>Tình trạng ví hoa hồng của thợ</h3>
+            <div className="afp-tech-tabs">
+              <button className={techFilter === 'all' ? 'active' : ''} onClick={() => setTechFilter('all')}>Tất cả</button>
+              <button className={techFilter === 'normal' ? 'active' : ''} onClick={() => setTechFilter('normal')}>Bình thường</button>
+              <button className={techFilter === 'low' ? 'active' : ''} onClick={() => setTechFilter('low')}>Sắp hết</button>
+              <button className={techFilter === 'locked' ? 'active' : ''} onClick={() => setTechFilter('locked')}>Đã khóa</button>
+            </div>
+          </div>
+
+          <div className="afp-tech-list">
+            <div className="afp-tech-row afp-tech-head">
+              <span>THỢ</span>
+              <span>SỐ DƯ VÍ HOA HỒNG</span>
+              <span>TRẠNG THÁI</span>
+              <span>TỔNG PHÍ ĐÃ TRỪ</span>
+              <span>ĐƠN GẦN NHẤT</span>
+              <span />
+            </div>
+            {technicians
+              .filter((t) => techFilter === 'all' ? true : t.status === techFilter)
+              .map((t) => (
+                <div className="afp-tech-row" key={t.id}>
+                  <span className="afp-tech-name">
+                    <div className="afp-avatar small">{t.name.split(' ').map(n => n[0]).slice(-2).join('')}</div>
                     <div>
-                      <strong>{item.name}</strong>
-                      <small>{item.id.toUpperCase()}</small>
+                      <strong>{t.name}</strong>
+                      <small>{t.id.toUpperCase()}</small>
                     </div>
-                    <b>{item.amount.toLocaleString('vi-VN')}đ</b>
-                  </div>
-                  <div className="afp-bank-row">
-                    <FaBuildingColumns />
-                    <span>{item.bank}</span>
-                    <small>{item.account}</small>
-                  </div>
-                  <button type="button">Xác nhận đã chuyển khoản</button>
+                  </span>
+                  <span className={t.balance > 0 ? 'afp-amount-in' : 'afp-amount-out'}>{t.balance.toLocaleString('vi-VN')}đ</span>
+                  <span className={`afp-td-status ${t.status}`}>{t.status === 'normal' ? 'Bình thường' : t.status === 'low' ? 'Sắp hết' : 'Đã khóa'}</span>
+                  <span>{t.totalDeducted.toLocaleString('vi-VN')}đ</span>
+                  <span>
+                    <strong>{t.lastOrder}</strong>
+                    <small>{t.lastOrderDate}</small>
+                  </span>
+                  <span><button className="afp-more-btn">...</button></span>
                 </div>
               ))}
-            </div>
-          </article>
+          </div>
         </section>
 
         <section className="afp-table-wrap">
