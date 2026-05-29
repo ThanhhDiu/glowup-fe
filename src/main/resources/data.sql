@@ -226,8 +226,14 @@ WHERE NOT EXISTS (SELECT 1 FROM orders WHERE code = 'GU-99300');
 -- ---------------------------------------------------------------------
 -- 8. ADMIN SYSTEM SETTINGS — default commission & VAT
 -- ---------------------------------------------------------------------
--- system_settings được Hibernate auto-create từ entity SystemSetting.
--- Skip — service layer tự tạo default khi gọi GET /admin/settings lần đầu.
+INSERT INTO system_settings (setting_key, setting_value, created_at, updated_at)
+VALUES
+  ('fixed_commission_fee', '10000', NOW(), NOW()),
+  ('minimum_commission_balance', '20000', NOW(), NOW()),
+  ('auto_lock_enabled', 'true', NOW(), NOW())
+ON CONFLICT (setting_key) DO UPDATE SET
+  setting_value = EXCLUDED.setting_value,
+  updated_at = NOW();
 
 
 -- =====================================================================
@@ -275,6 +281,61 @@ SELECT 'USR-C-' || LPAD(s::text,3,'0') AS code,
        FALSE, NOW(), NOW()
 FROM generate_series(1,300) s
 ON CONFLICT (code) DO NOTHING;
+
+-- 3.5) Commission wallet demo data (NORMAL / LOW_BALANCE / LOCKED)
+INSERT INTO wallets (user_id, balance, pending_balance, total_earned, total_withdrawn, currency, created_at, updated_at)
+SELECT u.id, 70000, 0, 70000, 0, 'VND', NOW(), NOW()
+FROM users u WHERE u.code = 'USR-004'
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO wallets (user_id, balance, pending_balance, total_earned, total_withdrawn, currency, created_at, updated_at)
+SELECT u.id, 30000, 0, 50000, 20000, 'VND', NOW(), NOW()
+FROM users u WHERE u.code = 'USR-005'
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO wallets (user_id, balance, pending_balance, total_earned, total_withdrawn, currency, created_at, updated_at)
+SELECT u.id, 15000, 0, 15000, 0, 'VND', NOW(), NOW()
+FROM users u WHERE u.code = 'USR-T-001'
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO wallet_transactions (
+  transaction_code, wallet_id, type, category, title, amount, fee, net_amount,
+  after_balance, note, actor, related_order_code, status, created_at, processed_at
+)
+SELECT 'TX-COMM-001', w.id, 'COMMISSION', 'COMMISSION_TOPUP', 'Nạp hoa hồng cho thợ',
+       70000, 0, 70000, 70000,
+       'Nạp quỹ hoa hồng khởi tạo', 'ADMIN', NULL,
+       'SUCCESS', NOW() - INTERVAL '3 days', NOW() - INTERVAL '3 days'
+FROM wallets w
+JOIN users u ON u.id = w.user_id
+WHERE u.code = 'USR-004'
+  AND NOT EXISTS (SELECT 1 FROM wallet_transactions wt WHERE wt.transaction_code = 'TX-COMM-001');
+
+INSERT INTO wallet_transactions (
+  transaction_code, wallet_id, type, category, title, amount, fee, net_amount,
+  after_balance, note, actor, related_order_code, status, created_at, processed_at
+)
+SELECT 'TX-COMM-002', w.id, 'COMMISSION', 'COMMISSION_DEDUCTION', 'Khấu trừ hoa hồng đơn GU-99210',
+       20000, 0, -20000, 30000,
+       'Khấu trừ phí cố định theo đơn hoàn thành', 'SYSTEM', 'GU-99210',
+       'SUCCESS', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 days'
+FROM wallets w
+JOIN users u ON u.id = w.user_id
+WHERE u.code = 'USR-005'
+  AND NOT EXISTS (SELECT 1 FROM wallet_transactions wt WHERE wt.transaction_code = 'TX-COMM-002');
+
+INSERT INTO wallet_transactions (
+  transaction_code, wallet_id, type, category, title, amount, fee, net_amount,
+  after_balance, note, actor, related_order_code, status, created_at, processed_at
+)
+SELECT 'TX-COMM-003', w.id, 'COMMISSION', 'COMMISSION_REFUND', 'Hoàn hoa hồng đơn GU-SEED-001',
+       15000, 0, 15000, 15000,
+       'Hoàn phí hoa hồng cho kỹ thuật viên', 'ADMIN', 'GU-SEED-001',
+       'SUCCESS', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day'
+FROM wallets w
+JOIN users u ON u.id = w.user_id
+WHERE u.code = 'USR-T-001'
+  AND NOT EXISTS (SELECT 1 FROM wallet_transactions wt WHERE wt.transaction_code = 'TX-COMM-003');
 
 -- 3) Ensure required categories exist (Sửa điện, Sửa nước, Vệ sinh máy lạnh)
 INSERT INTO categories (code, title, description, icon_url, priority, status, deleted, created_at, updated_at)

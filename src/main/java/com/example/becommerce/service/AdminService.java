@@ -7,6 +7,8 @@ import com.example.becommerce.dto.response.admin.AdminSettingsSavedResponse;
 import com.example.becommerce.dto.response.admin.AdminStatsResponse;
 import com.example.becommerce.dto.response.admin.AdminTransactionsResponse;
 import com.example.becommerce.dto.response.admin.CommissionResponse;
+import com.example.becommerce.dto.response.admin.CommissionSettingsResponse;
+import com.example.becommerce.dto.response.admin.CommissionWalletsResponse;
 import com.example.becommerce.dto.response.admin.RecentOrdersResponse;
 import com.example.becommerce.dto.response.admin.RevenueStatsResponse;
 import com.example.becommerce.dto.response.admin.ServiceDistributionResponse;
@@ -31,11 +33,16 @@ public interface AdminService {
 
     CommissionResponse updateCommission(CommissionUpdateRequest request);
 
+    CommissionSettingsResponse getCommissionSettings();
+
+    CommissionWalletsResponse getCommissionWallets(String status, String keyword, int page, int size);
+
     WalletAdjustResponse adjustWallet(WalletAdjustRequest request);
 
     AdminSettingsRequest getSettings();
 
     AdminSettingsSavedResponse updateSettings(AdminSettingsRequest request);
-
-    AdminStatsResponse getStats();
 }
+
+
+
