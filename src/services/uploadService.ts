@@ -4,13 +4,20 @@ export const uploadService = {
   /**
    * POST /api/upload/image
    * Upload ảnh avatar, CCCD, banner (1 file)
+   * @param file - File ảnh cần upload
+   * @param folder - Thư mục lưu trữ (avatars, banners, cccd, ...)
    */
   uploadImage: async (
-    file: File
+    file: File,
+    folder = 'avatars'
   ): Promise<{ success: boolean; data: { url: string }; message?: string }> => {
     const formData = new FormData();
-    formData.append('image', file);
+    // Backend nhận @RequestParam("file") MultipartFile file
+    formData.append('file', file);
+    // Backend nhận @RequestParam("folder") String folder
+    formData.append('folder', folder);
 
+    // KHÔNG set Content-Type thủ công — Axios tự đặt multipart/form-data + boundary
     const response = await apiClient.post<{ success: boolean; data: { url: string }; message?: string }>(
       '/api/upload/image',
       formData
@@ -21,17 +28,22 @@ export const uploadService = {
   /**
    * POST /api/upload/images
    * Upload nhiều ảnh
+   * @param files - Danh sách file ảnh
+   * @param folder - Thư mục lưu trữ
    */
   uploadImages: async (
-    files: File[]
+    files: File[],
+    folder = 'images'
   ): Promise<{ success: boolean; data: { urls: string[] }; message?: string }> => {
     const formData = new FormData();
-    files.forEach((file) => formData.append('images', file));
+    // Backend nhận @RequestParam("files") List<MultipartFile> files
+    files.forEach((file) => formData.append('files', file));
+    formData.append('folder', folder);
 
     const response = await apiClient.post<{ success: boolean; data: { urls: string[] }; message?: string }>(
       '/api/upload/images',
       formData
     );
     return response.data;
-  }
+  },
 };

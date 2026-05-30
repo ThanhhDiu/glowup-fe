@@ -1,6 +1,11 @@
 import AppRouter from './router'
+import { UserProfileProvider } from './contexts/UserProfileContext'
 import './App.css'
 
 export default function App() {
-  return <AppRouter />
+  return (
+    <UserProfileProvider>
+      <AppRouter />
+    </UserProfileProvider>
+  )
 }
