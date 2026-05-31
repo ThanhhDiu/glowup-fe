@@ -68,6 +68,17 @@ public class WalletTransaction {
     @Builder.Default
     private BigDecimal netAmount = BigDecimal.ZERO;
 
+    private Long afterBalance;
+
+    @Column(length = 255)
+    private String note;
+
+    @Column(length = 50)
+    private String actor;
+
+    @Column(length = 100)
+    private String relatedOrderCode;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private TransactionStatus status;

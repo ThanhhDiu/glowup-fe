@@ -1,0 +1,31 @@
+package com.example.becommerce.entity.enums;
+
+import com.example.becommerce.constant.WalletConstant;
+
+import java.math.BigDecimal;
+import java.util.Locale;
+
+/**
+ * Computed wallet health tiers.
+ */
+public enum WalletStatus {
+    NORMAL,
+    LOW_BALANCE,
+    LOCKED;
+
+    public String apiValue() {
+        return name().toLowerCase(Locale.ROOT);
+    }
+
+    public static WalletStatus fromBalance(BigDecimal balance) {
+        BigDecimal safeBalance = balance == null ? BigDecimal.ZERO : balance;
+        if (safeBalance.compareTo(WalletConstant.DEFAULT_NORMAL_BALANCE_THRESHOLD) >= 0) {
+            return NORMAL;
+        }
+        if (safeBalance.compareTo(WalletConstant.DEFAULT_MINIMUM_COMMISSION_BALANCE) >= 0) {
+            return LOW_BALANCE;
+        }
+        return LOCKED;
+    }
+}
+
