@@ -1,89 +1,165 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AdminHeader } from '../components/admin/AdminHeader';
 import { AdminSidebar } from '../components/admin/AdminSidebar';
 import { FaArrowUpRightDots, FaEllipsis, FaGear } from 'react-icons/fa6';
+import {
+  getAdminCommissionSettings,
+  getAdminCommissionTransactions,
+  getAdminCommissionWallets,
+  updateAdminCommission,
+  type AdminCommissionTransactionItem,
+  type AdminCommissionTransactionType,
+  type AdminCommissionWalletItem,
+} from '../services/adminCommissionService';
 import './AdminFinancePage.css';
 
-type TxStatus = 'done' | 'pending';
-type TxType = 'commission' | 'withdraw' | 'topup';
-
-type FinanceTx = {
-  id: string;
-  time: string;
-  date: string;
-  partner: string;
-  area: string;
-  type: TxType;
-  amount: number;
-  status: TxStatus;
-};
-
-
-
-const transactions: FinanceTx[] = [
-  {
-    id: '#TXN-882910',
-    time: '14:20',
-    date: '24/05/2024',
-    partner: 'Thái Ngọc',
-    area: 'HCMC, Quận 1',
-    type: 'commission',
-    amount: 125000,
-    status: 'done',
-  },
-  {
-    id: '#TXN-882909',
-    time: '13:15',
-    date: '24/05/2024',
-    partner: 'Phạm Tuấn',
-    area: 'HCMC, Thủ Đức',
-    type: 'withdraw',
-    amount: -2500000,
-    status: 'pending',
-  },
-  {
-    id: '#TXN-882908',
-    time: '11:45',
-    date: '24/05/2024',
-    partner: 'Minh Đức',
-    area: 'HCMC, Quận 7',
-    type: 'topup',
-    amount: 500000,
-    status: 'done',
-  },
-];
-
-const technicians = [
-  { id: 'wr-1', name: 'Trần Anh Tuấn', balance: 125000, status: 'normal', totalDeducted: 2450000, lastOrder: '#TXN-882910', lastOrderDate: '24/05/2024 14:20' },
-  { id: 'wr-2', name: 'Lê Minh Hoàng', balance: 18000, status: 'low', totalDeducted: 1980000, lastOrder: '#TXN-882905', lastOrderDate: '24/05/2024 13:15' },
-  { id: 'wr-3', name: 'Phạm Văn Đức', balance: 5000, status: 'locked', totalDeducted: 3120000, lastOrder: '#TXN-882899', lastOrderDate: '24/05/2024 12:05' },
-  { id: 'wr-4', name: 'Nguyễn Thị Hằng', balance: 68000, status: 'normal', totalDeducted: 1560000, lastOrder: '#TXN-882888', lastOrderDate: '23/05/2024 16:30' },
-  { id: 'wr-5', name: 'Hoàng Quốc Bảo', balance: 21000, status: 'low', totalDeducted: 1230000, lastOrder: '#TXN-882880', lastOrderDate: '23/05/2024 09:20' },
-];
-
-const typeLabel: Record<TxType, string> = {
-  commission: 'HOA HỒNG',
-  withdraw: 'RÚT TIỀN',
-  topup: 'NẠP TIỀN',
-};
-
-const statusLabel: Record<TxStatus, string> = {
-  done: 'Hoàn tất',
-  pending: 'Chờ duyệt',
-};
-
-const money = (value: number) => `${value > 0 ? '+' : ''}${value.toLocaleString('vi-VN')}đ`;
+type TxType = AdminCommissionTransactionType;
+type TechStatus = 'all' | 'normal' | 'low' | 'locked';
 
 const AdminFinancePage: React.FC = () => {
   const [commissionFixed, setCommissionFixed] = useState('10000');
   const [minBalance, setMinBalance] = useState('20000');
+  const [autoLockEnabled, setAutoLockEnabled] = useState(false);
+  const [commissionUpdatedAt, setCommissionUpdatedAt] = useState('');
+  const [commissionUpdatedBy, setCommissionUpdatedBy] = useState('');
+  const [wallets, setWallets] = useState<AdminCommissionWalletItem[]>([]);
+  const [transactions, setTransactions] = useState<AdminCommissionTransactionItem[]>([]);
   const [txTypeFilter, setTxTypeFilter] = useState<'all' | TxType>('all');
-  const [techFilter, setTechFilter] = useState<'all' | 'normal' | 'low' | 'locked'>('all');
+  const [txDateFilter, setTxDateFilter] = useState('');
+  const [techFilter, setTechFilter] = useState<TechStatus>('all');
+  const [transactionPage, setTransactionPage] = useState(1);
+  const [transactionLimit] = useState(10);
+  const [transactionTotalElements, setTransactionTotalElements] = useState(0);
+  const [transactionTotalPages, setTransactionTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
 
-  const filteredTransactions = useMemo(() => {
-    if (txTypeFilter === 'all') return transactions;
-    return transactions.filter((item) => item.type === txTypeFilter);
-  }, [txTypeFilter]);
+  useEffect(() => {
+    let active = true;
+
+    const loadCommissionSettings = async () => {
+      try {
+        const settings = await getAdminCommissionSettings();
+
+        if (!active) {
+          return;
+        }
+
+        setCommissionFixed(settings.fixedCommissionFee);
+        setMinBalance(settings.minimumCommissionBalance);
+        setAutoLockEnabled(settings.autoLockEnabled);
+        setCommissionUpdatedAt(settings.updatedAtLabel);
+      } catch (loadError) {
+        if (active) {
+          setError(loadError instanceof Error ? loadError.message : 'Không thể tải cài đặt hoa hồng');
+        }
+      }
+    };
+
+    void loadCommissionSettings();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadCommissionData = async () => {
+      setIsLoading(true);
+      setError('');
+
+      try {
+        const [walletResult, transactionResult] = await Promise.all([
+          getAdminCommissionWallets({
+            status: techFilter,
+            page: 1,
+            size: 10,
+          }),
+          getAdminCommissionTransactions({
+            type: txTypeFilter,
+            date: txDateFilter,
+            page: transactionPage,
+            limit: transactionLimit,
+          }),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        setWallets(walletResult.items);
+        setTransactions(transactionResult.items);
+        setTransactionTotalElements(transactionResult.totalElements);
+        setTransactionTotalPages(transactionResult.totalPages);
+      } catch (loadError) {
+        if (active) {
+          setError(loadError instanceof Error ? loadError.message : 'Không thể tải dữ liệu hoa hồng');
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadCommissionData();
+
+    return () => {
+      active = false;
+    };
+  }, [techFilter, transactionPage, transactionLimit, txDateFilter, txTypeFilter]);
+
+  const filteredWallets = useMemo(() => {
+    if (techFilter === 'all') {
+      return wallets;
+    }
+
+    return wallets.filter((wallet) => wallet.walletStatus === techFilter);
+  }, [techFilter, wallets]);
+
+  const visibleTransactionPages = useMemo(() => {
+    if (transactionTotalPages <= 1) {
+      return [1];
+    }
+
+    const pages = new Set<number>([transactionPage]);
+
+    if (transactionPage > 1) {
+      pages.add(transactionPage - 1);
+    }
+
+    if (transactionPage < transactionTotalPages) {
+      pages.add(transactionPage + 1);
+    }
+
+    return Array.from(pages)
+      .filter((page) => page >= 1 && page <= transactionTotalPages)
+      .sort((left, right) => left - right);
+  }, [transactionPage, transactionTotalPages]);
+
+  const handleSaveCommission = async () => {
+    setIsSaving(true);
+    setError('');
+
+    try {
+      const result = await updateAdminCommission({
+        fixedCommissionFee: Number(commissionFixed || 0),
+        minimumCommissionBalance: Number(minBalance || 0),
+      });
+
+      setCommissionFixed(result.fixedCommissionFee);
+      setMinBalance(result.minimumCommissionBalance);
+      setCommissionUpdatedAt(result.updatedAtLabel);
+      setCommissionUpdatedBy(result.updatedBy);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Không thể lưu cài đặt hoa hồng');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="afp-layout">
@@ -96,11 +172,14 @@ const AdminFinancePage: React.FC = () => {
             <h1>Quản lý Ví & Hoa hồng</h1>
             <p>Theo dõi nguồn thu tài chính và duyệt toàn bộ giao dịch thu/rút.</p>
           </div>
-          <div className="afp-total-chip">
-            <span>Tổng quát hệ thống</span>
-            <strong>1.450.000.000đ</strong>
-          </div>
         </section>
+
+        {error ? (
+          <section className="afp-card afp-alert-card">
+            <strong>Không thể tải dữ liệu</strong>
+            <p>{error}</p>
+          </section>
+        ) : null}
 
         <section className="afp-card-grid">
           <article className="afp-card afp-commission-card">
@@ -126,11 +205,17 @@ const AdminFinancePage: React.FC = () => {
                   <span>đ</span>
                 </div>
                 <small className="afp-help">Phí này sẽ được tự động trừ từ ví hoa hồng của thợ khi đơn hàng hoàn thành.</small>
-                <div className="afp-commission-meta">Cập nhật lần cuối: 24/05/2024 10:30 bởi Admin</div>
+                <div className="afp-commission-meta">
+                  Cập nhật lần cuối: {commissionUpdatedAt || '--'}{commissionUpdatedBy ? ` bởi ${commissionUpdatedBy}` : ''}
+                </div>
               </div>
               <div className="afp-commission-right">
-                <span className="afp-status-badge active">Đang áp dụng</span>
-                <button className="afp-primary-btn" type="button">Lưu thay đổi</button>
+                <span className={`afp-status-badge ${autoLockEnabled ? 'active' : ''}`}>
+                  Tự khóa ví: {autoLockEnabled ? 'Bật' : 'Tắt'}
+                </span>
+                <button className="afp-primary-btn" type="button" onClick={handleSaveCommission} disabled={isSaving}>
+                  {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                </button>
               </div>
             </div>
           </article>
@@ -139,7 +224,7 @@ const AdminFinancePage: React.FC = () => {
             <header className="afp-card-head">
               <h2>
                 <FaArrowUpRightDots />
-                Quy tắc áp dụng
+                Cài đặt ví Tín dụng thợ
               </h2>
             </header>
 
@@ -156,7 +241,9 @@ const AdminFinancePage: React.FC = () => {
                 <span>đ</span>
               </div>
 
-              <button className="afp-secondary-btn" type="button">Cập nhật</button>
+              <button className="afp-secondary-btn" type="button" onClick={handleSaveCommission} disabled={isSaving}>
+                {isSaving ? 'Đang lưu...' : 'Cập nhật'}
+              </button>
             </div>
           </article>
 
@@ -167,10 +254,10 @@ const AdminFinancePage: React.FC = () => {
           <div className="afp-tech-status-head">
             <h3>Tình trạng ví hoa hồng của thợ</h3>
             <div className="afp-tech-tabs">
-              <button className={techFilter === 'all' ? 'active' : ''} onClick={() => setTechFilter('all')}>Tất cả</button>
-              <button className={techFilter === 'normal' ? 'active' : ''} onClick={() => setTechFilter('normal')}>Bình thường</button>
-              <button className={techFilter === 'low' ? 'active' : ''} onClick={() => setTechFilter('low')}>Sắp hết</button>
-              <button className={techFilter === 'locked' ? 'active' : ''} onClick={() => setTechFilter('locked')}>Đã khóa</button>
+              <button type="button" className={techFilter === 'all' ? 'active' : ''} onClick={() => setTechFilter('all')}>Tất cả</button>
+              <button type="button" className={techFilter === 'normal' ? 'active' : ''} onClick={() => setTechFilter('normal')}>Bình thường</button>
+              <button type="button" className={techFilter === 'low' ? 'active' : ''} onClick={() => setTechFilter('low')}>Sắp hết</button>
+              <button type="button" className={techFilter === 'locked' ? 'active' : ''} onClick={() => setTechFilter('locked')}>Đã khóa</button>
             </div>
           </div>
 
@@ -180,28 +267,27 @@ const AdminFinancePage: React.FC = () => {
               <span>SỐ DƯ VÍ HOA HỒNG</span>
               <span>TRẠNG THÁI</span>
               <span>TỔNG PHÍ ĐÃ TRỪ</span>
-              <span>ĐƠN GẦN NHẤT</span>
+              <span>GIAO DỊCH GẦN NHẤT</span>
               <span />
             </div>
-            {technicians
-              .filter((t) => techFilter === 'all' ? true : t.status === techFilter)
+            {filteredWallets
               .map((t) => (
-                <div className="afp-tech-row" key={t.id}>
+                <div className="afp-tech-row" key={t.technicianId}>
                   <span className="afp-tech-name">
-                    <div className="afp-avatar small">{t.name.split(' ').map(n => n[0]).slice(-2).join('')}</div>
+                    <div className="afp-avatar small">{t.technicianName.split(' ').map((n) => n[0]).slice(-2).join('')}</div>
                     <div>
-                      <strong>{t.name}</strong>
-                      <small>{t.id.toUpperCase()}</small>
+                      <strong>{t.technicianName}</strong>
+                      <small>{t.technicianId}</small>
                     </div>
                   </span>
-                  <span className={t.balance > 0 ? 'afp-amount-in' : 'afp-amount-out'}>{t.balance.toLocaleString('vi-VN')}đ</span>
-                  <span className={`afp-td-status ${t.status}`}>{t.status === 'normal' ? 'Bình thường' : t.status === 'low' ? 'Sắp hết' : 'Đã khóa'}</span>
-                  <span>{t.totalDeducted.toLocaleString('vi-VN')}đ</span>
+                  <span className={t.walletBalance > 0 ? 'afp-amount-in' : 'afp-amount-out'}>{t.walletBalanceLabel}</span>
+                  <span className={`afp-td-status ${t.walletStatus}`}>{t.walletStatusLabel}</span>
+                  <span>{t.totalCommissionPaidLabel}</span>
                   <span>
-                    <strong>{t.lastOrder}</strong>
-                    <small>{t.lastOrderDate}</small>
+                    <strong>{t.lastOrderAtLabel}</strong>
+                    <small>{t.locked ? 'Ví đang khóa' : 'Ví đang hoạt động'}</small>
                   </span>
-                  <span><button className="afp-more-btn">...</button></span>
+                  <span><button className="afp-more-btn" type="button">...</button></span>
                 </div>
               ))}
           </div>
@@ -211,13 +297,19 @@ const AdminFinancePage: React.FC = () => {
           <div className="afp-table-head-row">
             <h3>Lịch sử giao dịch hệ thống</h3>
             <div className="afp-table-filters">
-              <select value={txTypeFilter} onChange={(event) => setTxTypeFilter(event.target.value as 'all' | TxType)}>
+              <select value={txTypeFilter} onChange={(event) => {
+                setTxTypeFilter(event.target.value as 'all' | TxType)
+                setTransactionPage(1)
+              }}>
                 <option value="all">Tất cả loại giao dịch</option>
                 <option value="commission">Hoa hồng</option>
                 <option value="withdraw">Rút tiền</option>
                 <option value="topup">Nạp tiền</option>
               </select>
-              <input type="date" />
+              <input type="date" value={txDateFilter} onChange={(event) => {
+                setTxDateFilter(event.target.value)
+                setTransactionPage(1)
+              }} />
             </div>
           </div>
 
@@ -232,7 +324,11 @@ const AdminFinancePage: React.FC = () => {
               <span>Thao tác</span>
             </div>
 
-            {filteredTransactions.map((item) => (
+            {isLoading ? (
+              <div className="afp-empty-state">Đang tải dữ liệu giao dịch...</div>
+            ) : null}
+
+            {!isLoading && transactions.map((item) => (
               <div className="afp-table-row" key={item.id}>
                 <span>{item.id}</span>
                 <span>
@@ -240,14 +336,14 @@ const AdminFinancePage: React.FC = () => {
                   <small>{item.date}</small>
                 </span>
                 <span>
-                  <strong>{item.partner}</strong>
-                  <small>{item.area}</small>
+                  <strong>{item.partnerName}</strong>
+                  <small>{item.partnerArea}</small>
                 </span>
                 <span>
-                  <b className={`afp-pill ${item.type}`}>{typeLabel[item.type]}</b>
+                  <b className={`afp-pill ${item.type}`}>{item.typeLabel}</b>
                 </span>
-                <span className={item.amount < 0 ? 'afp-amount-out' : 'afp-amount-in'}>{money(item.amount)}</span>
-                <span className={`afp-status ${item.status}`}>{statusLabel[item.status]}</span>
+                <span className={item.amount < 0 ? 'afp-amount-out' : 'afp-amount-in'}>{item.amountLabel}</span>
+                <span className={`afp-status ${item.status}`}>{item.statusLabel}</span>
                 <span>
                   <button className="afp-more-btn" type="button" aria-label="More actions">
                     <FaEllipsis />
@@ -258,12 +354,24 @@ const AdminFinancePage: React.FC = () => {
           </div>
 
           <footer className="afp-table-footer">
-            <p>Hiển thị 3 trên tổng số 1.240 giao dịch</p>
+            <p>Hiển thị {transactions.length} trên tổng số {transactionTotalElements} giao dịch</p>
             <div>
-              <button type="button">&lt;</button>
-              <button type="button" className="active">1</button>
-              <button type="button">2</button>
-              <button type="button">&gt;</button>
+              <button type="button" onClick={() => setTransactionPage((page) => Math.max(1, page - 1))} disabled={transactionPage === 1}>&lt;</button>
+              {visibleTransactionPages.map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={page === transactionPage ? 'active' : ''}
+                  onClick={() => setTransactionPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setTransactionPage((page) => Math.min(transactionTotalPages, page + 1))}
+                disabled={transactionPage >= transactionTotalPages}
+              >&gt;</button>
             </div>
           </footer>
         </section>

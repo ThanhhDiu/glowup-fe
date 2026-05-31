@@ -40,30 +40,6 @@
   font-size: 14px;
 }
 
-.afp-total-chip {
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  background: #fff;
-  padding: 10px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 188px;
-}
-
-.afp-total-chip span {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  font-weight: 600;
-}
-
-.afp-total-chip strong {
-  font-size: 30px;
-  line-height: 1;
-  color: var(--primary);
-}
-
 .afp-card-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -78,6 +54,23 @@
   border-radius: 16px;
   padding: 18px;
   height: 100%;
+}
+
+.afp-alert-card {
+  margin-bottom: 18px;
+  border-color: #fecaca;
+  background: #fff7f7;
+}
+
+.afp-alert-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #b91c1c;
+}
+
+.afp-alert-card p {
+  margin: 0;
+  color: #7f1d1d;
 }
 
 
@@ -513,6 +506,12 @@
 
 .afp-table-row small {
   color: #94a3b8;
+}
+
+.afp-empty-state {
+  padding: 18px 16px;
+  color: #64748b;
+  font-size: 14px;
 }
 
 .afp-pill {

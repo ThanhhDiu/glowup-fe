@@ -8,6 +8,8 @@ import com.example.becommerce.dto.response.admin.AdminSettingsSavedResponse;
 import com.example.becommerce.dto.response.admin.AdminStatsResponse;
 import com.example.becommerce.dto.response.admin.AdminTransactionsResponse;
 import com.example.becommerce.dto.response.admin.CommissionResponse;
+import com.example.becommerce.dto.response.admin.CommissionSettingsResponse;
+import com.example.becommerce.dto.response.admin.CommissionWalletsResponse;
 import com.example.becommerce.dto.response.admin.RecentOrdersResponse;
 import com.example.becommerce.dto.response.admin.RevenueStatsResponse;
 import com.example.becommerce.dto.response.admin.ServiceDistributionResponse;
@@ -31,6 +33,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Admin Management Controller
+ *
+ * Provides endpoints for:
+ * - Dashboard statistics and analytics
+ * - Commission configuration (PATCH /api/admin/commission, GET /api/admin/commission-settings)
+ * - Wallet management and adjustments
+ * - General platform settings
+ *
+ * Swagger/OpenAPI Documentation:
+ * To enable Swagger UI, add the following dependency to pom.xml:
+ * <dependency>
+ *     <groupId>org.springdoc</groupId>
+ *     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+ *     <version>2.0.2</version>
+ * </dependency>
+ *
+ * Then uncomment the @Operation and @ApiResponse annotations below.
+ */
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -97,8 +118,37 @@ public class AdminController {
     }
 
     @PatchMapping("/commission")
+    // @Operation(summary = "Update commission settings", description = "Update fixed commission fee and minimum commission balance")
+    // @ApiResponse(responseCode = "200", description = "Commission settings updated successfully")
+    // @ApiResponse(responseCode = "400", description = "Invalid request parameters")
+    // @ApiResponse(responseCode = "403", description = "Insufficient permissions")
     public ResponseEntity<ApiResponse<CommissionResponse>> updateCommission(@Valid @RequestBody CommissionUpdateRequest request) {
         return ResponseEntity.ok(ApiResponse.success(adminService.updateCommission(request)));
+    }
+
+    /**
+     * Retrieve current commission settings.
+     *
+     * Returns comprehensive commission configuration including fixed fee, minimum balance,
+     * and auto-lock status.
+     *
+     * @return CommissionSettingsResponse with current settings
+     */
+    @GetMapping("/commission-settings")
+    // @Operation(summary = "Get commission settings", description = "Retrieve current commission configuration including fixed fee, minimum balance, and auto-lock status")
+    // @ApiResponse(responseCode = "200", description = "Commission settings retrieved successfully")
+    // @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    public ResponseEntity<ApiResponse<CommissionSettingsResponse>> getCommissionSettings() {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getCommissionSettings()));
+    }
+
+    @GetMapping("/commission-wallets")
+    public ResponseEntity<ApiResponse<CommissionWalletsResponse>> getCommissionWallets(
+            @RequestParam(required = false, defaultValue = "all") String status,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
+        return ResponseEntity.ok(ApiResponse.success(adminService.getCommissionWallets(status, keyword, page, size)));
     }
 
     @PostMapping("/wallet/adjust")
