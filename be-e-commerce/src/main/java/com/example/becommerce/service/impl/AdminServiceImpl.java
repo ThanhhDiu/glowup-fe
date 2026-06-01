@@ -9,6 +9,8 @@ import com.example.becommerce.dto.response.admin.AdminSettingsSavedResponse;
 import com.example.becommerce.dto.response.admin.AdminStatsResponse;
 import com.example.becommerce.dto.response.admin.AdminTransactionsResponse;
 import com.example.becommerce.dto.response.admin.CommissionResponse;
+import com.example.becommerce.dto.response.admin.CommissionSettingsResponse;
+import com.example.becommerce.dto.response.admin.CommissionWalletsResponse;
 import com.example.becommerce.dto.response.admin.RecentOrdersResponse;
 import com.example.becommerce.dto.response.admin.RevenueStatsResponse;
 import com.example.becommerce.dto.response.admin.ServiceDistributionResponse;
@@ -23,6 +25,7 @@ import com.example.becommerce.entity.enums.Role;
 import com.example.becommerce.entity.enums.TransactionStatus;
 import com.example.becommerce.entity.enums.TransactionType;
 import com.example.becommerce.entity.enums.UserStatus;
+import com.example.becommerce.entity.enums.WalletStatus;
 import com.example.becommerce.exception.AppException;
 import com.example.becommerce.repository.CategoryRepository;
 import com.example.becommerce.repository.OrderRepository;
@@ -65,6 +68,9 @@ import java.util.TreeMap;
 public class AdminServiceImpl implements AdminService {
 
     private static final String SETTINGS_KEY = "admin.settings";
+    private static final String FIXED_COMMISSION_FEE_KEY = "fixed_commission_fee";
+    private static final String MINIMUM_COMMISSION_BALANCE_KEY = "minimum_commission_balance";
+    private static final String AUTO_LOCK_ENABLED_KEY = "auto_lock_enabled";
     private static final String[] COLORS = {"#3b82f6", "#8b5cf6", "#f59e0b", "#06b6d4", "#22c55e"};
 
     private final WalletRepository walletRepository;
@@ -122,7 +128,7 @@ public class AdminServiceImpl implements AdminService {
         LocalDateTime from = range[0];
         LocalDateTime to = range[1];
 
-        String rangeLabel = "";
+        String rangeLabel;
         List<RevenueStatsResponse.Item> items = new ArrayList<>();
 
         if ("all-time".equals(mode)) {
@@ -212,7 +218,6 @@ public class AdminServiceImpl implements AdminService {
                 .build();
     }
 
-    @Override
     public AdminStatsResponse getStats() {
         // delegate through proxy so @Transactional on the parameterized method is honored
         AdminService proxy = applicationContext.getBean(AdminService.class);
@@ -283,7 +288,7 @@ public class AdminServiceImpl implements AdminService {
     // helper: compute range from mode/year/quarter/month
     private LocalDateTime[] computeRange(String mode, Integer year, Integer quarter, Integer month) {
         mode = StringUtils.hasText(mode) ? mode.toLowerCase() : "month";
-        LocalDateTime from = LocalDateTime.MIN;
+        LocalDateTime from;
         LocalDateTime to = LocalDateTime.now();
 
         if ("all-time".equals(mode)) {
@@ -309,9 +314,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private BigDecimal toBigDecimal(Object val) {
-        if (val == null) return BigDecimal.ZERO;
         if (val instanceof BigDecimal) return (BigDecimal) val;
         if (val instanceof Number) return BigDecimal.valueOf(((Number) val).longValue());
+        if (val == null) return BigDecimal.ZERO;
         try {
             return new BigDecimal(val.toString());
         } catch (Exception ex) {
@@ -390,15 +395,110 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public CommissionResponse updateCommission(CommissionUpdateRequest request) {
-        AdminSettingsRequest settings = getSettings();
-        settings.getBilling().setPlatformFeePercent(request.getPlatformFeePercent());
-        settings.getBilling().setVatPercent(request.getVatPercent());
-        updateSettings(settings);
+        saveSystemSetting(FIXED_COMMISSION_FEE_KEY, request.getFixedCommissionFee().toPlainString());
+        saveSystemSetting(MINIMUM_COMMISSION_BALANCE_KEY, request.getMinimumCommissionBalance().toPlainString());
         return CommissionResponse.builder()
-                .platformFeePercent(request.getPlatformFeePercent())
-                .vatPercent(request.getVatPercent())
+                .fixedCommissionFee(request.getFixedCommissionFee())
+                .minimumCommissionBalance(request.getMinimumCommissionBalance())
                 .updatedBy(currentAdminLabel())
                 .updatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommissionSettingsResponse getCommissionSettings() {
+        BigDecimal fixedFee = BigDecimal.ZERO;
+        BigDecimal minBalance = BigDecimal.ZERO;
+        Boolean autoLock = false;
+        LocalDateTime updatedAt = LocalDateTime.now();
+
+        // Retrieve fixed commission fee
+        var fixedFeeSetting = systemSettingRepository.findByKey(FIXED_COMMISSION_FEE_KEY);
+        if (fixedFeeSetting.isPresent()) {
+            try {
+                fixedFee = new BigDecimal(fixedFeeSetting.get().getValue());
+            } catch (Exception ex) {
+                fixedFee = BigDecimal.ZERO;
+            }
+        }
+
+        // Retrieve minimum commission balance
+        var minBalanceSetting = systemSettingRepository.findByKey(MINIMUM_COMMISSION_BALANCE_KEY);
+        if (minBalanceSetting.isPresent()) {
+            try {
+                minBalance = new BigDecimal(minBalanceSetting.get().getValue());
+            } catch (Exception ex) {
+                minBalance = BigDecimal.ZERO;
+            }
+        }
+
+        // Retrieve auto lock enabled
+        var autoLockSetting = systemSettingRepository.findByKey(AUTO_LOCK_ENABLED_KEY);
+        if (autoLockSetting.isPresent()) {
+            autoLock = Boolean.parseBoolean(autoLockSetting.get().getValue());
+        }
+
+        return CommissionSettingsResponse.builder()
+                .fixedCommissionFee(fixedFee)
+                .minimumCommissionBalance(minBalance)
+                .autoLockEnabled(autoLock)
+                .updatedAt(updatedAt)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommissionWalletsResponse getCommissionWallets(String status, String keyword, int page, int size) {
+        BigDecimal minimumBalance = getConfiguredMinimumCommissionBalance();
+
+        // Build query using Specification
+        Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.max(1, size), Sort.by(Sort.Direction.DESC, "balance"));
+
+        Page<Wallet> walletPage = walletRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Filter by status if provided
+            if (StringUtils.hasText(status) && !"all".equalsIgnoreCase(status)) {
+                String normalizedStatus = status.trim().toLowerCase(Locale.ROOT);
+                switch (normalizedStatus) {
+                    case "locked" -> predicates.add(cb.lessThanOrEqualTo(root.get("balance"), BigDecimal.ZERO));
+                    case "low", "low_balance" -> {
+                        predicates.add(cb.greaterThan(root.get("balance"), BigDecimal.ZERO));
+                        predicates.add(cb.lessThan(root.get("balance"), minimumBalance));
+                    }
+                    case "normal" -> predicates.add(cb.greaterThanOrEqualTo(root.get("balance"), minimumBalance));
+                    default -> {
+                        // Ignore invalid status values
+                    }
+                }
+            }
+
+            // Filter by technician name (keyword)
+            if (StringUtils.hasText(keyword)) {
+                predicates.add(cb.like(cb.lower(root.get("user").get("fullName")),
+                        "%" + keyword.toLowerCase() + "%"));
+            }
+
+            // Only include technician wallets
+            predicates.add(cb.equal(root.get("user").get("role"), Role.TECHNICIAN));
+            predicates.add(cb.equal(root.get("user").get("deleted"), false));
+
+            return cb.and(predicates.toArray(Predicate[]::new));
+        }, pageable);
+
+        List<CommissionWalletsResponse.Item> items = walletPage.getContent().stream()
+                .map(wallet -> toCommissionWalletItem(wallet, minimumBalance))
+                .toList();
+
+        return CommissionWalletsResponse.builder()
+                .content(items)
+                .pagination(PagedResponse.PaginationMeta.builder()
+                        .page(page)
+                        .limit(size)
+                        .total(walletPage.getTotalElements())
+                        .totalPages(walletPage.getTotalPages())
+                        .build())
                 .build();
     }
 
@@ -425,6 +525,9 @@ public class AdminServiceImpl implements AdminService {
                 .amount(request.getAmount())
                 .fee(BigDecimal.ZERO)
                 .netAmount(request.getAmount())
+                .afterBalance(newBalance.longValueExact())
+                .note(request.getReason())
+                .actor(currentAdminLabel())
                 .status(TransactionStatus.SUCCESS)
                 .processedAt(LocalDateTime.now())
                 .build();
@@ -473,8 +576,21 @@ public class AdminServiceImpl implements AdminService {
 
     private AdminTransactionsResponse.Item toTransactionItem(WalletTransaction transaction) {
         User user = transaction.getWallet().getUser();
+        String orderCode = transaction.getOrder() != null ? transaction.getOrder().getCode() : (transaction.getRelatedOrderCode() != null ? transaction.getRelatedOrderCode() : "");
+
         return AdminTransactionsResponse.Item.builder()
                 .id(transaction.getTransactionCode())
+                .transactionCode(transaction.getTransactionCode())
+                .transactionType(transaction.getType().apiValue())
+                .amount(transaction.getAmount())
+                .afterBalance(transaction.getAfterBalance())
+                .walletStatus(transaction.getWallet().getWalletStatus() != null ? transaction.getWallet().getWalletStatus().apiValue() : "NORMAL")
+                .technicianName(user.getFullName())
+                .orderCode(orderCode)
+                .note(transaction.getNote())
+                .actor(transaction.getActor())
+                .createdAt(transaction.getCreatedAt())
+                // Legacy fields
                 .time(transaction.getCreatedAt().format(DateTimeFormatter.ofPattern("HH:mm")))
                 .date(transaction.getCreatedAt().toLocalDate().toString())
                 .partner(AdminTransactionsResponse.Partner.builder()
@@ -482,9 +598,88 @@ public class AdminServiceImpl implements AdminService {
                         .area(String.join(", ", List.of(nullToEmpty(user.getDistrict()), nullToEmpty(user.getAddress()))).replaceAll("(^, |, $)", ""))
                         .build())
                 .type(transaction.getType().apiValue())
-                .amount(transaction.getAmount())
                 .status(transaction.getStatus() == TransactionStatus.SUCCESS ? "done" : transaction.getStatus().apiValue())
                 .build();
+    }
+
+    private CommissionWalletsResponse.Item toCommissionWalletItem(Wallet wallet, BigDecimal minimumBalance) {
+        // Calculate total commission paid from commission deduction transactions only.
+        List<WalletTransaction> commissions = walletTransactionRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("wallet").get("id"), wallet.getId()));
+            predicates.add(cb.equal(root.get("type"), TransactionType.COMMISSION));
+            predicates.add(cb.equal(root.get("category"), "COMMISSION_DEDUCTION"));
+            predicates.add(cb.equal(root.get("status"), TransactionStatus.SUCCESS));
+            return cb.and(predicates.toArray(Predicate[]::new));
+        });
+
+        BigDecimal totalCommissionPaid = commissions.stream()
+                .map(t -> t.getNetAmount() != null ? t.getNetAmount().abs() : t.getAmount().abs())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Get the latest commission-related transaction linked to an order.
+        LocalDateTime lastOrderAt = null;
+        if (wallet.getUser() != null) {
+            List<WalletTransaction> transactions = walletTransactionRepository.findAll((root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("wallet").get("id"), wallet.getId()));
+                predicates.add(cb.or(
+                        cb.isNotNull(root.get("order")),
+                        cb.and(
+                                cb.isNotNull(root.get("relatedOrderCode")),
+                                cb.notEqual(cb.trim(root.get("relatedOrderCode")), "")
+                        )
+                ));
+                return cb.and(predicates.toArray(Predicate[]::new));
+            });
+            if (!transactions.isEmpty()) {
+                lastOrderAt = transactions.stream()
+                        .map(WalletTransaction::getCreatedAt)
+                        .max(LocalDateTime::compareTo)
+                        .orElse(null);
+            }
+        }
+
+        WalletStatus computedStatus = resolveCommissionWalletStatus(wallet.getBalance(), minimumBalance);
+
+        return CommissionWalletsResponse.Item.builder()
+                .technicianId(wallet.getUser().getId())
+                .technicianName(wallet.getUser().getFullName())
+                .walletBalance(wallet.getBalance())
+                .walletStatus(computedStatus.apiValue())
+                .totalCommissionPaid(totalCommissionPaid)
+                .lastOrderAt(lastOrderAt)
+                .locked(computedStatus == WalletStatus.LOCKED)
+                .build();
+    }
+
+    private BigDecimal getConfiguredMinimumCommissionBalance() {
+        return systemSettingRepository.findByKey(MINIMUM_COMMISSION_BALANCE_KEY)
+                .map(SystemSetting::getValue)
+                .map(value -> {
+                    try {
+                        return new BigDecimal(value);
+                    } catch (Exception ex) {
+                        return BigDecimal.ZERO;
+                    }
+                })
+                .filter(value -> value.compareTo(BigDecimal.ZERO) >= 0)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    private WalletStatus resolveCommissionWalletStatus(BigDecimal balance, BigDecimal minimumBalance) {
+        BigDecimal safeBalance = balance == null ? BigDecimal.ZERO : balance;
+        BigDecimal safeMinimumBalance = minimumBalance == null ? BigDecimal.ZERO : minimumBalance;
+
+        if (safeBalance.compareTo(BigDecimal.ZERO) <= 0) {
+            return WalletStatus.LOCKED;
+        }
+
+        if (safeBalance.compareTo(safeMinimumBalance) < 0) {
+            return WalletStatus.LOW_BALANCE;
+        }
+
+        return WalletStatus.NORMAL;
     }
 
     private WithdrawRequestsResponse.Item toWithdrawItem(WalletTransaction transaction) {
@@ -518,7 +713,7 @@ public class AdminServiceImpl implements AdminService {
         }
         String normalized = range.toLowerCase(Locale.ROOT).replace("days", "");
         try {
-            return Math.min(Math.max(Integer.parseInt(normalized), 1), 90);
+                return Integer.parseInt(normalized) < 1 ? 1 : Math.min(Integer.parseInt(normalized), 90);
         } catch (NumberFormatException ex) {
             return 7;
         }
@@ -578,13 +773,20 @@ public class AdminServiceImpl implements AdminService {
         return request;
     }
 
+    private void saveSystemSetting(String key, String value) {
+        SystemSetting setting = systemSettingRepository.findByKey(key)
+                .orElse(SystemSetting.builder().key(key).build());
+        setting.setValue(value);
+        systemSettingRepository.save(setting);
+    }
+
     private String initials(String fullName) {
         if (!StringUtils.hasText(fullName)) {
             return "";
         }
         String[] words = fullName.trim().split("\\s+");
         return words.length == 1 ? words[0].substring(0, 1).toUpperCase(Locale.ROOT)
-                : (words[0].substring(0, 1) + words[words.length - 1].substring(0, 1)).toUpperCase(Locale.ROOT);
+                : (String.valueOf(words[0].charAt(0)) + words[words.length - 1].charAt(0)).toUpperCase(Locale.ROOT);
     }
 
     private String nullToEmpty(String value) {

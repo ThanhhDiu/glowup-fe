@@ -135,8 +135,9 @@ export const fetchWithAuth = async (
 ): Promise<Response> => {
   const { skipAuth, headers, ...rest } = init
   const nextHeaders = new Headers(headers || undefined)
+  const isFormDataBody = rest.body instanceof FormData
 
-  if (!nextHeaders.has('Content-Type')) {
+  if (!nextHeaders.has('Content-Type') && !isFormDataBody) {
     nextHeaders.set('Content-Type', 'application/json')
   }
 
