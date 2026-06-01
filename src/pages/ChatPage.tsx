@@ -8,26 +8,14 @@ import { QuotationCard } from '../components/chat/QuotationCard';
 import { MessageInput } from '../components/chat/MessageInput';
 import { SearchBar } from '../components/chat/SearchBar';
 import { Avatar } from '../components/common/Avatar';
-import type { Contact } from '../types/Message';
 import type {UserRole} from "../types/UserRole.ts";
+import { useConversations } from '../hooks/useConversations';
+import { useChatMessages } from '../hooks/useChatMessages';
+import { quotationService } from '../services/quotationService';
+import type { Quotation } from '../types/quotation';
+import type { Conversation } from '../types/conversation';
 
-const mockContact: Contact = {
-    id: '1',
-    name: 'Nguyễn Văn An',
-    lastMessage: 'Tôi đã gửi báo giá...',
-    time: '10:45 AM',
-    avatar: 'https://placehold.co/48x48',
-    isOnline: true
-};
-
-const mockContact2: Contact = {
-    id: '2',
-    name: 'Trần Văn Bình',
-    lastMessage: 'Dạ vâng, anh gửi đi ạ.',
-    time: '10:45 AM',
-    avatar: 'https://placehold.co/48x48',
-    isOnline: true
-};
+// kept legacy Contact type for some components
 
 const pageMap: Record<string, string> = {
     home: '/',
@@ -43,9 +31,56 @@ export const ChatPage: React.FC<{ role?: UserRole }> = ({ role = "customer" }) =
     const nav = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(role === "customer");
+    const { conversations, loading: convLoading } = useConversations(role);
+    const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
+    const { messages, setMessages, loading: msgLoading, sendTextMessage } = useChatMessages(activeConversation?.id);
 
-    const handleSendMessage = (text: string) => {
-        console.log("Tin nhắn mới:", text);
+    const handleSendMessage = async (text: string) => {
+        if (!activeConversation) return;
+        try {
+            await sendTextMessage(text);
+        } catch (err) {
+            console.error('Gửi tin nhắn lỗi', err);
+        }
+    };
+
+    const handleQuoteCreated = (quotation: Quotation) => {
+        // create a temporary message to display quotation immediately
+        const quoteMessage = {
+            id: `MSG-TEMP-${quotation.id}`,
+            conversationId: quotation.conversationId || activeConversation?.id || 'unknown',
+            senderId: quotation.technicianId || 'unknown',
+            type: 'quotation' as const,
+            content: null,
+            quotation,
+            sentAt: quotation.createdAt || new Date().toISOString(),
+          };
+
+        setMessages((prev) => [...prev, quoteMessage]);
+    };
+
+    const handleAcceptQuote = async (quoteId?: string) => {
+        if (!quoteId) return;
+        try {
+            await quotationService.acceptQuote(quoteId);
+            // update message(s) with this quotation id
+            setMessages((prev) =>
+                prev.map((m) => {
+                    if (m.type === 'quotation' && m.quotation?.id === quoteId) {
+                        return {
+                            ...m,
+                            quotation: {
+                                ...m.quotation,
+                                status: 'accepted',
+                            },
+                        };
+                    }
+                    return m;
+                }),
+            );
+        } catch (err) {
+            console.error('Accept quote error', err);
+        }
     };
 
     const onNavigate = (page: string, data?: unknown) => {
@@ -79,8 +114,22 @@ export const ChatPage: React.FC<{ role?: UserRole }> = ({ role = "customer" }) =
                         />
                     </div>
                     <div style={{ padding: '0 8px' }}>
-                        <ContactItem contact={mockContact} isActive />
-                        <ContactItem contact={mockContact2} />
+                        {convLoading && <div>Đang tải hội thoại...</div>}
+                        {!convLoading && conversations.map((c) => (
+                            <div key={c.id} onClick={() => setActiveConversation(c)}>
+                                <ContactItem
+                                    contact={{
+                                        id: c.id,
+                                        name: c.partner.fullName,
+                                        lastMessage: c.lastMessage?.content || '',
+                                        time: c.lastMessage?.sentAt || '',
+                                        avatar: c.partner.avatar || 'https://placehold.co/48x48',
+                                        isOnline: c.partner.isOnline,
+                                    }}
+                                    isActive={activeConversation?.id === c.id}
+                                />
+                            </div>
+                        ))}
                     </div>
                 </aside>
 
@@ -101,50 +150,66 @@ export const ChatPage: React.FC<{ role?: UserRole }> = ({ role = "customer" }) =
                                 </button>
                             )}
 
-                            <Avatar src={mockContact.avatar} size={40} isOnline />
-                            <div>
-                                <strong>{mockContact.name}</strong>
-                                <span style={{ fontSize: 12, color: '#22C55E', display: 'block' }}>
-                                    ● Đang hoạt động
-                                </span>
-                            </div>
+                            {activeConversation ? (
+                                <>
+                                    <Avatar src={activeConversation.partner.avatar || 'https://placehold.co/40x40'} size={40} isOnline={!!activeConversation.partner.isOnline} />
+                                    <div>
+                                        <strong>{activeConversation.partner.fullName}</strong>
+                                        <span style={{ fontSize: 12, color: '#22C55E', display: 'block' }}>
+                                            ● {activeConversation.partner.isOnline ? 'Đang hoạt động' : 'Ngoại tuyến'}
+                                        </span>
+                                    </div>
+                                </>
+                            ) : (
+                                <div style={{ padding: 12 }}>
+                                    <strong>Chọn hội thoại</strong>
+                                </div>
+                            )}
                         </div>
                     </header>
 
                     {/* MESSAGE */}
                     <section className={styles.messageList}>
-                        <div className={styles.messageRow}>
-                            <Avatar src={mockContact.avatar} size={32} />
-                            <div className={styles.messageContent}>
-                                <div className={`${styles.bubble} ${styles.bubbleLeft}`}>
-                                    Chào bạn, tôi gửi báo giá nhé.
-                                </div>
-                            </div>
-                        </div>
+                        {msgLoading && <div>Đang tải tin nhắn...</div>}
+                        {!msgLoading && !activeConversation && <div>Vui lòng chọn hội thoại từ bên trái.</div>}
+                        {!msgLoading && activeConversation && messages.length === 0 && <div>Chưa có tin nhắn.</div>}
+                        {!msgLoading && activeConversation && messages.map((m) => {
+                            const isPartnerMessage = m.senderId === activeConversation.partner.id;
+                            // On customer chat: partner is the technician, so partner messages are left and customer messages are right.
+                            // On technician chat: partner is the customer, so partner messages are left and technician messages are right.
+                            return (
+                                <div key={m.id} className={`${styles.messageRow} ${isPartnerMessage ? '' : styles.messageRowRight}`}>
+                                    {isPartnerMessage && <Avatar src={activeConversation.partner.avatar || 'https://placehold.co/32x32'} size={32} />}
+                                    <div className={styles.messageContent}>
+                                        {m.type === 'text' && (
+                                            <div className={`${styles.bubble} ${isPartnerMessage ? styles.bubbleLeft : styles.bubbleRight}`}>
+                                                {m.content}
+                                            </div>
+                                        )}
 
-                        <div className={`${styles.messageRow} ${styles.messageRowRight}`}>
-                            <div className={styles.messageContent}>
-                                <div className={`${styles.bubble} ${styles.bubbleRight}`}>
-                                    Ok anh.
+                                        {m.type === 'quotation' && m.quotation && (
+                                            <QuotationCard
+                                                serviceName={m.quotation.serviceName}
+                                                description={m.quotation.description}
+                                                price={m.quotation.price}
+                                                isTechnician={role === 'technician'}
+                                                onAccept={role === 'technician' ? undefined : () => handleAcceptQuote(m.quotation.id)}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className={styles.messageRow}>
-                            <Avatar src={mockContact.avatar} size={32} />
-                            <div className={styles.messageContent}>
-                                <QuotationCard
-                                    serviceName="Sửa máy lạnh"
-                                    description="Vệ sinh + nạp gas"
-                                    price={450000}
-                                />
-                            </div>
-                        </div>
+                            );
+                        })}
                     </section>
 
                     {/* INPUT */}
                     <footer className={styles.inputArea}>
-                        <MessageInput onSendMessage={handleSendMessage} />
+                        <MessageInput
+                            onSendMessage={handleSendMessage}
+                            conversationId={activeConversation?.id}
+                            onQuoteCreated={handleQuoteCreated}
+                            role={role}
+                        />
                     </footer>
                 </main>
             </div>

@@ -4,13 +4,17 @@ import styles from './Chat.module.css';
 import QuoteCreateModal from '../modal/QuoteCreateModal';
 
 import { ChatInputWrapper } from './ChatInputWrapper';
+import type { UserRole } from '../../types/UserRole';
 
 
 interface MessageInputProps {
     onSendMessage?: (message: string) => void;
+    conversationId?: string;
+    onQuoteCreated?: (quotation: any) => void;
+    role?: UserRole;
 }
 
-export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
+export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, conversationId, onQuoteCreated, role = 'customer' }) => {
     const [message, setMessage] = useState('');
     const [open, setOpen] = useState(false);
 
@@ -26,13 +30,15 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
             <ChatInputWrapper
                 leftIcons={
                     <>
-                        <button
-                            className={styles.iconButton}
-                            title="Tạo báo giá"
-                            onClick={() => setOpen(true)}
-                        >
-                            <Paperclip size={20} color="#4A5E8B" />
-                        </button>
+                        {role === 'technician' && (
+                            <button
+                                className={styles.iconButton}
+                                title="Tạo báo giá"
+                                onClick={() => setOpen(true)}
+                            >
+                                <Paperclip size={20} color="#4A5E8B" />
+                            </button>
+                        )}
 
                         <button className={styles.iconButton} title="Gửi hình ảnh">
                             <Image size={20} color="#4A5E8B" />
@@ -72,6 +78,11 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
             <QuoteCreateModal
                 open={open}
                 onClose={() => setOpen(false)}
+                conversationId={conversationId}
+                onCreated={(q) => {
+                    onQuoteCreated?.(q);
+                    setOpen(false);
+                }}
             />
         </>
     );

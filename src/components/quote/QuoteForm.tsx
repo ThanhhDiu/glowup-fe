@@ -6,18 +6,25 @@ interface Props {
     quote: Quote;
     setQuote: (q: Quote) => void;
     onClose: () => void;
+    onSubmit?: (q: Quote) => Promise<void> | void;
 }
 
-const QuoteForm = ({ quote, setQuote, onClose }: Props) => {
+const QuoteForm = ({ quote, setQuote, onClose, onSubmit }: Props) => {
     const handleChange = (field: keyof Quote, value: string | number) => {
         setQuote({ ...quote, [field]: value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Sending quote:", quote);
-        // Add submission logic here
-        onClose();
+        try {
+            if (onSubmit) {
+                await onSubmit(quote);
+            }
+            onClose();
+        } catch (err) {
+            console.error('Gửi báo giá lỗi', err);
+            // keep modal open so user can retry
+        }
     };
 
     return (
@@ -112,4 +119,4 @@ const QuoteForm = ({ quote, setQuote, onClose }: Props) => {
     );
 };
 
-export default QuoteForm;
+export default QuoteForm;

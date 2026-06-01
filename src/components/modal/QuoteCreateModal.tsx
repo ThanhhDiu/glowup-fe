@@ -5,12 +5,17 @@ import { QuotationCard } from "../chat/QuotationCard";
 import type { Quote } from "../../types/Quote";
 import "./css/quote.css";
 
+import { quotationService } from '../../services/quotationService';
+import type { Quotation } from '../../types/quotation';
+
 interface QuoteCreateModalProps {
     open: boolean;
     onClose: () => void;
+    conversationId?: string;
+    onCreated?: (quotation: Quotation) => void;
 }
 
-const QuoteCreateModal: React.FC<QuoteCreateModalProps> = ({ open, onClose }) => {
+const QuoteCreateModal: React.FC<QuoteCreateModalProps> = ({ open, onClose, conversationId, onCreated }) => {
     const [quote, setQuote] = useState<Quote>({
         serviceName: "Sửa máy lạnh",
         description: "",
@@ -19,6 +24,21 @@ const QuoteCreateModal: React.FC<QuoteCreateModalProps> = ({ open, onClose }) =>
         price: 0,
         notes: "",
     });
+
+    const handleSubmit = async (q: Quote) => {
+        if (!conversationId) throw new Error('conversationId required');
+
+        const payload = {
+            serviceName: q.serviceName,
+            description: q.description,
+            price: Number(q.price),
+            scheduledAt: `${q.date}T${q.time}:00.000Z`,
+            notes: q.notes,
+        };
+
+        const quotation = await quotationService.createQuote(conversationId, payload);
+        onCreated?.(quotation);
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -29,6 +49,7 @@ const QuoteCreateModal: React.FC<QuoteCreateModalProps> = ({ open, onClose }) =>
                         quote={quote}
                         setQuote={setQuote}
                         onClose={onClose}
+                        onSubmit={handleSubmit}
                     />
                 </div>
 

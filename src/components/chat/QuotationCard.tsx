@@ -99,28 +99,28 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
 
                         </div>
 
-                        {!previewMode && (
-                            <div className={styles.actionGroup}>
-                                <button
-                                    className={styles.btnSecondary}
-                                    onClick={onReject}
-                                    disabled={locked}
-                                >
-                                    Từ chối
-                                </button>
+                        {!previewMode && !isTechnician && (
+                                <div className={styles.actionGroup}>
+                                    <button
+                                        className={styles.btnSecondary}
+                                        onClick={onReject}
+                                        disabled={locked}
+                                    >
+                                        Từ chối
+                                    </button>
 
-                                <button
-                                    className={styles.btnPrimary}
-                                    onClick={() => {
-                                        setLocked(true); // LOCK
-                                        onAccept?.();
-                                    }}
-                                    disabled={locked}
-                                >
-                                    Đồng ý & Đặt đơn
-                                </button>
-                            </div>
-                        )}
+                                    <button
+                                        className={styles.btnPrimary}
+                                        onClick={() => {
+                                            setLocked(true); // LOCK
+                                            onAccept?.();
+                                        }}
+                                        disabled={locked}
+                                    >
+                                        Đồng ý & Đặt đơn
+                                    </button>
+                                </div>
+                            )}
                     </div>
                 </div>
             </div>
