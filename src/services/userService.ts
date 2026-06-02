@@ -19,6 +19,21 @@ export const userService = {
   },
 
   /**
+   * PUT /api/users/change-password
+   * Đổi mật khẩu: xác minh mật khẩu cũ rồi cập nhật bằng mật khẩu mới
+   */
+  changePassword: async (
+    oldPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message?: string }> => {
+    const response = await apiClient.put<{ success: boolean; message?: string }>(
+      '/api/users/change-password',
+      { oldPassword, newPassword }
+    );
+    return response.data;
+  },
+
+  /**
    * GET /api/auth/me
    * Lấy thông tin user hiện tại (alias từ authService)
    */
@@ -26,3 +41,4 @@ export const userService = {
     return await authService.getMe();
   }
 };
+

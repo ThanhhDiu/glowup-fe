@@ -28,6 +28,7 @@ import HomePage from '../pages/HomePage'
 import Provider from '../pages/Provider'
 import ProviderDashboard from '../pages/ProviderDashboard'
 import ProviderProfile from '../pages/ProviderProfile'
+import CustomerSecurityPage from '../pages/CustomerSecurityPage'
 import { OrderManagementPage } from '../pages/OrderManagementPage'
 import ServicesPage from '../pages/ServicesPage'
 import TechnicianProfileSettingsPage from '../pages/TechnicianProfileSettingsPage'
@@ -73,7 +74,7 @@ export default function AppRouter() {
         <Route path="settings" element={<Navigate to="/customer/account-settings" replace />} />
         <Route path="chat" element={<ChatPage />} />
         <Route path="order-management" element={<CustomerLayout activeNavKey="account" activeSidebarItem="wallet" searchPlaceholder="Tìm kiếm dịch vụ..."><OrderManagementPage role="customer" /></CustomerLayout>} />
-        <Route path="change-password" element={<CustomerLayout activeNavKey="account" activeSidebarItem="security" searchPlaceholder="Tìm kiếm dịch vụ..."><ChangePasswordPage /></CustomerLayout>} />
+        <Route path="change-password" element={<CustomerLayout activeNavKey="account" activeSidebarItem="security" searchPlaceholder="Tìm kiếm dịch vụ..."><CustomerSecurityPage /></CustomerLayout>} />
         <Route path="account-settings" element={<CustomerLayout activeNavKey="account" activeSidebarItem="personal" searchPlaceholder="Tìm kiếm dịch vụ..."><CustomerAccountSettingsPage /></CustomerLayout>} />
       </Route>
 

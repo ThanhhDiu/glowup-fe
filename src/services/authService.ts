@@ -70,4 +70,15 @@ export const authService = {
         );
         return response.data;
     },
+
+    /**
+     * Đăng xuất: xóa token khỏi storage
+     */
+    logout: (): void => {
+        // Có thể gọi clearAllTokens từ token.ts hoặc xóa thủ công
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        localStorage.removeItem('auth_remember');
+    }
 };

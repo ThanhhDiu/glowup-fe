@@ -1,6 +1,10 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useUserProfile } from '../../contexts/UserProfileContext';
 import './technicianSidebar.css';
+
+// Ảnh mặc định khi chưa có avatar hoặc ảnh bị lỗi
+const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=28';
 
 interface SidebarProps {
     activeItem?: string;
@@ -9,6 +13,11 @@ interface SidebarProps {
 
 export const TechnicianSidebar: React.FC<SidebarProps> = ({activeItem = 'dashboard', onNavigate}) => {
     const navigate = useNavigate();
+    // Tính năng 3: Sidebar sử dụng chung Global State (UserProfileContext) với trang Profile
+    // Khi avatar thay đổi ở trang Profile → setAvatar/updateProfile cập nhật context
+    // → Sidebar tự re-render hiển thị avatar mới mà KHÔNG cần reload trang
+    const { profile } = useUserProfile();
+
     const menuItems = [
         {
             id: 'dashboard', label: 'Dashboard', icon: (
@@ -78,6 +87,9 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({activeItem = 'dashboa
         navigate(target);
     };
 
+    // Xử lý avatar: dùng avatar từ context, fallback sang ảnh mặc định nếu chưa có
+    const displayAvatar = profile?.avatar || DEFAULT_AVATAR;
+
     return (
         <aside className="db-sidebar">
             <div className="db-sidebar-top">
@@ -101,11 +113,21 @@ export const TechnicianSidebar: React.FC<SidebarProps> = ({activeItem = 'dashboa
             </div>
 
             <div className="db-sidebar-bottom">
-                <div className="db-user-profile">
-                    <img src="https://i.pravatar.cc/150?img=28" alt="User" className="db-user-avatar"/>
+                <div className="db-user-profile" style={{ marginBottom: '12px' }}>
+                    {/* Tính năng 3: Avatar đồng bộ realtime từ UserProfileContext
+                        - Khi upload avatar mới ở trang Profile → context cập nhật → sidebar re-render
+                        - onError: nếu URL ảnh bị lỗi (404, mất kết nối), fallback về ảnh mặc định */}
+                    <img
+                        src={displayAvatar}
+                        alt={profile?.fullName || 'Technician'}
+                        className="db-user-avatar"
+                        onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = DEFAULT_AVATAR;
+                        }}
+                    />
                     <div className="db-user-info">
-                        <span className="db-user-name">Minh Nguyễn</span>
-                        <span className="db-user-id">ID: #GP-8829</span>
+                        <span className="db-user-name">{profile?.fullName || 'Technician'}</span>
+                        <span className="db-user-id">ID: #{profile?.id ? `TECH-${profile.id}` : 'GP-8829'}</span>
                     </div>
                 </div>
             </div>

@@ -24,7 +24,10 @@ export const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
-  const { profile, clearProfile } = useUserProfile();
+  const { profile, isProfileLoaded, clearProfile } = useUserProfile();
+
+  // Kiểm tra trạng thái đăng nhập: kết hợp token trong localStorage VÀ profile đã load
+  const loggedIn = isAuthenticated() && isProfileLoaded;
 
   const userAvatar = profile.avatar || DEFAULT_AVATAR;
   const userName = profile.fullName;
@@ -170,7 +173,8 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
           <NotificationMenu badgeStyle="dot" />
-          {isAuthenticated() ? profileDropdown : loginButton}
+          {/* Tính năng 1: Hiển thị dropdown profile nếu đã đăng nhập, nút "Đăng nhập" nếu chưa */}
+          {loggedIn ? profileDropdown : loginButton}
         </div>
       </div>
     </header>
