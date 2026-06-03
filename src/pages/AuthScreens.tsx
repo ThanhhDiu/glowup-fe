@@ -572,32 +572,32 @@ export function RegisterPage() {
     try {
       await registerUser({ fullName, email, phone, password, accountType })
       setIsSubmitting(false)
-      
+
       // Lưu email vào sessionStorage để sử dụng ở trang pending verification
       sessionStorage.setItem('registerEmail', email)
-      
+
       // Redirect đến trang chờ xác nhận email
       window.setTimeout(() => {
         navigate('/pending-email-verification')
       }, 500)
     } catch (error: any) {
-  setIsSubmitting(false)
+      setIsSubmitting(false)
 
-  const errorMessage =
-    error.message || 'Đăng ký thất bại, vui lòng thử lại sau.'
+      const errorMessage =
+        error.message || 'Đăng ký thất bại, vui lòng thử lại sau.'
 
-  // Hiển thị đúng field bị lỗi
-  if (errorMessage.toLowerCase().includes('email')) {
-    setErrors({ email: errorMessage })
-  } else if (
-    errorMessage.toLowerCase().includes('phone') ||
-    errorMessage.toLowerCase().includes('số điện thoại')
-  ) {
-    setErrors({ phone: errorMessage })
-  } else {
-    setErrors({ fullName: errorMessage })
-  }
-}
+      // Hiển thị đúng field bị lỗi
+      if (errorMessage.toLowerCase().includes('email')) {
+        setErrors({ email: errorMessage })
+      } else if (
+        errorMessage.toLowerCase().includes('phone') ||
+        errorMessage.toLowerCase().includes('số điện thoại')
+      ) {
+        setErrors({ phone: errorMessage })
+      } else {
+        setErrors({ fullName: errorMessage })
+      }
+    }
   }
 
   return (
@@ -804,7 +804,7 @@ export function ForgotPasswordPage() {
       // Gọi API gửi yêu cầu forgot password
       const response = await authService.forgotPassword(identifier.trim())
       setIsSubmitting(false)
-      
+
       // Kiểm tra nếu Backend trả về mã HTTP 200 nhưng success = false
       if (response && response.success === false) {
         setError(response.message || 'Yêu cầu không thành công. Vui lòng thử lại.');
@@ -817,11 +817,11 @@ export function ForgotPasswordPage() {
       )
     } catch (err: any) {
       setIsSubmitting(false)
-      
+
       // Xử lý lỗi chi tiết theo status code
       const status = err?.response?.status
       const message = err?.response?.data?.message
-      
+
       if (status === 404) {
         setError('Email hoặc số điện thoại này không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc đăng ký tài khoản mới.')
       } else if (status === 400) {

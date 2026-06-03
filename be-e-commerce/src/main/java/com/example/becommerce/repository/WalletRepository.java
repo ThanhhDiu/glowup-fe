@@ -2,6 +2,7 @@ package com.example.becommerce.repository;
 
 import com.example.becommerce.entity.Wallet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,7 +12,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 @Repository
-public interface WalletRepository extends JpaRepository<Wallet, Long> {
+public interface WalletRepository extends JpaRepository<Wallet, Long>, JpaSpecificationExecutor<Wallet> {
 
     Optional<Wallet> findByUser_Id(Long userId);
 
@@ -22,7 +23,6 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Wallet> findWithLockByUser_Id(Long userId);
 
-    @Query("select coalesce(sum(w.balance), 0) from Wallet w")
+    @Query("select coalesce(sum(w.creditBalance + w.personalBalance), 0) from Wallet w")
     BigDecimal sumBalance();
 }
-

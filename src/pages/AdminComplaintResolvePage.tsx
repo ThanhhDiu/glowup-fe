@@ -401,7 +401,7 @@ export default function AdminComplaintResolvePage() {
       }
 
       setComplaintStatus('resolved');
-      setBanner('success', 'Đã tạo giao dịch hoàn tiền, thông báo khách hàng và đóng khiếu nại ở trạng thái Đã giải quyết.');
+      setBanner('success', 'Đã tạo giao dịch hoàn tiền, thông báo khách hàng.');
       return;
     }
 

@@ -2,7 +2,6 @@ package com.example.becommerce.service.impl;
 
 import com.example.becommerce.constant.ErrorCode;
 import com.example.becommerce.dto.mapper.BankAccountMapper;
-import com.example.becommerce.dto.mapper.WalletMapper;
 import com.example.becommerce.dto.mapper.WalletTransactionMapper;
 import com.example.becommerce.dto.request.BankAccountCreateRequest;
 import com.example.becommerce.dto.request.WalletTopUpConfirmRequest;
@@ -25,6 +24,8 @@ import com.example.becommerce.entity.WalletTransaction;
 import com.example.becommerce.entity.enums.PaymentMethod;
 import com.example.becommerce.entity.enums.TransactionStatus;
 import com.example.becommerce.entity.enums.TransactionType;
+import com.example.becommerce.entity.enums.WalletType;
+import com.example.becommerce.entity.enums.WalletStatus;
 import com.example.becommerce.exception.AppException;
 import com.example.becommerce.repository.BankAccountRepository;
 import com.example.becommerce.repository.UserRepository;
@@ -66,7 +67,6 @@ public class WalletServiceImpl implements WalletService {
     private final WalletTransactionRepository walletTransactionRepository;
     private final BankAccountRepository bankAccountRepository;
     private final UserRepository userRepository;
-    private final WalletMapper walletMapper;
     private final WalletTransactionMapper walletTransactionMapper;
     private final BankAccountMapper bankAccountMapper;
     private final TransactionCodeGenerator transactionCodeGenerator;
@@ -87,24 +87,39 @@ public class WalletServiceImpl implements WalletService {
     @Value("${app.wallet.topup-expiry-minutes:30}")
     private int topupExpiryMinutes;
 
+    @Value("${app.wallet.qr.bank-name:Techcombank}")
+    private String qrBankName;
+
+    @Value("${app.wallet.qr.account-name:GLOWUP SERVICE}")
+    private String qrAccountName;
+
+    @Value("${app.wallet.qr.account-number:123456789}")
+    private String qrAccountNumber;
+
+    @Value("${app.wallet.qr.transfer-prefix:VQR-GLOWUP-03}")
+    private String qrTransferPrefix;
+
     @Override
     @Transactional
     public WalletResponse getCurrentWallet() {
         User currentUser = getCurrentUser();
         Wallet wallet = getOrCreateWallet(currentUser);
-        return walletMapper.toResponse(wallet);
+        return buildWalletResponse(wallet);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponse<WalletTransactionResponse> getTransactions(String type, int page, int limit) {
+    public PagedResponse<WalletTransactionResponse> getTransactions(String type, String walletType, int page, int limit) {
         User currentUser = getCurrentUser();
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), Math.max(1, limit), Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<WalletTransaction> transactionPage;
-        if (!StringUtils.hasText(type) || "all".equalsIgnoreCase(type)) {
+        WalletType resolvedWalletType = resolveWalletTypeFilter(walletType);
+        boolean allTypes = !StringUtils.hasText(type) || "all".equalsIgnoreCase(type);
+
+        if (allTypes && resolvedWalletType == null) {
             transactionPage = walletTransactionRepository.findByWallet_User_IdOrderByCreatedAtDesc(currentUser.getId(), pageable);
-        } else {
+        } else if (!allTypes && resolvedWalletType == null) {
             TransactionType transactionType;
             try {
                 transactionType = TransactionType.from(type);
@@ -112,6 +127,18 @@ public class WalletServiceImpl implements WalletService {
                 throw AppException.badRequest(ErrorCode.INVALID_TRANSACTION_TYPE, "Loại giao dịch không hợp lệ");
             }
             transactionPage = walletTransactionRepository.findByWallet_User_IdAndTypeOrderByCreatedAtDesc(currentUser.getId(), transactionType, pageable);
+        } else if (allTypes) {
+            transactionPage = walletTransactionRepository.findByWallet_User_IdAndWalletTypeOrderByCreatedAtDesc(
+                    currentUser.getId(), resolvedWalletType, pageable);
+        } else {
+            TransactionType transactionType;
+            try {
+                transactionType = TransactionType.from(type);
+            } catch (IllegalArgumentException ex) {
+                throw AppException.badRequest(ErrorCode.INVALID_TRANSACTION_TYPE, "Loại giao dịch không hợp lệ");
+            }
+            transactionPage = walletTransactionRepository.findByWallet_User_IdAndTypeAndWalletTypeOrderByCreatedAtDesc(
+                    currentUser.getId(), transactionType, resolvedWalletType, pageable);
         }
 
         List<WalletTransactionResponse> items = transactionPage.getContent()
@@ -134,40 +161,48 @@ public class WalletServiceImpl implements WalletService {
         }
 
         PaymentMethod paymentMethod = PaymentMethod.from(request.getMethod());
-        if (paymentMethod != PaymentMethod.VNPAY) {
-            throw AppException.badRequest(ErrorCode.INVALID_PAYMENT_METHOD, "Hiện tại chỉ hỗ trợ thanh toán bằng VNPay");
-        }
-
         String transactionCode = generateUniqueTransactionCode(TransactionType.TOPUP);
+        String transferContent = MoneyUtils.generateTransferContent(qrTransferPrefix, amount);
 
         WalletTransaction transaction = WalletTransaction.builder()
                 .transactionCode(transactionCode)
                 .wallet(wallet)
                 .type(TransactionType.TOPUP)
+                .walletType(WalletType.CREDIT)
                 .category(MoneyUtils.buildCategory(TransactionType.TOPUP))
-                .title("Nạp tiền vào ví")
+                .title("Nạp tiền vào ví tín dụng")
                 .amount(amount)
                 .fee(BigDecimal.ZERO)
                 .netAmount(amount)
+                .note("Chờ xác nhận thanh toán")
+                .actor("USER")
                 .status(TransactionStatus.AWAITING_PAYMENT)
                 .paymentMethod(paymentMethod)
-                .transferContent(null)
-                .qrCode(null)
+                .transferContent(transferContent)
+                .qrCode(buildQrPayload(paymentMethod, amount, transferContent))
                 .expiredAt(LocalDateTime.now().plusMinutes(topupExpiryMinutes))
                 .build();
 
         transaction = walletTransactionRepository.save(transaction);
-
-        PaymentGatewayService.GatewayCheckoutData checkout = paymentGatewayService.createCheckout(transaction, paymentMethod);
+        PaymentGatewayService.GatewayCheckoutData checkout = paymentMethod == PaymentMethod.VNPAY
+                ? paymentGatewayService.createCheckout(transaction, paymentMethod)
+                : new PaymentGatewayService.GatewayCheckoutData(null, null, null);
 
         return WalletTopUpResponse.builder()
                 .transactionId(transactionCode)
                 .amount(amount)
+                .walletType(WalletType.CREDIT.apiValue())
                 .method(paymentMethod.apiValue())
                 .checkoutUrl(checkout.checkoutUrl())
                 .deepLink(checkout.deepLink())
                 .qrCodeUrl(checkout.qrCodeUrl())
-                .paymentInfo(null)
+                .paymentInfo(WalletTopUpResponse.PaymentInfo.builder()
+                        .bankName(qrBankName)
+                        .accountName(qrAccountName)
+                        .accountNumber(qrAccountNumber)
+                        .transferContent(transferContent)
+                        .qrCode(transaction.getQrCode())
+                        .build())
                 .expiredAt(transaction.getExpiredAt())
                 .status(transaction.getStatus().apiValue())
                 .build();
@@ -214,8 +249,8 @@ public class WalletServiceImpl implements WalletService {
             throw AppException.badRequest(ErrorCode.WITHDRAW_AMOUNT_TOO_SMALL, "Số tiền rút phải lớn hơn phí rút");
         }
 
-        if (wallet.getBalance().compareTo(amount) < 0) {
-            throw AppException.badRequest(ErrorCode.INSUFFICIENT_BALANCE, "Số dư ví không đủ để thực hiện rút tiền");
+        if (wallet.getPersonalBalance().compareTo(amount) < 0) {
+            throw AppException.badRequest(ErrorCode.INSUFFICIENT_BALANCE, "Số dư ví cá nhân không đủ để thực hiện rút tiền");
         }
 
         BankAccount bankAccount = bankAccountRepository
@@ -223,8 +258,9 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> AppException.notFound("Không tìm thấy tài khoản ngân hàng"));
 
         BigDecimal netAmount = amount.subtract(withdrawFee);
-        wallet.setBalance(wallet.getBalance().subtract(amount));
-        wallet.setPendingBalance(wallet.getPendingBalance().add(netAmount));
+        BigDecimal remainingPersonalBalance = wallet.getPersonalBalance().subtract(amount);
+        wallet.setPersonalBalance(remainingPersonalBalance);
+        wallet.setPendingWithdrawBalance(wallet.getPendingWithdrawBalance().add(netAmount));
         wallet.setTotalWithdrawn(wallet.getTotalWithdrawn().add(amount));
         walletRepository.save(wallet);
 
@@ -233,11 +269,15 @@ public class WalletServiceImpl implements WalletService {
                 .transactionCode(transactionCode)
                 .wallet(wallet)
                 .type(TransactionType.WITHDRAW)
+                .walletType(WalletType.PERSONAL)
                 .category(MoneyUtils.buildCategory(TransactionType.WITHDRAW))
-                .title("Yêu cầu rút tiền về ngân hàng")
+                .title("Yêu cầu rút tiền từ ví cá nhân")
                 .amount(amount)
                 .fee(withdrawFee)
                 .netAmount(netAmount)
+                .afterBalance(remainingPersonalBalance.longValueExact())
+                .note("Yêu cầu rút tiền về tài khoản ngân hàng")
+                .actor(currentUser.getRole().name())
                 .status(TransactionStatus.PENDING)
                 .paymentMethod(PaymentMethod.BANK_TRANSFER)
                 .bankAccount(bankAccount)
@@ -250,6 +290,8 @@ public class WalletServiceImpl implements WalletService {
                 .amount(amount)
                 .fee(withdrawFee)
                 .netAmount(netAmount)
+                .walletType(WalletType.PERSONAL.apiValue())
+                .remainingBalance(remainingPersonalBalance)
                 .bankAccount(WalletWithdrawResponse.BankAccountInfo.builder()
                         .bankName(bankAccount.getBankName())
                         .accountNumber(BankAccountMaskUtils.mask(bankAccount.getAccountNumber()))
@@ -333,8 +375,9 @@ public class WalletServiceImpl implements WalletService {
                     try {
                         walletRepository.save(Wallet.builder()
                                 .user(user)
-                                .balance(BigDecimal.ZERO)
-                                .pendingBalance(BigDecimal.ZERO)
+                                .creditBalance(BigDecimal.ZERO)
+                                .personalBalance(BigDecimal.ZERO)
+                                .pendingWithdrawBalance(BigDecimal.ZERO)
                                 .totalEarned(BigDecimal.ZERO)
                                 .totalWithdrawn(BigDecimal.ZERO)
                                 .currency(defaultCurrency)
@@ -352,8 +395,9 @@ public class WalletServiceImpl implements WalletService {
                     try {
                         return walletRepository.save(Wallet.builder()
                                 .user(user)
-                                .balance(BigDecimal.ZERO)
-                                .pendingBalance(BigDecimal.ZERO)
+                                .creditBalance(BigDecimal.ZERO)
+                                .personalBalance(BigDecimal.ZERO)
+                                .pendingWithdrawBalance(BigDecimal.ZERO)
                                 .totalEarned(BigDecimal.ZERO)
                                 .totalWithdrawn(BigDecimal.ZERO)
                                 .currency(defaultCurrency)
@@ -365,8 +409,34 @@ public class WalletServiceImpl implements WalletService {
                 });
     }
 
+    private WalletResponse buildWalletResponse(Wallet wallet) {
+        return WalletResponse.builder()
+                .userId(wallet.getUser() != null ? wallet.getUser().getCode() : null)
+                .totalBalance(wallet.getCreditBalance().add(wallet.getPersonalBalance()))
+                .creditWallet(WalletResponse.WalletPocket.builder()
+                        .type(WalletType.CREDIT.apiValue())
+                        .balance(wallet.getCreditBalance())
+                        .status(resolveWalletStatus(wallet.getCreditBalance()).apiValue())
+                        .build())
+                .personalWallet(WalletResponse.WalletPocket.builder()
+                        .type(WalletType.PERSONAL.apiValue())
+                        .balance(wallet.getPersonalBalance())
+                        .pendingBalance(wallet.getPendingWithdrawBalance())
+                        .status(resolveWalletStatus(wallet.getPersonalBalance()).apiValue())
+                        .build())
+                .totalEarned(wallet.getTotalEarned())
+                .totalWithdrawn(wallet.getTotalWithdrawn())
+                .currency(wallet.getCurrency())
+                .updatedAt(wallet.getUpdatedAt())
+                .build();
+    }
+
+    private WalletStatus resolveWalletStatus(BigDecimal balance) {
+        return WalletStatus.fromBalance(balance);
+    }
+
     private void ensureTopUpTransactionCanBeConfirmed(WalletTransaction transaction) {
-        if (transaction.getPaymentMethod() != PaymentMethod.VIETQR) {
+        if (transaction.getPaymentMethod() == PaymentMethod.VNPAY) {
             throw AppException.badRequest(ErrorCode.BAD_REQUEST,
                     "Giao dịch này cần được xác nhận qua callback từ cổng thanh toán");
         }
@@ -399,6 +469,30 @@ public class WalletServiceImpl implements WalletService {
         return transactionCodeGenerator.generateBankAccountCode();
     }
 
+    private WalletType resolveWalletTypeFilter(String walletType) {
+        if (!StringUtils.hasText(walletType) || "all".equalsIgnoreCase(walletType)) {
+            return null;
+        }
+
+        try {
+            return WalletType.from(walletType);
+        } catch (IllegalArgumentException ex) {
+            throw AppException.badRequest(ErrorCode.BAD_REQUEST, "Loại ví không hợp lệ");
+        }
+    }
+
+    private String buildQrPayload(PaymentMethod paymentMethod, BigDecimal amount, String transferContent) {
+        return String.format(
+                "METHOD:%s|BANK:%s|ACCOUNT:%s|OWNER:%s|AMOUNT:%s|CONTENT:%s",
+                paymentMethod.apiValue(),
+                qrBankName,
+                qrAccountNumber,
+                qrAccountName,
+                amount.toPlainString(),
+                transferContent
+        );
+    }
+
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -410,7 +504,6 @@ public class WalletServiceImpl implements WalletService {
                 .orElseThrow(() -> AppException.notFound("Không tìm thấy người dùng hiện tại"));
     }
 }
-
 
 
 

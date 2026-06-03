@@ -9,29 +9,29 @@ interface RegisterUserData {
 }
 
 export const registerUser = async (userData: RegisterUserData): Promise<void> => {
-    const { fullName, email, phone, password, accountType } = userData
-    
-    // Dòng fetch phát đi yêu cầu
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fullName,
-        email,
-        phone,
-        password,
-        role: accountType === 'customer' ? 'CUSTOMER' : 'TECHNICIAN',
-      }),
-    })
-  
-    const data = await response.json()
-  
-    if (!response.ok) {
-      throw new Error(data.message || 'Đăng ký thất bại')
-    }
+  const { fullName, email, phone, password, accountType } = userData
+
+  // Dòng fetch phát đi yêu cầu
+  const response = await fetch(`${API_URL}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fullName,
+      email,
+      phone,
+      password,
+      role: accountType === 'customer' ? 'CUSTOMER' : 'TECHNICIAN',
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Đăng ký thất bại')
   }
+}
 
 export interface LoginUserData {
   identifier: string
@@ -66,6 +66,11 @@ export interface RefreshTokenResponse {
   }
 }
 
+interface AuthMeResponse {
+  success: boolean
+  data: User
+}
+
 type FetchWithAuthOptions = RequestInit & {
   skipAuth?: boolean
 }
@@ -85,14 +90,14 @@ export const loginUser = async (
   })
 
   const data: LoginResponse = await response.json()
-  
+
   if (!response.ok) {
     throw new Error('Đăng nhập thất bại')
   }
   const { user, accessToken, refreshToken } = data.data
-    localStorage.setItem('user', JSON.stringify({ user }))
-    localStorage.setItem('accessToken',  accessToken )
-    localStorage.setItem('refreshToken', refreshToken )
+  localStorage.setItem('user', JSON.stringify({ user }))
+  localStorage.setItem('accessToken', accessToken)
+  localStorage.setItem('refreshToken', refreshToken)
   return data
 }
 
@@ -128,8 +133,10 @@ export const fetchWithAuth = async (
 ): Promise<Response> => {
   const { skipAuth, headers, ...rest } = init
   const nextHeaders = new Headers(headers || undefined)
+  const isFormDataBody = rest.body instanceof FormData
 
   if (!nextHeaders.has('Content-Type') && !(rest.body instanceof FormData)) {
+    /* if (!nextHeaders.has('Content-Type') && !isFormDataBody) {*/
     nextHeaders.set('Content-Type', 'application/json')
   }
 
@@ -175,15 +182,16 @@ export const isAuthenticated = (): boolean => {
   return !!accessToken
 }
 export const getAccessToken = (): string | null => {
-    if (!isAuthenticated()) {
-        return null
-    }
+  if (!isAuthenticated()) {
+    return null
+  }
   return localStorage.getItem('accessToken')
 }
 
 export const getRefreshToken = (): string | null => {
   return localStorage.getItem('refreshToken')
 }
+
 
 export const verifyEmail = async (data: { token: string }): Promise<void> => {
   const response = await fetch(`${API_URL}/auth/verify-email`, {
@@ -200,4 +208,37 @@ export const verifyEmail = async (data: { token: string }): Promise<void> => {
     throw new Error(responseData.message || 'Xác nhận email thất bại')
   }
 }
+
+/*
+export const getStoredUser = (): User | null => {
+  const raw = localStorage.getItem('user')
+  if (!raw) {
+    return null
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as { user?: User } | User
+    if ('user' in parsed && parsed.user) {
+      return parsed.user
+    }
+    return parsed as User
+  } catch {
+    return null
+  }
+}
+
+export const fetchCurrentUser = async (): Promise<User> => {
+  const response = await fetchWithAuth(`${API_URL}/auth/me`, {
+    method: 'GET',
+  })
+
+  const payload: AuthMeResponse = await response.json()
+
+  if (!response.ok || !payload.success) {
+    throw new Error('Không thể lấy thông tin người dùng')
+  }
+
+  localStorage.setItem('user', JSON.stringify({ user: payload.data }))
+  return payload.data
+}*/
 
