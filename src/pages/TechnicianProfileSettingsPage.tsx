@@ -67,7 +67,7 @@ export default function TechnicianProfileSettingsPage() {
   };
 
   const resolvedAvatarUrl = resolveMediaUrl(userProfileContext.avatar);
-  const displayAvatar = previewUrl || resolvedAvatarUrl || 'https://i.pravatar.cc/160?img=12';
+  const displayAvatar = previewUrl || resolvedAvatarUrl || 'https://segayanime.com/wp-content/uploads/2026/01/avatar-fb-mac-dinh-1.jpg';
 
   useEffect(() => {
     if (resolvedAvatarUrl && previewUrl) {
