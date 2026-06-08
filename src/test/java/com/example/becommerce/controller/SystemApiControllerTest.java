@@ -288,8 +288,8 @@ class SystemApiControllerTest {
     @DisplayName("WALLET — wallet / transactions / topup / confirm / withdraw / bank accounts")
     void walletApisReturnExpectedContracts() throws Exception {
         when(walletService.getCurrentWallet()).thenReturn(WalletResponse.builder()
-                .userId("US-001").totalBalance(BigDecimal.valueOf(1500000)).currency("VND").build());
-        when(walletService.getTransactions(anyString(), anyString(), anyInt(), anyInt()))
+                .userId("US-001").balance(BigDecimal.valueOf(1500000)).currency("VND").build());
+        when(walletService.getTransactions(anyString(), anyInt(), anyInt()))
                 .thenReturn(PagedResponse.of(List.of(WalletTransactionResponse.builder()
                         .id("TXN-001").type("credit").amount(BigDecimal.valueOf(100000)).status("done").build()),
                         1, 10, 1));
@@ -309,7 +309,7 @@ class SystemApiControllerTest {
 
         walletMvc.perform(get("/api/wallet"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.totalBalance").value(1500000));
+                .andExpect(jsonPath("$.data.balance").value(1500000));
 
         walletMvc.perform(get("/api/wallet/transactions").param("type", "all").param("page", "1"))
                 .andExpect(status().isOk())
