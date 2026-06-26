@@ -28,6 +28,11 @@ import CustomerSecurityPage from '../pages/CustomerSecurityPage';
 import { VerifyEmailPage } from '../pages/VerifyEmailPage'
 import { PendingEmailVerificationPage } from '../pages/PendingEmailVerificationPage'
 import { ChatPage } from '../pages/ChatPage'
+import AdminVerificationRequests from '../pages/AdminVerificationRequests'
+import AdminVerificationDetail from '../pages/AdminVerificationDetail'
+import AdminVerificationUpdate from '../pages/AdminVerificationUpdate'
+import AdminComplaintsPage from '../pages/AdminComplaintsPage'
+import AdminComplaintResolvePage from '../pages/AdminComplaintResolvePage'
 export default function AppRouter() {
   return (
     <Routes>
@@ -118,6 +123,11 @@ export default function AppRouter() {
       <Route path="/admin/users/:id" element={<AdminUserDetail />} />
       <Route path="/admin/finance" element={<AdminFinancePage />} />
       <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+      <Route path="/admin/verification" element={<AdminVerificationRequests />} />
+      <Route path="/admin/verification/:requestId" element={<AdminVerificationDetail />} />
+      <Route path="/admin/verification/:requestId/update" element={<AdminVerificationUpdate />} />
+      <Route path="/admin/complaints" element={<AdminComplaintsPage />} />
+      <Route path="/admin/complaints/:complaintId/resolve" element={<AdminComplaintResolvePage />} />
     </Routes>
   )
 }
